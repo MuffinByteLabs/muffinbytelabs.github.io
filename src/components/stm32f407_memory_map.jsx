@@ -298,6 +298,44 @@ const FPU_CTRL_REGS = [
   { name:"MVFR1",  off:0xF44, desc:"Media and VFP Feature 1. Read-only. FP fused MAC, FP16 support." },
 ];
 
+// ITM registers (ARM TRM Table 10-1)
+const ITM_REGS = [
+  { name:"STIM0",  off:0x000, desc:"Stimulus Port 0. Write char here for printf over SWO. Read: bit 0 = FIFO ready." },
+  { name:"STIM1",  off:0x004, desc:"Stimulus Port 1. Additional trace channel." },
+  { name:"TER",    off:0xE00, desc:"Trace Enable Register. Each bit enables the corresponding stimulus port (0–31)." },
+  { name:"TPR",    off:0xE40, desc:"Trace Privilege. Controls which stimulus ports are accessible from unprivileged code." },
+  { name:"TCR",    off:0xE80, desc:"Trace Control. ITMENA (global enable), SYNCENA, DWTENA, SWOENA, TSPrescale, ATB ID." },
+  { name:"LAR",    off:0xFB0, desc:"Lock Access. Write 0xC5ACCE55 to unlock ITM registers for writing. Must do before any config." },
+];
+
+// DWT registers (ARM TRM Table 9-1)
+const DWT_REGS = [
+  { name:"CTRL",      off:0x000, desc:"Control. CYCCNTENA (bit 0) enables cycle counter. NUMCOMP = number of comparators." },
+  { name:"CYCCNT",    off:0x004, desc:"Cycle Count. 32-bit. Counts processor clock cycles when enabled. Wraps at 2^32." },
+  { name:"CPICNT",    off:0x008, desc:"CPI Count. Counts extra cycles beyond first for multi-cycle instructions." },
+  { name:"EXCCNT",    off:0x00C, desc:"Exception Overhead Count. Cycles spent on exception entry/exit." },
+  { name:"SLEEPCNT",  off:0x010, desc:"Sleep Count. Cycles spent sleeping (WFI/WFE)." },
+  { name:"LSUCNT",    off:0x014, desc:"LSU Count. Extra cycles for load/store instructions." },
+  { name:"FOLDCNT",   off:0x018, desc:"Folded-instruction Count. Instructions that execute in zero cycles (IT folding)." },
+  { name:"PCSR",      off:0x01C, desc:"PC Sample Register. Read-only. Snapshot of PC — debugger uses this for profiling." },
+  { name:"COMP0",     off:0x020, desc:"Comparator 0. Address/data match value. Can also match CYCCNT." },
+  { name:"MASK0",     off:0x024, desc:"Mask 0. Ignore bottom N bits of comparison. Max 32 KB range." },
+  { name:"FUNCTION0", off:0x028, desc:"Function 0. Selects comparator action: disabled, watchpoint (read/write/access), ETM trigger." },
+  { name:"COMP1",     off:0x030, desc:"Comparator 1. Can do data value matching (unique to COMP1)." },
+  { name:"MASK1",     off:0x034, desc:"Mask 1." },
+  { name:"FUNCTION1", off:0x038, desc:"Function 1. DATAVMATCH enables data value matching (only comparator 1)." },
+];
+
+// Flash Interface registers (RM0090 Section 3.9, Table 20, base 0x40023C00)
+const FLASH_IF_REGS = [
+  { name:"ACR",     off:0x00, desc:"Access Control. LATENCY (wait states 0–7), PRFTEN (prefetch), ICEN/DCEN (I/D cache). At 168 MHz: set LATENCY=5." },
+  { name:"KEYR",    off:0x04, desc:"Key Register. Write 0x45670123 then 0xCDEF89AB to unlock FLASH_CR for erase/program." },
+  { name:"OPTKEYR", off:0x08, desc:"Option Key. Write 0x08192A3B then 0x4C5D6E7F to unlock option byte programming." },
+  { name:"SR",      off:0x0C, desc:"Status. BSY (busy), EOP (end of operation), WRPERR, PGAERR, PGPERR, PGSERR." },
+  { name:"CR",      off:0x10, desc:"Control. PG (program), SER (sector erase), MER (mass erase), SNB (sector number), STRT, LOCK." },
+  { name:"OPTCR",   off:0x14, desc:"Option Control. RDP (read protection level), WDG_SW, nRST_STOP, nRST_STDBY, BOR_LEV, nWRP." },
+];
+
 const hex = (n) => "0x" + n.toString(16).toUpperCase().padStart(8,"0");
 const hex4 = (n) => "0x" + n.toString(16).toUpperCase().padStart(2,"0");
 
@@ -375,7 +413,7 @@ const DATA = {
     { id:"ahb1.gpioe", name:"GPIOE", addr:"0x40021000–0x400213FF", size:"1 KB", color:"ahb1", baseAddr:0x40021000, registers:GPIO_REGS, clock:"AHB1ENR bit 4", desc:"Port E. 16 pins." },
     { id:"ahb1.gpiofi", name:"GPIOF–GPIOI", addr:"0x40021400–0x400223FF", size:"4 KB", color:"gray", clock:"AHB1ENR bits 5–8", desc:"Ports F–I. Not all pins on Discovery board." },
     { id:"ahb1.rcc", name:"RCC", addr:"0x40023800–0x40023BFF", size:"1 KB", color:"ahb1_em", baseAddr:0x40023800, registers:RCC_REGS, desc:"Reset & Clock Control. Enable peripheral clocks here first." },
-    { id:"ahb1.flashif", name:"Flash Interface", addr:"0x40023C00–0x40023FFF", size:"1 KB", color:"ahb1_lt", desc:"Flash access control, latency, erase/program." },
+    { id:"ahb1.flashif", name:"Flash Interface", addr:"0x40023C00–0x40023FFF", size:"1 KB", color:"ahb1_lt", baseAddr:0x40023C00, registers:FLASH_IF_REGS, desc:"Flash access control. CRITICAL: set wait states (ACR.LATENCY) before increasing clock speed, or CPU reads garbage from Flash. At 168 MHz: LATENCY=5." },
     { id:"ahb1.dma1", name:"DMA1", addr:"0x40026000–0x400263FF", size:"1 KB", color:"ahb1", baseAddr:0x40026000, registers:DMA_REGS, clock:"AHB1ENR bit 21", desc:"Direct Memory Access. Copies data without CPU. 8 streams, each with configurable channel." },
     { id:"ahb1.dma2", name:"DMA2", addr:"0x40026400–0x400267FF", size:"1 KB", color:"ahb1", baseAddr:0x40026400, registers:DMA_REGS, clock:"AHB1ENR bit 22", desc:"Second DMA controller. 8 streams." },
     { id:"ahb1.eth", name:"Ethernet MAC", addr:"0x40028000–0x400293FF", size:"5 KB", color:"gray", desc:"Ethernet controller." },
@@ -431,8 +469,8 @@ const DATA = {
     { id:"ahb2.rng", name:"RNG", addr:"0x50060800–0x50060BFF", size:"1 KB", color:"ahb2_lt", desc:"True Random Number Generator." },
   ],
   ppb: [
-    { id:"ppb.itm", name:"ITM", addr:"0xE0000000–0xE0000FFF", size:"4 KB", color:"ppb", baseAddr:0xE0000000, addrEnd:0xE0000FFF, desc:"Instrumentation Trace. printf over SWO." },
-    { id:"ppb.dwt", name:"DWT", addr:"0xE0001000–0xE0001FFF", size:"4 KB", color:"ppb", baseAddr:0xE0001000, addrEnd:0xE0001FFF, desc:"Data Watchpoint and Trace. Cycle counter." },
+    { id:"ppb.itm", name:"ITM", addr:"0xE0000000–0xE0000FFF", size:"4 KB", color:"ppb", baseAddr:0xE0000000, addrEnd:0xE0000FFF, registers:ITM_REGS, desc:"Instrumentation Trace Macrocell. printf over SWO. Must enable TRCENA (DEMCR bit 24) first, then unlock with LAR." },
+    { id:"ppb.dwt", name:"DWT", addr:"0xE0001000–0xE0001FFF", size:"4 KB", color:"ppb", baseAddr:0xE0001000, addrEnd:0xE0001FFF, registers:DWT_REGS, desc:"Data Watchpoint and Trace. Cycle counter (CYCCNT) for timing, 4 hardware watchpoints, profiling counters." },
     { id:"ppb.fpb", name:"FPB", addr:"0xE0002000–0xE0002FFF", size:"4 KB", color:"ppb", baseAddr:0xE0002000, addrEnd:0xE0002FFF, desc:"Flash Patch and Breakpoint. HW breakpoints." },
     { id:"ppb.gap", name:"Reserved", addr:"0xE0003000–0xE000DFFF", color:"dim" },
     { id:"ppb.scs", name:"SCS (System Control Space)", addr:"0xE000E000–0xE000EFFF", size:"4 KB", color:"scs", baseAddr:0xE000E000, addrEnd:0xE000EFFF, _lookupRegs:ALL_SCS_REGS, desc:"4 KB window shared by 5 ARM blocks: NVIC, SysTick, SCB, DCB, and FPU control. Not one peripheral — a container.", children:"scs" },
