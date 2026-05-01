@@ -199,7 +199,12 @@ const ADC_REGS = [
   { name:"DR",    off:0x4C, desc:"Regular data register. Conversion result." },
 ];
 
-// DMA registers — per-stream (RM0090 Section 10.5)
+// ADC common registers (at ADC1 base + 0x300, i.e. 0x40012300)
+const ADC_COMMON_REGS = [
+  { name:"CSR", off:0x00, desc:"Common status. Read-only image of all 3 ADCs' status bits (EOC1/2/3, OVR1/2/3, AWD1/2/3)." },
+  { name:"CCR", off:0x04, desc:"Common control. ADCPRE (prescaler), DMA mode, MULTI (dual/triple mode select), TSVREFE, VBATE." },
+  { name:"CDR", off:0x08, desc:"Common regular data. In dual/triple mode, holds converted data from multiple ADCs." },
+];
 // DMA has a global register block + per-stream registers. Show key globals + stream 0 as example.
 const DMA_REGS = [
   { name:"LISR",   off:0x00, desc:"Low interrupt status. TCIF/HTIF/TEIF/DMEIF/FEIF for streams 0–3." },
@@ -232,44 +237,72 @@ const PWR_REGS = [
   { name:"CR",  off:0x00, desc:"Power control. VOS (voltage scaling), FPDS, DBP (backup domain write), PLS (PVD level), PVDE." },
   { name:"CSR", off:0x04, desc:"Power control/status. PVDO, SBF (standby flag), WUF (wakeup flag), BRE, EWUP." },
 ];
-const SCS_REGS = [
-  { name:"ICTR",    off:0x004, desc:"Interrupt Controller Type. Read-only. Number of interrupt lines." },
-  { name:"STCSR",   off:0x010, desc:"SysTick Control and Status Register." },
-  { name:"STRVR",   off:0x014, desc:"SysTick Reload Value Register." },
-  { name:"STCVR",   off:0x018, desc:"SysTick Current Value Register." },
-  { name:"STCR",    off:0x01C, desc:"SysTick Calibration Value Register." },
-  { name:"ISER0",   off:0x100, desc:"Interrupt Set-Enable Register 0. Write 1 to enable IRQs 0–31." },
-  { name:"ISER1",   off:0x104, desc:"Interrupt Set-Enable Register 1. IRQs 32–63." },
-  { name:"ISER2",   off:0x108, desc:"Interrupt Set-Enable Register 2. IRQs 64–81." },
-  { name:"ICER0",   off:0x180, desc:"Interrupt Clear-Enable Register 0. Write 1 to disable IRQs 0–31." },
-  { name:"ICER1",   off:0x184, desc:"Interrupt Clear-Enable Register 1. IRQs 32–63." },
-  { name:"ICER2",   off:0x188, desc:"Interrupt Clear-Enable Register 2. IRQs 64–81." },
-  { name:"ISPR0",   off:0x200, desc:"Interrupt Set-Pending Register 0." },
-  { name:"ICPR0",   off:0x280, desc:"Interrupt Clear-Pending Register 0." },
-  { name:"IABR0",   off:0x300, desc:"Interrupt Active Bit Register 0. Read-only." },
-  { name:"IPR0",    off:0x400, desc:"Interrupt Priority Register 0. 8 bits per IRQ (only top 4 used)." },
-  { name:"CPUID",   off:0xD00, desc:"CPUID Base Register. Read-only. Identifies the processor." },
-  { name:"ICSR",    off:0xD04, desc:"Interrupt Control and State. Pending exception info, NMI/PendSV triggers." },
-  { name:"VTOR",    off:0xD08, desc:"Vector Table Offset Register. Relocate the vector table." },
-  { name:"AIRCR",   off:0xD0C, desc:"Application Interrupt and Reset Control. Priority grouping, system reset." },
-  { name:"SCR",     off:0xD10, desc:"System Control Register. Sleep modes (WFI/WFE behavior)." },
-  { name:"CCR",     off:0xD14, desc:"Configuration and Control. Stack alignment, div-by-zero trap." },
-  { name:"SHPR1",   off:0xD18, desc:"System Handler Priority Register 1. MemManage, BusFault, UsageFault." },
-  { name:"SHPR2",   off:0xD1C, desc:"System Handler Priority Register 2. SVCall." },
-  { name:"SHPR3",   off:0xD20, desc:"System Handler Priority Register 3. PendSV, SysTick." },
-  { name:"SHCSR",   off:0xD24, desc:"System Handler Control and State. Enable/pending fault handlers." },
-  { name:"CFSR",    off:0xD28, desc:"Configurable Fault Status. Combines MemManage + BusFault + UsageFault." },
-  { name:"HFSR",    off:0xD2C, desc:"HardFault Status Register." },
-  { name:"MMAR",    off:0xD34, desc:"MemManage Fault Address Register." },
-  { name:"BFAR",    off:0xD38, desc:"BusFault Address Register." },
-  { name:"AFSR",    off:0xD3C, desc:"Auxiliary Fault Status Register." },
-  { name:"CPACR",   off:0xD88, desc:"Coprocessor Access Control. Enable FPU (bits 20–23)." },
-  { name:"DEMCR",   off:0xDFC, desc:"Debug Exception and Monitor Control. Bit 24 (TRCENA) = master trace enable." },
-  { name:"STIR",    off:0xF00, desc:"Software Trigger Interrupt Register. Write IRQ number to trigger it." },
+// ── SCS sub-block registers (ARM Cortex-M4 Generic User Guide Table 4-1, TRM Table 7-4) ──
+
+const SYSTICK_REGS = [
+  { name:"STCSR",  off:0x00, desc:"Control and Status. ENABLE, TICKINT, CLKSOURCE, COUNTFLAG." },
+  { name:"STRVR",  off:0x04, desc:"Reload Value. 24-bit. Counter reloads to this on reaching 0." },
+  { name:"STCVR",  off:0x08, desc:"Current Value. Read: current count. Write: clears to 0 + COUNTFLAG." },
+  { name:"STCR",   off:0x0C, desc:"Calibration. TENMS (10ms reload value), SKEW, NOREF." },
+];
+
+const NVIC_REGS = [
+  { name:"ICTR",   off:0x004, desc:"Interrupt Controller Type. Read-only. INTLINESNUM = number of supported IRQ groups." },
+  { name:"ISER0",  off:0x100, desc:"Interrupt Set-Enable 0. Write 1 to enable IRQs 0–31." },
+  { name:"ISER1",  off:0x104, desc:"Interrupt Set-Enable 1. IRQs 32–63." },
+  { name:"ISER2",  off:0x108, desc:"Interrupt Set-Enable 2. IRQs 64–81." },
+  { name:"ICER0",  off:0x180, desc:"Interrupt Clear-Enable 0. Write 1 to disable IRQs 0–31." },
+  { name:"ICER1",  off:0x184, desc:"Interrupt Clear-Enable 1. IRQs 32–63." },
+  { name:"ICER2",  off:0x188, desc:"Interrupt Clear-Enable 2. IRQs 64–81." },
+  { name:"ISPR0",  off:0x200, desc:"Interrupt Set-Pending 0. Write 1 to force IRQs 0–31 pending." },
+  { name:"ISPR1",  off:0x204, desc:"Interrupt Set-Pending 1. IRQs 32–63." },
+  { name:"ISPR2",  off:0x208, desc:"Interrupt Set-Pending 2. IRQs 64–81." },
+  { name:"ICPR0",  off:0x280, desc:"Interrupt Clear-Pending 0." },
+  { name:"ICPR1",  off:0x284, desc:"Interrupt Clear-Pending 1. IRQs 32–63." },
+  { name:"ICPR2",  off:0x288, desc:"Interrupt Clear-Pending 2. IRQs 64–81." },
+  { name:"IABR0",  off:0x300, desc:"Interrupt Active Bit 0. Read-only. Which IRQs 0–31 are currently active." },
+  { name:"IABR1",  off:0x304, desc:"Interrupt Active Bit 1. IRQs 32–63." },
+  { name:"IABR2",  off:0x308, desc:"Interrupt Active Bit 2. IRQs 64–81." },
+  { name:"IPR0",   off:0x400, desc:"Interrupt Priority 0. 4 IRQs per register, 8 bits each (top 4 bits used on STM32F4)." },
+  { name:"STIR",   off:0xF00, desc:"Software Trigger Interrupt. Write IRQ number (0–81) to trigger it from software." },
+];
+
+const SCB_REGS = [
+  { name:"CPUID",  off:0xD00, desc:"CPUID Base. Read-only. Identifies ARM Cortex-M4 r0p1." },
+  { name:"ICSR",   off:0xD04, desc:"Interrupt Control and State. VECTACTIVE, VECTPENDING, PENDSTSET, PENDSVSET." },
+  { name:"VTOR",   off:0xD08, desc:"Vector Table Offset. Relocate the vector table (must be 512-byte aligned)." },
+  { name:"AIRCR",  off:0xD0C, desc:"App Interrupt and Reset Control. PRIGROUP (priority grouping), SYSRESETREQ, VECTKEY." },
+  { name:"SCR",    off:0xD10, desc:"System Control. SLEEPDEEP, SLEEPONEXIT, SEVONPEND." },
+  { name:"CCR",    off:0xD14, desc:"Configuration and Control. STKALIGN, DIV_0_TRP, UNALIGN_TRP." },
+  { name:"SHPR1",  off:0xD18, desc:"System Handler Priority 1. MemManage, BusFault, UsageFault." },
+  { name:"SHPR2",  off:0xD1C, desc:"System Handler Priority 2. SVCall." },
+  { name:"SHPR3",  off:0xD20, desc:"System Handler Priority 3. PendSV, SysTick." },
+  { name:"SHCSR",  off:0xD24, desc:"System Handler Control and State. Enable + pending bits for fault handlers." },
+  { name:"CFSR",   off:0xD28, desc:"Configurable Fault Status. MMFSR (7:0) + BFSR (15:8) + UFSR (31:16)." },
+  { name:"HFSR",   off:0xD2C, desc:"HardFault Status. FORCED (escalated), VECTTBL (vector table read fault)." },
+  { name:"MMAR",   off:0xD34, desc:"MemManage Fault Address. Valid when MMFSR.MMARVALID=1." },
+  { name:"BFAR",   off:0xD38, desc:"BusFault Address. Valid when BFSR.BFARVALID=1." },
+  { name:"AFSR",   off:0xD3C, desc:"Auxiliary Fault Status. Implementation-defined." },
+  { name:"CPACR",  off:0xD88, desc:"Coprocessor Access Control. Bits 23:20 enable FPU (CP10/CP11). 0xF << 20 = full access." },
+];
+
+const DCB_REGS = [
+  { name:"DEMCR",  off:0xDFC, desc:"Debug Exception and Monitor Control. Bit 24 (TRCENA) = master trace enable for ITM/DWT/TPIU." },
+];
+
+const FPU_CTRL_REGS = [
+  { name:"FPCCR",  off:0xF34, desc:"FP Context Control. ASPEN (auto state preservation), LSPEN (lazy stacking)." },
+  { name:"FPCAR",  off:0xF38, desc:"FP Context Address. Points to FP stack frame for lazy stacking." },
+  { name:"FPDSCR", off:0xF3C, desc:"FP Default Status Control. Default NaN mode, flush-to-zero, rounding." },
+  { name:"MVFR0",  off:0xF40, desc:"Media and VFP Feature 0. Read-only. FP rounding, sqrt support." },
+  { name:"MVFR1",  off:0xF44, desc:"Media and VFP Feature 1. Read-only. FP fused MAC, FP16 support." },
 ];
 
 const hex = (n) => "0x" + n.toString(16).toUpperCase().padStart(8,"0");
 const hex4 = (n) => "0x" + n.toString(16).toUpperCase().padStart(2,"0");
+
+// Combined SCS registers for address calculator lookup (all sub-blocks merged)
+const ALL_SCS_REGS = [...SYSTICK_REGS.map(r=>({...r,off:r.off+0x010})), ...NVIC_REGS, ...SCB_REGS, ...DCB_REGS, ...FPU_CTRL_REGS];
 
 /* ══════════════════════════════════════════════════════════════════════════
    DATA TREE — unique IDs, bus-consistent colors, registers, clock, disc
@@ -349,30 +382,46 @@ const DATA = {
     { id:"ahb1.usbhs", name:"USB OTG HS", addr:"0x40040000–0x4007FFFF", size:"256 KB", color:"gray", desc:"USB 2.0 High-Speed." },
   ],
   apb1: [
-    { id:"apb1.tim2", name:"TIM2", addr:"0x40000000–0x400003FF", size:"1 KB", color:"apb1", baseAddr:0x40000000, registers:TIM_GP_REGS, clock:"APB1ENR bit 0", desc:"32-bit general-purpose timer." },
-    { id:"apb1.tim3", name:"TIM3", addr:"0x40000400–0x400007FF", size:"1 KB", color:"apb1", baseAddr:0x40000400, registers:TIM_GP_REGS, clock:"APB1ENR bit 1", desc:"16-bit general-purpose timer." },
-    { id:"apb1.tim4", name:"TIM4", addr:"0x40000800–0x40000BFF", size:"1 KB", color:"apb1", baseAddr:0x40000800, registers:TIM_GP_REGS, clock:"APB1ENR bit 2", desc:"16-bit general-purpose timer." },
-    { id:"apb1.tim5", name:"TIM5", addr:"0x40000C00–0x40000FFF", size:"1 KB", color:"apb1", baseAddr:0x40000C00, registers:TIM_GP_REGS, clock:"APB1ENR bit 3", desc:"32-bit general-purpose timer." },
-    { id:"apb1.tim67", name:"TIM6, TIM7", addr:"0x40001000–0x400017FF", size:"2 KB", color:"apb1", baseAddr:0x40001000, registers:TIM_BASIC_REGS, clock:"APB1ENR bits 4–5", desc:"Basic timers (DAC trigger)." },
-    { id:"apb1.tim121314", name:"TIM12, TIM13, TIM14", addr:"0x40001800–0x40002BFF", color:"apb1_dk", clock:"APB1ENR bits 6–8", desc:"16-bit general-purpose timers." },
-    { id:"apb1.spi23", name:"SPI2/I2S2, SPI3/I2S3", addr:"0x40003800–0x40003FFF", size:"2 KB", color:"apb1_lt", baseAddr:0x40003800, registers:SPI_REGS, clock:"APB1ENR bits 14–15", desc:"Serial Peripheral Interface." },
-    { id:"apb1.usart23", name:"USART2, USART3", addr:"0x40004400–0x40004BFF", size:"2 KB", color:"apb1_lt", baseAddr:0x40004400, registers:USART_REGS, clock:"APB1ENR bits 17–18", disc_usart2:"Available on Discovery header pins", desc:"USART." },
-    { id:"apb1.uart45", name:"UART4, UART5", addr:"0x40004C00–0x400053FF", size:"2 KB", color:"apb1_lt", clock:"APB1ENR bits 19–20", desc:"Asynchronous-only UARTs." },
-    { id:"apb1.i2c", name:"I2C1, I2C2, I2C3", addr:"0x40005400–0x40005FFF", color:"apb1_dk", baseAddr:0x40005400, registers:I2C_REGS, clock:"APB1ENR bits 21–23", disc:"I2C1 → onboard accelerometer", desc:"Inter-Integrated Circuit." },
-    { id:"apb1.can", name:"CAN1, CAN2", addr:"0x40006400–0x40006BFF", size:"2 KB", color:"apb1_dk", clock:"APB1ENR bits 25–26", desc:"Controller Area Network." },
+    { id:"apb1.tim2", name:"TIM2", addr:"0x40000000–0x400003FF", size:"1 KB", color:"apb1", baseAddr:0x40000000, registers:TIM_GP_REGS, clock:"APB1ENR bit 0", desc:"32-bit general-purpose timer. 4 channels." },
+    { id:"apb1.tim3", name:"TIM3", addr:"0x40000400–0x400007FF", size:"1 KB", color:"apb1", baseAddr:0x40000400, registers:TIM_GP_REGS, clock:"APB1ENR bit 1", desc:"16-bit general-purpose timer. 4 channels." },
+    { id:"apb1.tim4", name:"TIM4", addr:"0x40000800–0x40000BFF", size:"1 KB", color:"apb1", baseAddr:0x40000800, registers:TIM_GP_REGS, clock:"APB1ENR bit 2", desc:"16-bit general-purpose timer. 4 channels." },
+    { id:"apb1.tim5", name:"TIM5", addr:"0x40000C00–0x40000FFF", size:"1 KB", color:"apb1", baseAddr:0x40000C00, registers:TIM_GP_REGS, clock:"APB1ENR bit 3", desc:"32-bit general-purpose timer. 4 channels." },
+    { id:"apb1.tim6", name:"TIM6", addr:"0x40001000–0x400013FF", size:"1 KB", color:"apb1", baseAddr:0x40001000, registers:TIM_BASIC_REGS, clock:"APB1ENR bit 4", desc:"Basic timer. DAC trigger, no output pins." },
+    { id:"apb1.tim7", name:"TIM7", addr:"0x40001400–0x400017FF", size:"1 KB", color:"apb1", baseAddr:0x40001400, registers:TIM_BASIC_REGS, clock:"APB1ENR bit 5", desc:"Basic timer. DAC trigger, no output pins." },
+    { id:"apb1.tim12", name:"TIM12", addr:"0x40001800–0x40001BFF", size:"1 KB", color:"apb1_dk", baseAddr:0x40001800, clock:"APB1ENR bit 6", desc:"16-bit timer. 2 channels. Input capture, output compare, PWM." },
+    { id:"apb1.tim13", name:"TIM13", addr:"0x40001C00–0x40001FFF", size:"1 KB", color:"apb1_dk", baseAddr:0x40001C00, clock:"APB1ENR bit 7", desc:"16-bit timer. 1 channel." },
+    { id:"apb1.tim14", name:"TIM14", addr:"0x40002000–0x400023FF", size:"1 KB", color:"apb1_dk", baseAddr:0x40002000, clock:"APB1ENR bit 8", desc:"16-bit timer. 1 channel." },
+    { id:"apb1.spi2", name:"SPI2 / I2S2", addr:"0x40003800–0x40003BFF", size:"1 KB", color:"apb1_lt", baseAddr:0x40003800, registers:SPI_REGS, clock:"APB1ENR bit 14", desc:"Serial Peripheral Interface / Inter-IC Sound." },
+    { id:"apb1.spi3", name:"SPI3 / I2S3", addr:"0x40003C00–0x40003FFF", size:"1 KB", color:"apb1_lt", baseAddr:0x40003C00, registers:SPI_REGS, clock:"APB1ENR bit 15", desc:"Serial Peripheral Interface / Inter-IC Sound." },
+    { id:"apb1.usart2", name:"USART2", addr:"0x40004400–0x400047FF", size:"1 KB", color:"apb1_lt", baseAddr:0x40004400, registers:USART_REGS, clock:"APB1ENR bit 17", disc:"Available on Discovery header pins (PA2/PA3)", desc:"USART on APB1 (42 MHz)." },
+    { id:"apb1.usart3", name:"USART3", addr:"0x40004800–0x40004BFF", size:"1 KB", color:"apb1_lt", baseAddr:0x40004800, registers:USART_REGS, clock:"APB1ENR bit 18", desc:"USART on APB1 (42 MHz)." },
+    { id:"apb1.uart4", name:"UART4", addr:"0x40004C00–0x40004FFF", size:"1 KB", color:"apb1_lt", baseAddr:0x40004C00, registers:USART_REGS, clock:"APB1ENR bit 19", desc:"Async-only UART. No synchronous mode, no Smartcard." },
+    { id:"apb1.uart5", name:"UART5", addr:"0x40005000–0x400053FF", size:"1 KB", color:"apb1_lt", baseAddr:0x40005000, registers:USART_REGS, clock:"APB1ENR bit 20", desc:"Async-only UART. No synchronous mode, no Smartcard." },
+    { id:"apb1.i2c1", name:"I2C1", addr:"0x40005400–0x400057FF", size:"1 KB", color:"apb1_dk", baseAddr:0x40005400, registers:I2C_REGS, clock:"APB1ENR bit 21", disc:"→ onboard LIS3DSH/LIS302DL accelerometer", desc:"Inter-Integrated Circuit." },
+    { id:"apb1.i2c2", name:"I2C2", addr:"0x40005800–0x40005BFF", size:"1 KB", color:"apb1_dk", baseAddr:0x40005800, registers:I2C_REGS, clock:"APB1ENR bit 22", desc:"Inter-Integrated Circuit." },
+    { id:"apb1.i2c3", name:"I2C3", addr:"0x40005C00–0x40005FFF", size:"1 KB", color:"apb1_dk", baseAddr:0x40005C00, registers:I2C_REGS, clock:"APB1ENR bit 23", desc:"Inter-Integrated Circuit." },
+    { id:"apb1.can1", name:"CAN1", addr:"0x40006400–0x400067FF", size:"1 KB", color:"apb1_dk", baseAddr:0x40006400, clock:"APB1ENR bit 25", desc:"Controller Area Network." },
+    { id:"apb1.can2", name:"CAN2", addr:"0x40006800–0x40006BFF", size:"1 KB", color:"apb1_dk", baseAddr:0x40006800, clock:"APB1ENR bit 26", desc:"Controller Area Network." },
     { id:"apb1.pwr", name:"PWR", addr:"0x40007000–0x400073FF", size:"1 KB", color:"apb1_dk", baseAddr:0x40007000, registers:PWR_REGS, clock:"APB1ENR bit 28", desc:"Power controller." },
     { id:"apb1.dac", name:"DAC", addr:"0x40007400–0x400077FF", size:"1 KB", color:"apb1_lt", baseAddr:0x40007400, registers:DAC_REGS, clock:"APB1ENR bit 29", disc:"→ onboard CS43L22 audio codec", desc:"DAC. 2 channels, 12-bit." },
   ],
   apb2: [
-    { id:"apb2.tim1", name:"TIM1", addr:"0x40010000–0x400103FF", size:"1 KB", color:"apb2", baseAddr:0x40010000, registers:TIM_ADV_REGS, clock:"APB2ENR bit 0", desc:"Advanced-control timer. PWM + complementary outputs." },
+    { id:"apb2.tim1", name:"TIM1", addr:"0x40010000–0x400103FF", size:"1 KB", color:"apb2", baseAddr:0x40010000, registers:TIM_ADV_REGS, clock:"APB2ENR bit 0", desc:"Advanced-control timer. PWM + complementary outputs + dead-time." },
     { id:"apb2.tim8", name:"TIM8", addr:"0x40010400–0x400107FF", size:"1 KB", color:"apb2", baseAddr:0x40010400, registers:TIM_ADV_REGS, clock:"APB2ENR bit 1", desc:"Advanced-control timer." },
-    { id:"apb2.usart16", name:"USART1, USART6", addr:"0x40011000–0x400117FF", size:"2 KB", color:"apb2_lt", baseAddr:0x40011000, registers:USART_REGS, clock:"APB2ENR bits 4–5", desc:"Fast USARTs on APB2." },
-    { id:"apb2.adc", name:"ADC1, ADC2, ADC3", addr:"0x40012000–0x400123FF", size:"1 KB", color:"apb2_lt", baseAddr:0x40012000, registers:ADC_REGS, clock:"APB2ENR bits 8–10", desc:"12-bit ADC, up to 2.4 MSPS." },
+    { id:"apb2.usart1", name:"USART1", addr:"0x40011000–0x400113FF", size:"1 KB", color:"apb2_lt", baseAddr:0x40011000, registers:USART_REGS, clock:"APB2ENR bit 4", desc:"USART on APB2 (84 MHz). Fastest USART." },
+    { id:"apb2.usart6", name:"USART6", addr:"0x40011400–0x400117FF", size:"1 KB", color:"apb2_lt", baseAddr:0x40011400, registers:USART_REGS, clock:"APB2ENR bit 5", desc:"USART on APB2 (84 MHz)." },
+    { id:"apb2.adc1", name:"ADC1", addr:"0x40012000–0x4001204C", size:"80 B", color:"apb2_lt", baseAddr:0x40012000, addrEnd:0x4001204C, registers:ADC_REGS, clock:"APB2ENR bit 8", desc:"12-bit ADC. Master in dual/triple mode. 16 external + 3 internal channels." },
+    { id:"apb2.adc2", name:"ADC2", addr:"0x40012100–0x4001214C", size:"80 B", color:"apb2_lt", baseAddr:0x40012100, addrEnd:0x4001214C, registers:ADC_REGS, clock:"APB2ENR bit 9", desc:"12-bit ADC. Slave 1. Same registers at +0x100 offset." },
+    { id:"apb2.adc3", name:"ADC3", addr:"0x40012200–0x4001224C", size:"80 B", color:"apb2_lt", baseAddr:0x40012200, addrEnd:0x4001224C, registers:ADC_REGS, clock:"APB2ENR bit 10", desc:"12-bit ADC. Slave 2. Same registers at +0x200 offset." },
+    { id:"apb2.adc_com", name:"ADC Common", addr:"0x40012300–0x40012308", size:"12 B", color:"apb2_dk", baseAddr:0x40012300, addrEnd:0x40012308, registers:ADC_COMMON_REGS, desc:"Shared: prescaler, DMA mode, multi-ADC config." },
     { id:"apb2.sdio", name:"SDIO", addr:"0x40012C00–0x40012FFF", size:"1 KB", color:"gray", clock:"APB2ENR bit 11", desc:"SD/MMC card interface." },
-    { id:"apb2.spi14", name:"SPI1, SPI4", addr:"0x40013000–0x400137FF", size:"2 KB", color:"apb2_lt", baseAddr:0x40013000, registers:SPI_REGS, clock:"APB2ENR bits 12–13", disc:"SPI1 → onboard accelerometer", desc:"Fast SPI." },
+    { id:"apb2.spi1", name:"SPI1", addr:"0x40013000–0x400133FF", size:"1 KB", color:"apb2_lt", baseAddr:0x40013000, registers:SPI_REGS, clock:"APB2ENR bit 12", disc:"→ onboard LIS3DSH/LIS302DL accelerometer", desc:"Fast SPI on APB2 (84 MHz)." },
+    { id:"apb2.spi4", name:"SPI4", addr:"0x40013400–0x400137FF", size:"1 KB", color:"apb2_lt", baseAddr:0x40013400, registers:SPI_REGS, clock:"APB2ENR bit 13", desc:"SPI on APB2 (84 MHz)." },
     { id:"apb2.syscfg", name:"SYSCFG", addr:"0x40013800–0x40013BFF", size:"1 KB", color:"apb2_dk", baseAddr:0x40013800, registers:SYSCFG_REGS, clock:"APB2ENR bit 14", desc:"Memory remap, EXTI line mux." },
     { id:"apb2.exti", name:"EXTI", addr:"0x40013C00–0x40013FFF", size:"1 KB", color:"apb2_dk", baseAddr:0x40013C00, registers:EXTI_REGS, clock:"APB2ENR bit 14 (SYSCFG)", desc:"Extended Interrupts and Events." },
-    { id:"apb2.tim91011", name:"TIM9, TIM10, TIM11", addr:"0x40014000–0x40014BFF", color:"apb2", clock:"APB2ENR bits 16–18", desc:"16-bit general-purpose timers." },
+    { id:"apb2.tim9", name:"TIM9", addr:"0x40014000–0x400143FF", size:"1 KB", color:"apb2", baseAddr:0x40014000, clock:"APB2ENR bit 16", desc:"16-bit timer. 2 channels." },
+    { id:"apb2.tim10", name:"TIM10", addr:"0x40014400–0x400147FF", size:"1 KB", color:"apb2", baseAddr:0x40014400, clock:"APB2ENR bit 17", desc:"16-bit timer. 1 channel." },
+    { id:"apb2.tim11", name:"TIM11", addr:"0x40014800–0x40014BFF", size:"1 KB", color:"apb2", baseAddr:0x40014800, clock:"APB2ENR bit 18", desc:"16-bit timer. 1 channel." },
   ],
   ahb2: [
     { id:"ahb2.usbfs", name:"USB OTG FS", addr:"0x50000000–0x5003FFFF", size:"256 KB", color:"ahb2", desc:"USB 2.0 Full-Speed." },
@@ -386,9 +435,16 @@ const DATA = {
     { id:"ppb.dwt", name:"DWT", addr:"0xE0001000–0xE0001FFF", size:"4 KB", color:"ppb", baseAddr:0xE0001000, addrEnd:0xE0001FFF, desc:"Data Watchpoint and Trace. Cycle counter." },
     { id:"ppb.fpb", name:"FPB", addr:"0xE0002000–0xE0002FFF", size:"4 KB", color:"ppb", baseAddr:0xE0002000, addrEnd:0xE0002FFF, desc:"Flash Patch and Breakpoint. HW breakpoints." },
     { id:"ppb.gap", name:"Reserved", addr:"0xE0003000–0xE000DFFF", color:"dim" },
-    { id:"ppb.scs", name:"SCS (System Control Space)", addr:"0xE000E000–0xE000EFFF", size:"4 KB", color:"scs", baseAddr:0xE000E000, addrEnd:0xE000EFFF, registers:SCS_REGS, desc:"NVIC, SysTick, SCB. DEMCR bit 24 = trace enable." },
+    { id:"ppb.scs", name:"SCS (System Control Space)", addr:"0xE000E000–0xE000EFFF", size:"4 KB", color:"scs", baseAddr:0xE000E000, addrEnd:0xE000EFFF, _lookupRegs:ALL_SCS_REGS, desc:"4 KB window shared by 5 ARM blocks: NVIC, SysTick, SCB, DCB, and FPU control. Not one peripheral — a container.", children:"scs" },
     { id:"ppb.gap2", name:"Reserved", addr:"0xE000F000–0xE003FFFF", color:"dim" },
     { id:"ppb.tpiu", name:"TPIU", addr:"0xE0040000–0xE0040FFF", size:"4 KB", color:"ppb", baseAddr:0xE0040000, addrEnd:0xE0040FFF, desc:"Trace Port Interface. SWO output." },
+  ],
+  scs: [
+    { id:"scs.systick", name:"SysTick", addr:"0xE000E010–0xE000E01F", size:"16 B", color:"scs", baseAddr:0xE000E010, _noLookup:true, registers:SYSTICK_REGS, desc:"24-bit system timer. Counts down from reload value, fires SysTick exception at 0. On the Cortex-M4 block diagram: inside the NVIC box." },
+    { id:"scs.nvic", name:"NVIC", addr:"0xE000E100–0xE000EF00", size:"scattered", color:"scs", baseAddr:0xE000E000, _noLookup:true, registers:NVIC_REGS, desc:"Nested Vectored Interrupt Controller. Enable, disable, pend, prioritize all 82 IRQs. On the block diagram: the NVIC box (tightly coupled to processor core)." },
+    { id:"scs.scb", name:"SCB (System Control Block)", addr:"0xE000ED00–0xE000ED88", size:"scattered", color:"scs", baseAddr:0xE000E000, _noLookup:true, registers:SCB_REGS, desc:"System info, exception control, vector table relocation, fault status, priority grouping, FPU enable (CPACR). On the block diagram: inside the processor core." },
+    { id:"scs.dcb", name:"DCB (Debug Control Block)", addr:"0xE000EDFC", size:"4 B", color:"scs", baseAddr:0xE000E000, _noLookup:true, registers:DCB_REGS, desc:"Debug exception and monitor control. DEMCR bit 24 (TRCENA) is the master switch for ITM/DWT/TPIU. On the block diagram: invisible — part of the debug infrastructure." },
+    { id:"scs.fpu", name:"FPU Control Registers", addr:"0xE000EF34–0xE000EF44", size:"20 B", color:"scs", baseAddr:0xE000E000, _noLookup:true, registers:FPU_CTRL_REGS, desc:"Floating-point context save/restore control and feature identification. On the block diagram: the optional FPU box inside the Cortex-M4 core." },
   ],
 };
 
@@ -405,7 +461,8 @@ const NOTES = {
   apb1:"Lowest-speed bus (42 MHz). Base 0x40000000 = Peripheral region base.",
   apb2:"84 MHz — double APB1. Advanced timers and fast peripherals.",
   ahb2:"USB Full-Speed, camera, crypto accelerators.",
-  ppb:"ARM CoreSight debug via PPB — does NOT go through bus matrix.",
+  ppb:"\"PPB\" refers to two things in ARM docs: (1) the physical bus inside the Cortex-M4 that connects the CPU to its internal debug/control peripherals, and (2) this 1 MB address region (0xE0000000–0xE00FFFFF) that is only reachable via that bus. Does NOT go through the bus matrix.",
+  scs:"System Control Space — 4 KB shared by 5 ARM blocks. These are NOT separate peripherals with separate 1 KB address ranges — they are logical groups of registers interleaved within one 4 KB window (per ARM Generic User Guide Table 4-1).",
 };
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -492,9 +549,10 @@ function buildAddrLookup() {
   const walk = (gk, region, bus) => {
     const blocks = DATA[gk]; if(!blocks) return;
     for (const b of blocks) {
-      if (b.baseAddr !== undefined) {
+      if (b.baseAddr !== undefined && !b._noLookup) {
         const end = b.addrEnd !== undefined ? b.addrEnd : b.baseAddr + 0x3FF;
-        entries.push({ name:b.name, base:b.baseAddr, end, bus:bus||b.bus||"", region:region||"", registers:b.registers||[] });
+        const regs = b._lookupRegs || b.registers || [];
+        entries.push({ name:b.name, base:b.baseAddr, end, bus:bus||b.bus||"", region:region||"", registers:regs });
       }
       if (b.children && DATA[b.children]) walk(b.children, region||b.name, bus||b.bus||"");
     }
@@ -752,6 +810,163 @@ function BitBandCalc({type}) {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
+   BAUD RATE CALCULATOR
+   ══════════════════════════════════════════════════════════════════════════ */
+const USART_CLOCKS = {
+  "USART1": { fck:84000000, bus:"APB2", label:"USART1 (APB2, 84 MHz)" },
+  "USART2": { fck:42000000, bus:"APB1", label:"USART2 (APB1, 42 MHz)" },
+  "USART3": { fck:42000000, bus:"APB1", label:"USART3 (APB1, 42 MHz)" },
+  "UART4":  { fck:42000000, bus:"APB1", label:"UART4 (APB1, 42 MHz)" },
+  "UART5":  { fck:42000000, bus:"APB1", label:"UART5 (APB1, 42 MHz)" },
+  "USART6": { fck:84000000, bus:"APB2", label:"USART6 (APB2, 84 MHz)" },
+};
+const COMMON_BAUDS = [9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600];
+
+function BaudRateCalc() {
+  const [usart, setUsart] = useState("USART2");
+  const [baudInput, setBaudInput] = useState("115200");
+  const [over8, setOver8] = useState(false);
+  const [customClk, setCustomClk] = useState("");
+
+  const baud = parseInt(baudInput);
+  const cfg = USART_CLOCKS[usart];
+  const customHz = parseFloat(customClk) * 1e6;
+  const useCustom = customClk !== "" && !isNaN(customHz) && customHz > 0;
+  const fck = useCustom ? customHz : (cfg ? cfg.fck : 0);
+  const valid = !isNaN(baud) && baud > 0 && fck > 0;
+
+  let result = null;
+  if (valid) {
+    const overVal = over8 ? 8 : 16;
+    const usartdiv = fck / (overVal * baud);
+    const mantissa = Math.floor(usartdiv);
+
+    let fraction, fracMax;
+    if (over8) {
+      fracMax = 8;
+      fraction = Math.round((usartdiv - mantissa) * 8);
+      if (fraction >= 8) { fraction = 0; }
+    } else {
+      fracMax = 16;
+      fraction = Math.round((usartdiv - mantissa) * 16);
+      if (fraction >= 16) { fraction = 0; }
+    }
+
+    const brrValue = (mantissa << 4) | fraction;
+    const actualDiv = mantissa + fraction / fracMax;
+    const actualBaud = actualDiv > 0 ? fck / (overVal * actualDiv) : 0;
+    const errorPct = baud > 0 ? ((actualBaud - baud) / baud) * 100 : 0;
+
+    result = { usartdiv, mantissa, fraction, brrValue, actualBaud, errorPct };
+  }
+
+  const iStyle = {background:"#1a1a28",border:"1px solid #333348",borderRadius:3,padding:"3px 6px",color:"#c0c0d8",fontSize:11,fontFamily:"'JetBrains Mono',monospace",outline:"none"};
+  const selStyle = {background:"#1a1a28",border:"1px solid #333348",borderRadius:3,padding:"3px 6px",color:"#c0c0d8",fontSize:11,outline:"none"};
+
+  const presetClocks = [
+    { label:"16 MHz (HSI, no PLL)", mhz:16 },
+    { label: cfg && (usart==="USART1"||usart==="USART6") ? "84 MHz (APB2 w/ PLL)" : "42 MHz (APB1 w/ PLL)", mhz: cfg && (usart==="USART1"||usart==="USART6") ? 84 : 42 },
+  ];
+
+  return <div>
+    <div style={{fontSize:10,fontWeight:700,color:"#606078",marginBottom:8,letterSpacing:0.8}}>USART BAUD RATE CALCULATOR</div>
+
+    {/* Row 1: USART select + OVER8 */}
+    <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap",marginBottom:8}}>
+      <label style={{fontSize:10,color:"#8888a0"}}>USART:
+        <select value={usart} onChange={e=>{setUsart(e.target.value);setCustomClk("")}} style={{...selStyle,marginLeft:4}}>
+          {Object.entries(USART_CLOCKS).map(([k,v])=><option key={k} value={k}>{v.label}</option>)}
+        </select>
+      </label>
+      <label style={{fontSize:10,color:"#8888a0",display:"flex",alignItems:"center",gap:4}}>
+        <input type="checkbox" checked={over8} onChange={e=>setOver8(e.target.checked)} style={{margin:0}} />
+        OVER8 (8x oversampling)
+      </label>
+    </div>
+
+    {/* Row 2: Clock frequency — presets + custom */}
+    <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap",marginBottom:8}}>
+      <span style={{fontSize:10,color:"#8888a0"}}>fck:</span>
+      {presetClocks.map(p=><button key={p.mhz} onClick={()=>setCustomClk(String(p.mhz))} style={{
+        background: useCustom && Math.abs(customHz/1e6-p.mhz)<0.01 ? "#252540" : !useCustom && Math.abs(fck/1e6-p.mhz)<0.01 ? "#252540" : "#16161e",
+        border:`1px solid ${useCustom && Math.abs(customHz/1e6-p.mhz)<0.01 ? "#4466aa" : !useCustom && Math.abs(fck/1e6-p.mhz)<0.01 ? "#4466aa" : "#2a2a3e"}`,
+        borderRadius:3,padding:"2px 8px",fontSize:10,color:useCustom && Math.abs(customHz/1e6-p.mhz)<0.01?"#a0b8e0":"#8080a0",cursor:"pointer",
+      }}>{p.label}</button>)}
+      <label style={{fontSize:10,color:"#8888a0"}}>Custom MHz:
+        <input value={customClk} onChange={e=>setCustomClk(e.target.value)} placeholder={String(cfg?cfg.fck/1e6:42)} style={{...iStyle,marginLeft:4,width:56}} />
+      </label>
+    </div>
+
+    {/* Row 3: Baud rate input + quick picks */}
+    <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap",marginBottom:8}}>
+      <label style={{fontSize:10,color:"#8888a0"}}>Baud rate:
+        <input value={baudInput} onChange={e=>setBaudInput(e.target.value)} placeholder="115200" style={{...iStyle,marginLeft:4,width:90}} />
+      </label>
+      <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>
+        {COMMON_BAUDS.map(b=><button key={b} onClick={()=>setBaudInput(String(b))} style={{
+          background:String(b)===baudInput?"#252540":"#16161e",
+          border:`1px solid ${String(b)===baudInput?"#4466aa":"#2a2a3e"}`,
+          borderRadius:3,padding:"2px 6px",fontSize:9,
+          color:String(b)===baudInput?"#a0b8e0":"#606078",
+          cursor:"pointer",fontFamily:"'JetBrains Mono',monospace",
+        }}>{b>=1000?`${b/1000}k`:b}</button>)}
+      </div>
+    </div>
+
+    {/* Active clock display */}
+    <div style={{fontSize:10,color:useCustom?"#e0d870":"#607060",marginBottom:6}}>
+      Using: <strong>{(fck/1e6).toFixed(fck%1e6===0?0:2)} MHz</strong>
+      {!useCustom && cfg && <span> (default for {usart} on {cfg.bus} with PLL)</span>}
+      {useCustom && <span> (custom)</span>}
+      {useCustom && Math.abs(customHz-16e6)<1 && <span style={{color:"#e0a040"}}> ← typical after reset, no PLL</span>}
+    </div>
+
+    {/* Results */}
+    {result && <div style={{background:"#1a1a24",borderRadius:5,padding:"10px 12px",border:"1px solid #28283a"}}>
+      {/* Formula */}
+      <div style={{fontSize:10,color:"#707090",marginBottom:6,fontFamily:"'JetBrains Mono',monospace"}}>
+        USARTDIV = {(fck/1e6).toFixed(fck%1e6===0?0:2)} MHz / ({over8?"8":"16"} × {baud}) = <span style={{color:"#e0d870"}}>{result.usartdiv.toFixed(4)}</span>
+      </div>
+
+      {/* BRR breakdown */}
+      <div style={{display:"flex",gap:16,flexWrap:"wrap",marginBottom:6}}>
+        <div style={{fontSize:11}}>
+          <span style={{color:"#707090"}}>Mantissa:</span>{" "}
+          <span style={{color:"#d0d0e8",fontFamily:"'JetBrains Mono',monospace",fontWeight:600}}>{result.mantissa} (0x{result.mantissa.toString(16).toUpperCase()})</span>
+        </div>
+        <div style={{fontSize:11}}>
+          <span style={{color:"#707090"}}>Fraction:</span>{" "}
+          <span style={{color:"#d0d0e8",fontFamily:"'JetBrains Mono',monospace",fontWeight:600}}>{result.fraction}/{over8?"8":"16"}</span>
+        </div>
+      </div>
+
+      {/* BRR value */}
+      <div style={{fontSize:12,marginBottom:6}}>
+        <span style={{color:"#707090"}}>BRR =</span>{" "}
+        <span style={{color:"#70d898",fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:14}}>0x{result.brrValue.toString(16).toUpperCase().padStart(4,"0")}</span>
+        <span style={{color:"#555570",fontSize:10,marginLeft:8}}>({result.brrValue} decimal)</span>
+      </div>
+
+      {/* Actual baud + error */}
+      <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
+        <div style={{fontSize:11}}>
+          <span style={{color:"#707090"}}>Actual baud:</span>{" "}
+          <span style={{color:"#d0d0e8",fontFamily:"'JetBrains Mono',monospace"}}>{result.actualBaud.toFixed(2)}</span>
+        </div>
+        <div style={{fontSize:11}}>
+          <span style={{color:"#707090"}}>Error:</span>{" "}
+          <span style={{color:Math.abs(result.errorPct)<1?"#70d898":Math.abs(result.errorPct)<2?"#e0d870":"#f07070",fontFamily:"'JetBrains Mono',monospace",fontWeight:600}}>
+            {result.errorPct>=0?"+":""}{result.errorPct.toFixed(3)}%
+          </span>
+          {Math.abs(result.errorPct)<1&&<span style={{color:"#506850",fontSize:9,marginLeft:4}}>✓ good</span>}
+          {Math.abs(result.errorPct)>=2&&<span style={{color:"#805050",fontSize:9,marginLeft:4}}>⚠ may cause framing errors</span>}
+        </div>
+      </div>
+    </div>}
+  </div>;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
    ANIMATED CHILDREN WRAPPER
    ══════════════════════════════════════════════════════════════════════════ */
 function AnimWrap({open,color,children}) {
@@ -877,6 +1092,7 @@ function ToolBar({bookmarks,onBookmarkJump,allBlocks}) {
       {openTool==="addr"&&<AddrCalcPanel/>}
       {openTool==="bb_sram"&&<BitBandCalc type="sram"/>}
       {openTool==="bb_periph"&&<BitBandCalc type="periph"/>}
+      {openTool==="baud"&&<BaudRateCalc/>}
       {openTool==="bookmarks"&&<BookmarkPanel bookmarks={bookmarks} onJump={onBookmarkJump} allBlocks={allBlocks}/>}
     </div>}
 
@@ -885,6 +1101,7 @@ function ToolBar({bookmarks,onBookmarkJump,allBlocks}) {
       <ToolBtn icon="📍" label="Address Calc" active={openTool==="addr"} onClick={()=>toggle("addr")}/>
       <ToolBtn icon="🔀" label="SRAM Bit-Band" active={openTool==="bb_sram"} onClick={()=>toggle("bb_sram")}/>
       <ToolBtn icon="🔀" label="Periph Bit-Band" active={openTool==="bb_periph"} onClick={()=>toggle("bb_periph")}/>
+      <ToolBtn icon="📡" label="Baud Rate" active={openTool==="baud"} onClick={()=>toggle("baud")}/>
       <ToolBtn icon="★" label={bmCount>0?`Bookmarks (${bmCount})`:"Bookmarks"} active={openTool==="bookmarks"} onClick={()=>toggle("bookmarks")} highlight={bmCount>0}/>
     </div>
   </div>;
