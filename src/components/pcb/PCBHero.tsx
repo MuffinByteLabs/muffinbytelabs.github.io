@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { PCB, FAB_STRING, STATUS_STRIP, POWER_STATUS, DESIGNATOR } from "./pcbData";
+import { PCB, FAB_STRING, STATUS_OK, STATUS_SPECS, POWER_STATUS, DESIGNATOR, KICAD_NATIVE } from "./pcbData";
 import { useReducedMotion } from "./useReducedMotion";
 
 export default function PCBHero() {
@@ -46,7 +46,7 @@ export default function PCBHero() {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     rafRef.current = requestAnimationFrame(() => {
       if (loupeRef.current) {
-        loupeRef.current.style.background = `radial-gradient(160px circle at ${px}px ${py}px, rgba(0,255,65,0.10), rgba(16,89,63,0.06) 40%, transparent 70%)`;
+        loupeRef.current.style.background = `radial-gradient(170px circle at ${px}px ${py}px, rgba(240,212,136,0.09), rgba(184,115,51,0.05) 45%, transparent 70%)`;
       }
       setMm({
         x: ((px / rect.width) * 84).toFixed(2),
@@ -55,6 +55,18 @@ export default function PCBHero() {
     });
   }
 
+  function onLeave() {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    if (loupeRef.current) loupeRef.current.style.background = "";
+    setMm(null);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
+
   return (
     <section id="board" className="relative min-h-screen flex items-center justify-center px-5 pt-24 pb-16">
       <div className="w-full max-w-5xl mx-auto">
@@ -62,9 +74,9 @@ export default function PCBHero() {
         <div
           ref={panelRef}
           onMouseMove={reduced ? undefined : onMove}
-          onMouseLeave={() => setMm(null)}
+          onMouseLeave={onLeave}
           className="pcb-substrate relative rounded-2xl overflow-hidden"
-          style={{ border: "1px solid rgba(232,234,213,0.18)", boxShadow: "0 30px 80px rgba(0,0,0,0.6)" }}
+          style={{ border: "1px solid rgba(234,230,218,0.18)", boxShadow: "0 30px 80px rgba(0,0,0,0.6)" }}
         >
           {/* loupe highlight */}
           <div ref={loupeRef} className="pointer-events-none absolute inset-0 z-20" />
@@ -84,12 +96,12 @@ export default function PCBHero() {
               style={{
                 top: p.t, bottom: p.b, left: p.l, right: p.r, width: 16, height: 16,
                 background: `radial-gradient(circle at 38% 32%, ${PCB.enigBright}, ${PCB.enig} 60%, #8c6a18)`,
-                boxShadow: "inset 0 0 0 3px #06241a",
+                boxShadow: "inset 0 0 0 3px #140d20",
               }} />
           ))}
 
           {/* fab string + barcode */}
-          <div className="absolute top-7 left-7 z-10 font-mono text-[9px] tracking-widest" style={{ color: PCB.silk, opacity: 0.5 }}>
+          <div className="absolute top-7 left-7 z-10 font-mono text-[10px] tracking-widest" style={{ color: PCB.silk, opacity: 0.55 }}>
             {FAB_STRING}
           </div>
           <div className="absolute top-6 right-7 z-10 flex items-end gap-[2px]" aria-hidden>
@@ -102,34 +114,37 @@ export default function PCBHero() {
           <div className="relative z-10 px-6 sm:px-12 pt-16 pb-10 text-center">
             <HeroModule powered={powered} />
 
-            {/* silkscreen name */}
+            {/* silkscreen name — engraved gold */}
             <h1
-              className="mt-6 text-4xl sm:text-6xl font-bold tracking-wider"
-              style={{ color: PCB.silk, fontFamily: "var(--font-geist-mono), monospace", textShadow: "0 1px 0 rgba(0,0,0,0.5)" }}
+              className="mt-6 text-5xl sm:text-7xl font-semibold gold-text"
+              style={{ fontFamily: "var(--font-fraunces), serif", letterSpacing: "0.01em" }}
             >
               MuffinManLabs
             </h1>
 
             {/* designator */}
-            <p className="mt-4 font-mono text-[10px] sm:text-xs tracking-[0.2em]" style={{ color: PCB.enig }}>
+            <p className="mt-5 font-mono text-xs sm:text-[13px] tracking-[0.2em]" style={{ color: PCB.enig }}>
               {DESIGNATOR}
+            </p>
+            <p className="mt-2 font-mono text-[11px] sm:text-xs" style={{ color: "rgba(234,230,218,0.6)" }}>
+              {KICAD_NATIVE}
             </p>
 
             {/* power-good + status line */}
             <div className="mt-6 flex flex-col items-center gap-2">
               <span
-                className="inline-flex items-center gap-2 px-3 py-1 rounded-sm font-mono text-[10px] tracking-widest transition-all duration-700"
+                className="inline-flex items-center gap-2 px-3 py-1 rounded-sm font-mono text-[11px] tracking-widest transition-all duration-700"
                 style={{
-                  color: powered ? PCB.green : "#3a3a3a",
-                  border: `1px solid ${powered ? "rgba(0,255,65,0.4)" : "rgba(120,120,120,0.25)"}`,
-                  boxShadow: powered ? "0 0 14px rgba(0,255,65,0.25)" : "none",
+                  color: powered ? PCB.green : "#46424c",
+                  border: `1px solid ${powered ? "rgba(61,220,132,0.4)" : "rgba(120,120,130,0.25)"}`,
+                  boxShadow: powered ? "0 0 14px rgba(61,220,132,0.22)" : "none",
                 }}
               >
                 <span className="w-2 h-2 rounded-full transition-all duration-700"
                   style={{ background: powered ? PCB.green : "#222", boxShadow: powered ? `0 0 8px ${PCB.green}` : "none" }} />
                 {powered ? "POWER GOOD" : "POWER —"}
               </span>
-              <code className="font-mono text-[11px]" style={{ color: PCB.green, minHeight: 16 }}>
+              <code className="font-mono text-xs" style={{ color: PCB.green, minHeight: 16 }}>
                 {typed}
                 {powered && typed.length < POWER_STATUS.length && <span className="pcb-caret">_</span>}
               </code>
@@ -137,30 +152,33 @@ export default function PCBHero() {
 
             {/* ENIG-gold pad CTAs */}
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-              <PadButton href="#boards" primary>VIEW BOARDS</PadButton>
+              <PadButton href="#services" primary>VIEW SERVICES</PadButton>
               <PadButton href="#contact">REQUEST A QUOTE</PadButton>
             </div>
           </div>
 
           {/* KiCad status strip */}
           <div
-            className="relative z-10 flex items-center justify-between px-6 py-2 font-mono text-[9px] sm:text-[10px] tracking-wider"
-            style={{ background: "rgba(4,8,4,0.6)", borderTop: "1px solid rgba(232,234,213,0.12)", color: PCB.silk }}
+            className="relative z-10 flex items-center justify-between gap-3 px-6 py-2 font-mono text-[11px] tracking-wider"
+            style={{ background: "rgba(11,7,20,0.6)", borderTop: "1px solid rgba(234,230,218,0.12)", color: PCB.silk }}
           >
-            <span style={{ color: PCB.green }}>{STATUS_STRIP}</span>
+            <span className="flex items-center gap-3">
+              <span style={{ color: PCB.green }}>{STATUS_OK}</span>
+              <span className="hidden sm:inline" style={{ opacity: 0.55 }}>{STATUS_SPECS}</span>
+            </span>
             <span style={{ opacity: 0.6 }}>{mm ? `X ${mm.x}  Y ${mm.y} mm` : "X --.--  Y --.-- mm"}</span>
           </div>
         </div>
 
         {/* value prop on near-black substrate (legibility) */}
-        <p className="mt-8 mx-auto max-w-2xl text-center font-mono text-sm leading-7 text-[#e0e0e0]/70">
-          I take a circuit idea or a breadboard prototype and hand back a{" "}
-          <span style={{ color: PCB.enig }}>clean, manufacturable production package</span> — Gerbers,
-          drill, BOM with real part numbers, CPL, and DRC/ERC-clean proof — that a fab accepts without
-          back-and-forth. An embedded-minded designer who understands the constraints behind the board.
+        <p className="mt-8 mx-auto max-w-2xl text-center text-base leading-8 text-[#d6d3cd]/75">
+          Five-plus years in the PCB industry. I take a circuit idea or prototype and hand back a{" "}
+          <span style={{ color: PCB.enig }}>clean, manufacturable production package</span> — native
+          KiCad source, Gerbers, drill, BOM with LCSC part numbers, CPL, and DRC/ERC-clean proof —
+          documented like a datasheet and organized to the file.
         </p>
-        <p className="mt-3 text-center font-mono text-[11px] text-[#a855f7]/70">
-          {"// scroll to power up the board"}
+        <p className="mt-4 text-center font-mono text-xs tracking-widest" style={{ color: "rgba(232,168,92,0.65)" }}>
+          ▼ SERVICES · PORTFOLIO · THE PACKAGE · THE STANDARD
         </p>
       </div>
     </section>
@@ -171,7 +189,7 @@ function PadButton({ href, children, primary = false }: { href: string; children
   return (
     <a
       href={href}
-      className="group relative font-mono text-xs tracking-widest px-5 py-3 rounded-md transition-all duration-300"
+      className="group relative font-mono text-[13px] tracking-widest px-5 py-3 rounded-md transition-all duration-300"
       style={
         primary
           ? { background: `linear-gradient(180deg, ${PCB.enigBright}, ${PCB.enig})`, color: "#1a1405", boxShadow: "0 4px 14px rgba(212,175,55,0.3)" }
@@ -188,8 +206,8 @@ function PadButton({ href, children, primary = false }: { href: string; children
 /* The ESP32-S3-WROOM-1 module (U1) at board center, traces fanning outward. */
 function HeroModule({ powered }: { powered: boolean }) {
   const trace = powered ? PCB.copperBright : PCB.copper;
-  const leftTraces = [38, 58, 78].map((y) => `M210 ${y} H120 a6 6 0 0 1 -6 6 V ${y + 22}`);
-  const rightTraces = [38, 58, 78].map((y) => `M310 ${y} H400 a6 6 0 0 1 6 6 V ${y + 22}`);
+  const leftTraces = [40, 64, 88].map((y) => `M210 ${y} H120 a6 6 0 0 0 -6 6 V ${y + 25}`);
+  const rightTraces = [40, 64, 88].map((y) => `M310 ${y} H400 a6 6 0 0 1 6 6 V ${y + 25}`);
   return (
     <svg viewBox="0 0 520 150" width="100%" className="max-w-2xl mx-auto" role="img" aria-label="ESP32-S3 module footprint">
       <defs>
@@ -206,12 +224,12 @@ function HeroModule({ powered }: { powered: boolean }) {
       ))}
       {powered &&
         [...leftTraces, ...rightTraces].map((d, i) => (
-          <path key={`p${i}`} className="pcb-pulse" d={d} fill="none" stroke={PCB.green} strokeWidth="1.4"
+          <path key={`p${i}`} className="pcb-pulse" d={d} fill="none" stroke={PCB.enigBright} strokeWidth="1.4"
             strokeDasharray="3 12" strokeLinecap="round" opacity="0.9" />
         ))}
 
       {/* end pads + vias */}
-      {[38, 58, 78].flatMap((y) => [
+      {[40, 64, 88].flatMap((y) => [
         { x: 114, y: y + 28 }, { x: 406, y: y + 28 },
       ]).map((p, i) => (
         <g key={i}>

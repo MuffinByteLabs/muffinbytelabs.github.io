@@ -52,7 +52,7 @@ function traceColor(kind: Trace["kind"], powered: boolean) {
 }
 
 export function BoardArt({
-  layout, layer = "all", powered = false, accent = PCB.green, idns, decals,
+  layout, layer = "all", powered = false, accent = PCB.green, idns, decals, label,
 }: {
   layout: BoardLayout;
   layer?: GerberLayer;
@@ -61,13 +61,16 @@ export function BoardArt({
   idns: string;
   /** dynamic / interaction overlays drawn in the same viewBox coordinate space */
   decals?: React.ReactNode;
+  /** accessible name announced to screen readers */
+  label?: string;
 }) {
   const { w, h } = layout;
   const op = layerOpacity(layer);
   const padFill = `url(#${idns}-enig)`;
 
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} width="100%" style={{ display: "block" }} role="img">
+    <svg viewBox={`0 0 ${w} ${h}`} width="100%" style={{ display: "block" }} role="img"
+      aria-label={label ?? "printed circuit board layout"}>
       <defs>
         <radialGradient id={`${idns}-enig`} cx="38%" cy="32%" r="75%">
           <stop offset="0%" stopColor={PCB.enigBright} />
@@ -77,7 +80,7 @@ export function BoardArt({
         <linearGradient id={`${idns}-mask`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={PCB.soldermaskLit} />
           <stop offset="55%" stopColor={PCB.soldermask} />
-          <stop offset="100%" stopColor="#06241a" />
+          <stop offset="100%" stopColor="#0f091a" />
         </linearGradient>
         <pattern id={`${idns}-pour`} width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
           <rect width="6" height="6" fill="transparent" />
@@ -88,7 +91,7 @@ export function BoardArt({
       {/* ── MASK layer : board surface + pours ───────────────────────────── */}
       <g opacity={op.mask}>
         <rect x="2" y="2" width={w - 4} height={h - 4} rx="7"
-          fill={`url(#${idns}-mask)`} stroke="#073022" strokeWidth="1.5" />
+          fill={`url(#${idns}-mask)`} stroke="#160e24" strokeWidth="1.5" />
         {(layout.pours ?? []).map((p, i) => (
           <rect key={i} x={p.x} y={p.y} width={p.w} height={p.h} rx="3"
             fill={`url(#${idns}-pour)`} opacity={powered ? 0.9 : 0.6} />
@@ -243,7 +246,7 @@ function ICPads({ ic, fill }: { ic: IC; fill: string }) {
 
 function LedMatrix({ m, powered }: { m: Matrix; powered: boolean }) {
   const cells = [];
-  const palette = ["#ff3366", "#ffb000", "#00ff41", "#00d4ff", "#a855f7", "#ff66cc"];
+  const palette = ["#ff5d73", "#ffb000", "#3ddc84", "#5ec8e5", "#b98aff", "#ff8ad1"];
   for (let r = 0; r < m.rows; r++) {
     for (let c = 0; c < m.cols; c++) {
       const idx = r * m.cols + c;

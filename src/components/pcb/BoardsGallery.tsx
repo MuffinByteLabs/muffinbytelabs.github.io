@@ -16,7 +16,7 @@ const LAYOUTS: Record<string, BoardLayout> = {
     traces: [
       { d: "M130 95 H196 V135 H252", kind: "bus" },
       { d: "M130 80 H188 V135 H252", kind: "bus" },
-      { d: "M168 36 V70", kind: "pwr" },
+      { d: "M170 30 V70", kind: "pwr" },
       { d: "M150 80 H132", kind: "pwr" },
       { d: "M254 70 H300", kind: "sig" },
     ],
@@ -37,7 +37,7 @@ const LAYOUTS: Record<string, BoardLayout> = {
       { x: 290, y: 30, w: 34, h: 14, ref: "J2" },
     ],
     leds: [{ x: 64, y: 142, ref: "D1", color: PCB.green }],
-    vias: [{ x: 196, y: 95 }, { x: 188, y: 80 }, { x: 252, y: 70 }, { x: 132, y: 80 }],
+    vias: [{ x: 196, y: 95 }, { x: 188, y: 80 }, { x: 252, y: 70 }, { x: 132, y: 80 }, { x: 300, y: 70 }],
     holes: HOLES,
   },
   "MML-02": {
@@ -59,7 +59,7 @@ const LAYOUTS: Record<string, BoardLayout> = {
     conns: [{ x: 8, y: 138, w: 46, h: 18, ref: "J1" }],
     matrix: { x: 196, y: 40, cols: 8, rows: 8, cell: 14 },
     leds: [{ x: 96, y: 132, ref: "C1", color: PCB.copperBright }],
-    vias: [{ x: 120, y: 90 }, { x: 180, y: 60 }, { x: 196, y: 70 }],
+    vias: [{ x: 120, y: 90 }, { x: 180, y: 60 }, { x: 196, y: 70 }, { x: 140, y: 90 }],
     holes: HOLES,
   },
   "MML-03": {
@@ -69,7 +69,7 @@ const LAYOUTS: Record<string, BoardLayout> = {
       { d: "M94 90 H120", kind: "sig" },
       { d: "M146 80 H160", kind: "pwr" },
       { d: "M182 78 H200", kind: "pwr" },
-      { d: "M276 150 V100 H276", kind: "pwr" },
+      { d: "M276 150 V100", kind: "pwr" },
     ],
     ics: [
       { x: 30, y: 55, w: 64, h: 70, ref: "U1", pins: "castellated", module: true },
@@ -108,13 +108,14 @@ export default function BoardsGallery() {
     <section id="boards" className="relative py-20 px-6">
       <div className="max-w-5xl mx-auto">
         <div className="mb-10">
-          <p className="font-mono text-xs text-[#a855f7] tracking-widest uppercase mb-3">// boards</p>
-          <h2 className="text-3xl sm:text-4xl font-bold text-[#f0f0f0]" style={{ fontFamily: "var(--font-geist-sans), sans-serif" }}>
+          <p className="font-mono text-xs tracking-[0.25em] uppercase mb-3" style={{ color: PCB.enig }}>Boards</p>
+          <h2 className="text-3xl sm:text-4xl font-semibold" style={{ color: PCB.silk, fontFamily: "var(--font-fraunces), serif" }}>
             <ScrambleText text="Three boards. Three client problems." />
           </h2>
-          <p className="mt-4 font-mono text-sm leading-7 text-[#e0e0e0]/60 max-w-3xl">
-            Each board adds exactly one hard thing on top of the last. Toggle the gerber layers, watch
-            it power up, and open the bring-up log.
+          <p className="mt-4 text-base leading-8 text-[#d6d3cd]/70 max-w-3xl">
+            Three builds covering the briefs clients actually send: a production sensor node, a
+            high-current LED driver, and isolated 24V I/O. Toggle the Gerber layers and open the
+            bring-up log on any board.
           </p>
         </div>
 
@@ -186,21 +187,22 @@ function BoardCard({ board }: { board: Board }) {
         boxShadow: powered ? `0 0 30px ${board.accent}12` : "none",
       }}
     >
-      {/* DRC scan-bar sweep on first reveal */}
+      {/* DRC scan-bar sweep on first reveal (unmounts when the sweep finishes) */}
       {scanned && !reduced && (
         <div className="pcb-scan pointer-events-none absolute inset-x-0 top-0 z-20 h-12"
-          style={{ background: `linear-gradient(180deg, ${board.accent}22, transparent)` }} />
+          style={{ background: `linear-gradient(180deg, ${board.accent}22, transparent)` }}
+          onAnimationEnd={() => setScanned(false)} />
       )}
 
       <div className="grid md:grid-cols-2 gap-0">
         {/* ── left : board art + layer toggle ── */}
         <div className="p-5 pcb-substrate" style={{ borderRight: "1px solid rgba(0,0,0,0.4)" }}>
           <div className="flex items-center justify-between mb-3">
-            <span className="font-mono text-[11px] tracking-widest" style={{ color: PCB.silk }}>{board.id}</span>
+            <span className="font-mono text-xs tracking-widest" style={{ color: PCB.silk }}>{board.id}</span>
             <div className="flex gap-1">
               {LAYER_TABS.map((t) => (
                 <button key={t.key} onClick={() => setLayer(t.key)}
-                  className="font-mono text-[9px] px-1.5 py-0.5 rounded transition-all duration-200"
+                  className="font-mono text-[11px] px-2 py-1 rounded transition-all duration-200"
                   style={{
                     color: layer === t.key ? "#1a1405" : PCB.silk,
                     background: layer === t.key ? PCB.enig : "rgba(0,0,0,0.35)",
@@ -210,12 +212,13 @@ function BoardCard({ board }: { board: Board }) {
             </div>
           </div>
           <BoardArt layout={layout} layer={layer} powered={powered} accent={board.accent}
-            idns={board.id.toLowerCase()} decals={decals} />
+            idns={board.id.toLowerCase()} decals={decals}
+            label={`${board.id} — ${board.name} board layout`} />
 
           {/* Board 2 trace-width calculator */}
           {board.id === "MML-02" && (
-            <div className="mt-3 rounded p-3" style={{ background: "rgba(4,8,4,0.5)" }}>
-              <div className="flex items-center justify-between font-mono text-[10px]" style={{ color: PCB.silk }}>
+            <div className="mt-3 rounded p-3" style={{ background: "rgba(11,7,20,0.55)" }}>
+              <div className="flex items-center justify-between font-mono text-[11px]" style={{ color: PCB.silk }}>
                 <span>IPC-2221 trace width</span>
                 <span style={{ color: board.accent }}>{current.toFixed(1)} A → {widthMils.toFixed(0)} mil @ 2oz, ΔT 10°C</span>
               </div>
@@ -228,42 +231,43 @@ function BoardCard({ board }: { board: Board }) {
 
         {/* ── right : details ── */}
         <div className="p-5">
-          <h3 className="font-mono text-base" style={{ color: board.accent }}>{board.name}</h3>
-          <p className="font-mono text-[11px] text-[#e0e0e0]/50 mt-1">{board.tagline}</p>
+          <h3 className="text-xl font-semibold" style={{ color: board.accent, fontFamily: "var(--font-fraunces), serif" }}>{board.name}</h3>
+          <p className="font-mono text-xs text-[#d6d3cd]/65 mt-1">{board.tagline}</p>
 
-          <div className="mt-3 font-mono text-[11px] leading-6 text-[#e0e0e0]/70">
-            <span className="text-[#a855f7]">$ </span>client: {board.problem}
+          <div className="mt-3 text-[14px] leading-7 text-[#d6d3cd]/80">
+            <span className="font-mono text-[11px] tracking-[0.2em] mr-2" style={{ color: PCB.copperBright }}>THE BRIEF</span>
+            {board.problem}
           </div>
-          <p className="mt-2 font-mono text-[11px] leading-6 text-[#e0e0e0]/60">{board.proves}</p>
+          <p className="mt-2 text-[13px] leading-7 text-[#d6d3cd]/65">{board.proves}</p>
 
           {/* specs */}
-          <div className="mt-4 grid grid-cols-2 gap-2 font-mono text-[10px]">
+          <div className="mt-4 grid grid-cols-2 gap-2 font-mono text-[11px]">
             {[
               ["LAYERS", board.specs.layers],
               ["MCU", board.specs.mcu],
               ["POWER", board.specs.power],
               ["EXTRA", board.specs.extra],
             ].map(([k, v]) => (
-              <div key={k} className="border border-white/5 rounded px-2 py-1.5">
-                <div style={{ color: PCB.enig }} className="opacity-70">{k}</div>
-                <div className="text-[#e0e0e0]/70 leading-4 mt-0.5">{v}</div>
+              <div key={k} className="border border-[#eae6da]/8 rounded px-2.5 py-2" style={{ background: "rgba(234,230,218,0.02)" }}>
+                <div style={{ color: PCB.enig }} className="opacity-75">{k}</div>
+                <div className="text-[#d6d3cd]/75 leading-5 mt-0.5">{v}</div>
               </div>
             ))}
           </div>
 
           {/* firmware + mfg badges */}
           <div className="mt-4 flex flex-wrap gap-2">
-            <span className="font-mono text-[9px] px-2 py-1 rounded" style={{ color: PCB.green, border: `1px solid ${PCB.green}40` }}>
+            <span className="font-mono text-[11px] px-2 py-1 rounded" style={{ color: PCB.comm, border: `1px solid ${PCB.comm}40` }}>
               firmware: {board.firmware}
             </span>
             {board.mfgPack.slice(0, 2).map((m) => (
-              <span key={m} className="font-mono text-[9px] px-2 py-1 rounded text-[#e0e0e0]/50 border border-white/5">{m}</span>
+              <span key={m} className="font-mono text-[11px] px-2 py-1 rounded text-[#d6d3cd]/65 border border-[#eae6da]/8">{m}</span>
             ))}
           </div>
 
           {/* bring-up log */}
           <button onClick={() => setExpanded((v) => !v)}
-            className="mt-4 font-mono text-[10px] tracking-wider transition-colors"
+            className="mt-4 font-mono text-[11px] tracking-wider transition-colors"
             style={{ color: board.accent }}>
             {expanded ? "▾ hide bring-up log" : "▸ run bring-up log"}
           </button>
@@ -289,9 +293,9 @@ function BringUp({ lines, accent, reduced }: { lines: string[]; accent: string; 
   }, [lines, reduced]);
 
   return (
-    <div className="mt-3 rounded p-3 font-mono text-[10px] leading-5" style={{ background: "rgba(4,8,4,0.6)", border: "1px solid rgba(255,255,255,0.05)" }}>
+    <div className="mt-3 rounded p-3 font-mono text-[11px] leading-6" style={{ background: "rgba(11,7,20,0.6)", border: "1px solid rgba(234,230,218,0.06)" }}>
       {shown.map((l, i) => (
-        <div key={i} style={{ color: l.startsWith(">>") ? accent : l.startsWith("$") ? PCB.green : "rgba(224,224,224,0.6)" }}>
+        <div key={i} style={{ color: l.startsWith(">>") ? PCB.green : l.startsWith("$") ? PCB.copperBright : "rgba(214,211,205,0.6)" }}>
           {l}
         </div>
       ))}

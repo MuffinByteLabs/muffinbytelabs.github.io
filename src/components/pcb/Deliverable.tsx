@@ -29,24 +29,25 @@ export default function Deliverable() {
     <section id="deliverable" className="relative py-20 px-6">
       <div className="max-w-5xl mx-auto">
         <div className="mb-10">
-          <p className="font-mono text-xs text-[#a855f7] tracking-widest uppercase mb-3">// the deliverable</p>
-          <h2 className="text-3xl sm:text-4xl font-bold text-[#f0f0f0]" style={{ fontFamily: "var(--font-geist-sans), sans-serif" }}>
+          <p className="font-mono text-xs tracking-[0.25em] uppercase mb-3" style={{ color: PCB.enig }}>The Deliverable</p>
+          <h2 className="text-3xl sm:text-4xl font-semibold" style={{ color: PCB.silk, fontFamily: "var(--font-fraunces), serif" }}>
             <ScrambleText text="The board isn't the product. The package is." />
           </h2>
-          <p className="mt-4 font-mono text-sm leading-7 text-[#e0e0e0]/60 max-w-3xl">
-            A gorgeous board with a messy hand-off says hobbyist. Every project ships as the same tidy,
-            factory-ready folder — hover any file to see what the fab does with it.
+          <p className="mt-4 text-base leading-8 text-[#d6d3cd]/70 max-w-3xl">
+            Anyone can route a pretty board — the difference shows in the hand-off. Every project
+            ships in the same predictable structure, and the tree below is the actual layout, file
+            for file. Hover or tap any file to see what the fab does with it.
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6 items-start">
           {/* file tree terminal */}
-          <div className="border border-[#00ff41]/10 rounded-md overflow-hidden">
-            <div className="flex items-center gap-2 px-4 py-2 border-b border-[#00ff41]/10 bg-[#00ff41]/[0.02]">
+          <div className="border border-[#eae6da]/10 rounded-md overflow-hidden" style={{ background: "rgba(18,14,26,0.55)" }}>
+            <div className="flex items-center gap-2 px-4 py-2 border-b border-[#eae6da]/10 bg-[#eae6da]/[0.03]">
               <span className="w-2 h-2 rounded-full bg-[#ff5f57]/60" />
               <span className="w-2 h-2 rounded-full bg-[#febc2e]/60" />
               <span className="w-2 h-2 rounded-full bg-[#28c840]/60" />
-              <span className="font-mono text-[10px] text-[#00ff41]/40 ml-2">tree ~/MML-0X-board</span>
+              <span className="font-mono text-[11px] text-[#eae6da]/60 ml-2">tree ~/MML-0X-board</span>
             </div>
             <div className="p-4">
               {rows.map((r, i) => (
@@ -55,8 +56,8 @@ export default function Deliverable() {
                   onMouseEnter={() => r.note && setActive(r)}
                   onFocus={() => r.note && setActive(r)}
                   onClick={() => r.note && setActive(r)}
-                  className="block w-full text-left font-mono text-[11px] sm:text-xs leading-6 transition-colors duration-200 hover:bg-[#00ff41]/[0.04]"
-                  style={{ color: active?.glyph === r.glyph ? PCB.green : r.isDir ? PCB.enig : "rgba(224,224,224,0.6)" }}
+                  className="block w-full text-left font-mono text-xs sm:text-[13px] leading-7 transition-colors duration-200 hover:bg-[#d4af37]/[0.06]"
+                  style={{ color: active?.glyph === r.glyph ? PCB.enigBright : r.isDir ? PCB.enig : "rgba(214,211,205,0.6)" }}
                 >
                   <span style={{ whiteSpace: "pre" }}>{r.glyph}</span>
                   {r.note && <span className="pcb-testpoint inline-block ml-2 align-middle rounded-full"
@@ -68,15 +69,15 @@ export default function Deliverable() {
 
           {/* probe readout + clean badges */}
           <div className="space-y-6">
-            <div className="border border-[#00ff41]/15 rounded-md p-5 min-h-[120px]" style={{ background: "rgba(0,255,65,0.02)" }}>
+            <div className="rounded-md p-5 min-h-[120px]" style={{ background: "rgba(212,175,55,0.04)", border: "1px solid rgba(212,175,55,0.22)" }}>
               <div className="flex items-center gap-2 mb-3">
                 <span className="w-2 h-2 rounded-full" style={{ background: PCB.green, boxShadow: `0 0 8px ${PCB.green}` }} />
-                <span className="font-mono text-[10px] tracking-widest" style={{ color: PCB.green }}>PROBE · CONTINUITY OK</span>
+                <span className="font-mono text-[11px] tracking-widest" style={{ color: PCB.green }}>PROBE · CONTINUITY OK</span>
               </div>
-              <p className="font-mono text-xs leading-6 text-[#e0e0e0]/80">
+              <p className="font-mono text-[13px] leading-7 text-[#d6d3cd]/85">
                 <span style={{ color: PCB.enig }}>{active?.name ?? "—"}</span>
                 <br />
-                {active?.note ?? "Hover a test point in the tree to probe it."}
+                {active?.note ?? "Hover or tap a test point in the tree to probe it."}
               </p>
             </div>
 
@@ -107,13 +108,13 @@ function Badges() {
         <div
           key={b.label}
           title={b.note}
-          className="font-mono text-[10px] tracking-wider px-3 py-2 rounded border text-center transition-all duration-500"
+          className="font-mono text-[11px] tracking-wider px-3 py-2 rounded border text-center transition-all duration-500"
           style={{
             transitionDelay: `${i * 80}ms`,
-            color: lit ? PCB.green : "#3a3a3a",
-            borderColor: lit ? "rgba(0,255,65,0.35)" : "rgba(120,120,120,0.2)",
-            boxShadow: lit ? "0 0 12px rgba(0,255,65,0.15)" : "none",
-            background: lit ? "rgba(0,255,65,0.04)" : "transparent",
+            color: lit ? PCB.green : "#46424c",
+            borderColor: lit ? "rgba(61,220,132,0.35)" : "rgba(120,120,130,0.2)",
+            boxShadow: lit ? "0 0 12px rgba(61,220,132,0.14)" : "none",
+            background: lit ? "rgba(61,220,132,0.05)" : "transparent",
           }}
         >
           {b.label}

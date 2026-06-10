@@ -5,30 +5,91 @@
    IPC-2221 trace widths, creepage on the 24V side, etc.).
    ════════════════════════════════════════════════════════════════════════ */
 
-/* ---- Palette (the new PCB visual language, layered on the existing brand) ---- */
+/* ---- Palette — "Midnight Fab": plum soldermask, ENIG gold, copper, silk ---- */
 export const PCB = {
-  bg: "#0a0a0a",
-  green: "#00ff41", // powered / active / DRC-pass ONLY
-  greenDim: "#00cc33",
-  purple: "#a855f7", // section eyebrows / secondary
-  soldermask: "#0b3d2e", // board surface (passive)
-  soldermaskLit: "#10593f", // hover / energized board surface
+  bg: "#0d0c11",
+  green: "#3ddc84", // status mint: powered / alive / DRC-pass ONLY
+  greenDim: "#2aa866",
+  purple: "#b98aff", // rarely used secondary
+  soldermask: "#1f1430", // board surface (passive, midnight plum)
+  soldermaskLit: "#2b1c42", // hover / energized board surface
   copper: "#b87333", // at-rest copper traces
   copperBright: "#e8a85c", // energized / current-carrying copper
   enig: "#d4af37", // pads, holes, test points, CTAs, Tier-2 skills
-  enigBright: "#f3d27a", // pad highlight
-  silk: "#e8ead5", // silkscreen ink (warm white)
-  drill: "#040804", // drill / via interiors
-  comm: "#00d4ff", // I2C/SPI/UART buses, net highlight
-  error: "#ff5f57", // DRC violation flash (sparingly)
+  enigBright: "#f0d488", // pad highlight
+  silk: "#eae6da", // silkscreen ink (warm white)
+  drill: "#0b0714", // drill / via interiors
+  comm: "#5ec8e5", // I2C/SPI/UART buses, net highlight
+  error: "#ff6b66", // DRC violation flash (sparingly)
 } as const;
 
 /* ---- Hero board-house string + status strip ---- */
-export const FAB_STRING = "MML-PCB · REV_A · 2-LAYER · 1.6mm FR-4 · ENIG · HASL→ENIG";
-export const STATUS_STRIP = "DRC: 0   ERC: 0   |   2-LAYER · 1.6mm FR-4 · ENIG   |   JLCPCB";
+export const FAB_STRING = "MML-PCB · REV_A · KICAD 10 NATIVE · 2-LAYER · FR-4 · ENIG";
+export const STATUS_OK = "DRC: 0 · ERC: 0";
+export const STATUS_SPECS = "KICAD 10 · 2-LAYER · 1.6mm FR-4 · ENIG · JLCPCB";
 export const POWER_STATUS = "> board powered :: rails nominal :: DRC clean / ERC clean";
 export const DESIGNATOR =
-  "EMBEDDED PCB DESIGNER · KiCad · ESP32 + STM32 · JLCPCB PRODUCTION-READY";
+  "KICAD PCB DESIGN SPECIALIST · 5+ YEARS · JLCPCB PRODUCTION-READY";
+export const KICAD_NATIVE =
+  "native .kicad_pro / .kicad_sch / .kicad_pcb — KiCad 8–10, no Altium, no conversions";
+
+/* ════════════════════════════════════════════════════════════════════════
+   SERVICES — shaped around what KiCad clients actually post on Upwork:
+   new boards, pre-fab reviews, and fixes to existing KiCad projects.
+   ════════════════════════════════════════════════════════════════════════ */
+export type Service = {
+  id: string;
+  title: string;
+  desc: string;
+  bullets: string[];
+  turnaround: string;
+};
+
+export const SERVICES: Service[] = [
+  {
+    id: "SVC-01",
+    title: "New board, idea to fab",
+    desc: "From a concept, breadboard prototype, or draft schematic to a manufacturing-ready KiCad project.",
+    bullets: [
+      "Schematic capture + component selection from in-stock LCSC / Digi-Key parts",
+      "Clean 2-layer & 4-layer layout — ESP32, sensors, USB-C, power",
+      "Full JLCPCB / PCBWay package: Gerbers, drill, BOM with LCSC / Digi-Key part numbers, CPL, PDF schematic, 3D render",
+    ],
+    turnaround: "small boards in days, not weeks",
+  },
+  {
+    id: "SVC-02",
+    title: "Pre-fab design review",
+    desc: "A second set of eyes on your board before you spend money at the fab.",
+    bullets: [
+      "DRC / ERC / DFM check against your fab's real capabilities",
+      "Footprint & part sanity pass — stock, lifecycle, polarity, pin-1, keep-outs",
+      "Written findings report with prioritized, concrete fixes",
+    ],
+    turnaround: "most reviews back in 24–48h",
+  },
+  {
+    id: "SVC-03",
+    title: "Fix, revise & finish",
+    desc: "Work inside your existing KiCad project without breaking what already works.",
+    bullets: [
+      "Schematic edits, re-routes, and Rev-B board revisions",
+      "Power & thermal fixes — pours, thermal vias, trace widths sized to current",
+      "DXF / PDF / image redrawn from scratch as a clean native KiCad project",
+    ],
+    turnaround: "scoped and quoted up front",
+  },
+];
+
+/* client-comfort points lifted straight from what job posts ask for */
+export const TRUST: string[] = [
+  "Money-back guarantee in every signed contract",
+  "KiCad 8–10 native — no Altium, no conversions",
+  "You own every file",
+  "NDA-friendly",
+  "Weekly written updates",
+  "DRC/ERC-clean proof with every delivery",
+];
 
 /* ════════════════════════════════════════════════════════════════════════
    THE DELIVERABLE — manufacturing package (the real product)
@@ -55,8 +116,8 @@ export const PACKAGE_TREE: TreeNode = {
       ],
     },
     { name: "docs/", note: "3D render, layout + schematic screenshots, ERC/DRC-clean proof, JLCPCB upload preview, and bring-up photos." },
-    { name: "README.md", note: "States the freelance problem this board solves — the highest-leverage file in the package." },
-    { name: "REV_A_notes.md", note: "Honest list of what I would change in Rev B. Shows engineering judgment, not just a passing DRC." },
+    { name: "README.md", note: "States the design intent — what the board does, the constraints it was built under, and how to regenerate every output. The first file your next engineer reads." },
+    { name: "REV_A_notes.md", note: "Honest list of what I would change in Rev B — so the next spin starts with a plan, not a guess." },
     { name: "CHANGES.md", note: "Revision log across board spins." },
   ],
 };
@@ -103,7 +164,7 @@ export const BOARDS: Board[] = [
     proves:
       "Datasheet-to-schematic capture, shared I2C/SPI buses, a protected analog input, and a tidy 2-layer pour that DRCs clean.",
     firmware: "ESPHome",
-    accent: "#00ff41",
+    accent: "#f0d488", // ENIG gold — the foundation board
     specs: {
       layers: "2-layer · signal + ground pour",
       mcu: "ESP32-S3-WROOM-1",
@@ -143,7 +204,7 @@ export const BOARDS: Board[] = [
     proves:
       "Power-path trace-width sizing, wide copper pours, bulk decoupling, and a proper 3.3V→5V data level shift for WS2812B.",
     firmware: "WLED",
-    accent: "#ffb000",
+    accent: "#e8a85c", // bright copper — the high-current board
     specs: {
       layers: "2-layer · wide power pours + ground",
       mcu: "ESP32-S3-WROOM-1",
@@ -177,13 +238,13 @@ export const BOARDS: Board[] = [
   {
     id: "MML-03",
     name: "24V Industrial-Style I/O Controller",
-    tagline: "Talks to 12/24V gear without frying itself.",
+    tagline: "Interfaces 12/24V field equipment behind a real isolation gap.",
     problem: "ESP32 board that interfaces 12/24V equipment safely.",
     mainSkill: "Input protection · buck converter · opto-isolation · mixed-signal",
     proves:
       "24V→5V buck with a tight switching loop, reverse-polarity + TVS front-end, and opto-isolated outputs with a real isolation gap / star ground.",
     firmware: "Tasmota / MQTT",
-    accent: "#22d3ee",
+    accent: "#5ec8e5", // comm cyan — the isolated I/O board
     specs: {
       layers: "2-layer · star ground + isolation gap",
       mcu: "ESP32-S3-WROOM-1",
@@ -203,7 +264,7 @@ export const BOARDS: Board[] = [
       "BOM.csv (MPNs) + CPL.csv centroid",
       "ERC-clean + DRC-clean screenshots",
       "3D render + JLCPCB upload preview",
-      'Bring-up photos + REV_A_notes.md ("industrial-STYLE demo, not certified")',
+      "Bring-up photos + REV_A_notes.md (scope note: not safety-certified)",
     ],
     bringup: [
       "$ tasmota --mqtt broker.local",
@@ -217,60 +278,117 @@ export const BOARDS: Board[] = [
 ];
 
 /* ════════════════════════════════════════════════════════════════════════
-   CAPABILITY MATRIX — Tier 1 (copper) + Tier 2 (ENIG gold)
+   SKILLS — grouped the way a client thinks about a project:
+   design the circuit → lay out the board → hand off to the fab.
    ════════════════════════════════════════════════════════════════════════ */
-export type Skill = {
-  refdes: string;
-  skill: string;
-  value: string;
-  description: string;
-  tier: "1" | "2";
+export type SkillGroup = {
+  title: string;
+  tagline: string;
+  skills: { name: string; detail?: string }[];
 };
 
-export const SKILLS: Skill[] = [
-  // ── Tier 1 — Foundation (appears in 80%+ of jobs)
-  { tier: "1", refdes: "U1", skill: "Schematic capture in KiCad", value: "KiCad 8.x", description: "Captures the full circuit as a readable, hierarchical schematic." },
-  { tier: "1", refdes: "U2", skill: "Footprint creation & library mgmt", value: "FP-LIB", description: "Builds accurate footprints and organized symbol/footprint libraries." },
-  { tier: "1", refdes: "U3", skill: "Component selection", value: "DK/Mouser/LCSC", description: "Picks in-stock, appropriate parts from the major distributor catalogs." },
-  { tier: "1", refdes: "U4", skill: "BOM with manufacturer part numbers", value: "BOM.csv MPN", description: "Produces a complete BOM with real MPNs for sourcing." },
-  { tier: "1", refdes: "U5", skill: "Gerber generation", value: "RS-274X", description: "Exports manufacturer-ready Gerbers for every copper, mask and silk layer." },
-  { tier: "1", refdes: "U6", skill: "Drill files", value: "EXCELLON", description: "Generates Excellon drill files for all plated and non-plated holes." },
-  { tier: "1", refdes: "U7", skill: "Pick-and-place (CPL) file", value: "CPL.csv", description: "Exports the centroid pick-and-place file for automated assembly." },
-  { tier: "1", refdes: "TP1", skill: "DRC clean", value: "DRC-PASS", description: "Resolves all design-rule-check violations for a manufacturable layout." },
-  { tier: "1", refdes: "TP2", skill: "ERC clean", value: "ERC-PASS", description: "Resolves all electrical-rule-check errors in the netlist." },
-  { tier: "1", refdes: "J1", skill: "JLCPCB workflow end-to-end", value: "JLCPCB-RDY", description: "Runs the full order workflow from upload through assembly review." },
-  { tier: "1", refdes: "U8", skill: "2-layer board design", value: "2L · 1.6mm", description: "Designs cost-effective, manufacturable two-layer boards." },
-  { tier: "1", refdes: "U9", skill: "Ground plane basics", value: "GND-POUR", description: "Implements solid ground planes for return paths and low noise." },
-  { tier: "1", refdes: "C1", skill: "Decoupling capacitor placement", value: "0.1µF ×N", description: "Places decoupling caps tight to IC power pins for a clean supply." },
-  { tier: "1", refdes: "U10", skill: "Silkscreen labeling", value: "SILK-WHT", description: "Adds clear white silkscreen for connectors, pins, and assembly." },
-  { tier: "1", refdes: "U11", skill: "Datasheet → schematic", value: "DS→SCH", description: "Translates datasheet reference circuits and pinouts into a schematic." },
-  { tier: "1", refdes: "C2", skill: "Power budgeting per rail", value: "PWR-BUDGET", description: "Sizes regulators and traces from per-rail current draw." },
-  // ── Tier 2 — Differentiators (appears in 50%+ of jobs)
-  { tier: "2", refdes: "U12", skill: "ESP32-WROOM/WROVER integration", value: "ESP32-WROOM", description: "Integrates ESP32 modules with correct keep-outs and antenna clearance." },
-  { tier: "2", refdes: "D1", skill: "USB-C + CC + ESD", value: "USBLC6-2SC6", description: "USB-C with 5.1k CC pull-downs and USBLC6 ESD protection." },
-  { tier: "2", refdes: "U13", skill: "LDO selection", value: "AP2112K-3.3", description: "Selects low-dropout LDOs like AP2112K-3.3 over the dated AMS1117." },
-  { tier: "2", refdes: "U14", skill: "I2C / SPI / UART routing", value: "BUS-ROUTE", description: "Routes buses with proper pull-ups and length matching." },
-  { tier: "2", refdes: "Q1", skill: "MOSFET / opto driver circuits", value: "MOSFET-DRV", description: "Designs transistor, MOSFET, and optocoupler driver stages." },
-  { tier: "2", refdes: "J2", skill: "JST connectors & headers", value: "JST-PH 2.0", description: "Specifies JST connectors and headers for power and signal." },
-  { tier: "2", refdes: "TP3", skill: "Test point planning", value: "TP-PLAN", description: "Plans accessible test points for bring-up, debug, and programming." },
-  { tier: "2", refdes: "R1", skill: "DFM awareness", value: "6/6 mil", description: "Applies trace/clearance DFM rules matched to fab capabilities." },
-  { tier: "2", refdes: "U15", skill: "3D viewer mechanical fit", value: "STEP-3D", description: "Verifies component heights and mechanical fit in the 3D viewer." },
-  { tier: "2", refdes: "J3", skill: "Mounting holes / enclosure", value: "M3-MNT", description: "Places mounting holes and plans outline for enclosure fit." },
-  { tier: "2", refdes: "U16", skill: "Level shifting 3.3↔5V", value: "74AHCT125", description: "Implements 3.3V↔5V level shifting with a 74AHCT125 buffer." },
-  { tier: "2", refdes: "L1", skill: "Buck converter layout", value: "BUCK-LOOP", description: "Lays out bucks with tight switching loops and minimized SW-node area." },
-  { tier: "2", refdes: "FB1", skill: "Polyfuse / TVS / reverse-polarity", value: "PTC+TVS+RP", description: "Adds polyfuse, TVS, and reverse-polarity protection to input power." },
+export const SKILL_GROUPS: SkillGroup[] = [
+  {
+    title: "Schematic & circuit design",
+    tagline: "from datasheet to a clean, readable schematic",
+    skills: [
+      { name: "Schematic capture", detail: "KiCad 8–10" },
+      { name: "Datasheet → schematic translation" },
+      { name: "Component selection", detail: "LCSC · Digi-Key · Mouser" },
+      { name: "ESP32-WROOM module integration", detail: "antenna keep-out" },
+      { name: "USB-C done right", detail: "5.1k CC pull-downs + USBLC6 ESD" },
+      { name: "LDO & regulator selection", detail: "AP2112K-3.3, not AMS1117" },
+      { name: "MOSFET / optocoupler driver stages" },
+      { name: "Input protection", detail: "polyfuse · TVS · reverse-polarity" },
+      { name: "Power budgeting per rail" },
+    ],
+  },
+  {
+    title: "PCB layout",
+    tagline: "boards that route clean and run cool",
+    skills: [
+      { name: "2-layer & 4-layer layout", detail: "FR-4 · 1.6mm" },
+      { name: "Ground planes & return paths" },
+      { name: "Decoupling placement", detail: "tight to every VDD pin" },
+      { name: "I2C / SPI / UART bus routing" },
+      { name: "Level shifting 3.3↔5V", detail: "74AHCT125" },
+      { name: "Buck converter layout", detail: "tight switching loop" },
+      { name: "Trace widths sized to current", detail: "IPC-2221" },
+      { name: "DFM to fab rules", detail: "6/6 mil JLCPCB" },
+      { name: "Footprints & library management" },
+      { name: "Test points, mounting holes & enclosure fit" },
+      { name: "3D mechanical fit checks" },
+    ],
+  },
+  {
+    title: "Manufacturing hand-off",
+    tagline: "the package your fab accepts first try",
+    skills: [
+      { name: "Gerber generation", detail: "RS-274X" },
+      { name: "Drill files", detail: "Excellon NPTH + PTH" },
+      { name: "BOM with real part numbers", detail: "LCSC / Digi-Key" },
+      { name: "Pick-and-place / CPL files" },
+      { name: "DRC + ERC clean, with proof" },
+      { name: "JLCPCB workflow end-to-end", detail: "upload → assembly review" },
+      { name: "Clear silkscreen & assembly markings" },
+      { name: "Datasheet-grade documentation", detail: "README · REV notes · CHANGES" },
+      { name: "Git-versioned, organized hand-off" },
+    ],
+  },
 ];
 
 /* ════════════════════════════════════════════════════════════════════════
-   HOW I WORK — power rail (embedded-minded decisions made visible)
+   THE STANDARD — premium differentiators (experience, docs, accountability)
    ════════════════════════════════════════════════════════════════════════ */
-export type RailStage = { refdes: string; label: string; note: string };
+export type Pillar = { num: string; title: string; body: string };
 
-export const POWER_RAIL: RailStage[] = [
-  { refdes: "J1", label: "5V IN", note: "USB-C / dedicated input — sized for peak draw, not idle." },
-  { refdes: "FB1", label: "POLYFUSE", note: "PTC + TVS clamp the input before anything downstream." },
-  { refdes: "Q1", label: "REV-POL", note: "P-MOSFET / Schottky — plug it in backwards, nothing dies." },
-  { refdes: "C1", label: "BULK CAP", note: "10µF+ at the module — rides out Wi-Fi TX current spikes (brown-out killer)." },
-  { refdes: "U2", label: "AP2112K-3.3", note: "Not AMS1117 — far better dropout, noise, and quiescent current." },
-  { refdes: "U1", label: "ESP32-S3", note: "3V3 rail · 0.1µF per VDD pin · one pull-up pair per I2C bus." },
+export const STANDARD_PILLARS: Pillar[] = [
+  {
+    num: "01",
+    title: "Five years in the PCB industry",
+    body: "Boards designed for production, not for the bench drawer. Schematics, layouts, and hand-offs that have been through real fabs, real assembly lines, and real design reviews.",
+  },
+  {
+    num: "02",
+    title: "Documentation that reads like a datasheet",
+    body: "Annotated schematics, a README that states the design intent, REV notes that say what changes next, and a CHANGES log for every spin. Your next engineer picks the project up cold.",
+  },
+  {
+    num: "03",
+    title: "Organized to the file",
+    body: "The same predictable project structure every time — /source, /production, /docs — versioned in Git. You will never hunt for a file or wonder which Gerber is current.",
+  },
+  {
+    num: "04",
+    title: "Accountability, in writing",
+    body: "A fixed quote before work starts. Weekly written updates while it runs. And a money-back guarantee in every signed contract — if the delivered work doesn't meet the agreed scope, you get your money back.",
+  },
+];
+
+export const STANDARD_STATS: { value: string; label: string }[] = [
+  { value: "5+", label: "years in the PCB industry" },
+  { value: "10", label: "KiCad — native, versions 8–10" },
+  { value: "24h", label: "fixed-quote turnaround" },
+  { value: "100%", label: "money-back guarantee" },
+];
+
+/* ════════════════════════════════════════════════════════════════════════
+   CONTACT — premium engagement flow
+   ════════════════════════════════════════════════════════════════════════ */
+export const CONTACT_STEPS: Pillar[] = [
+  {
+    num: "01",
+    title: "Send the brief",
+    body: "What the board does, your target fab, and any files you already have — a paragraph is enough to start.",
+  },
+  {
+    num: "02",
+    title: "Fixed quote in 24h",
+    body: "Scope, price, and timeline in writing. NDA signed first if your project needs one.",
+  },
+  {
+    num: "03",
+    title: "Contract, then work",
+    body: "A signed contract with the money-back guarantee written in: if delivery misses the agreed scope, you get a refund. Then the board gets built.",
+  },
 ];

@@ -27,33 +27,33 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     a: ({ href, children }) => (
       <a
         href={href}
-        className="text-[#00ff41] hover:text-[#00ff41]/80 underline underline-offset-4 decoration-[#00ff41]/30 transition-colors"
+        className="text-[#f0d488] hover:text-[#f0d488]/80 underline underline-offset-4 decoration-[#d4af37]/30 transition-colors"
       >
         {children}
       </a>
     ),
     code: ({ children }) => (
-      <code className="bg-[#111] text-[#a855f7] px-1.5 py-0.5 rounded text-sm font-mono border border-[#00ff41]/10">
+      <code className="bg-[#15121c] text-[#e8a85c] px-1.5 py-0.5 rounded text-sm font-mono border border-[#eae6da]/10">
         {children}
       </code>
     ),
     pre: ({ children }) => (
-      <pre className="bg-[#0d0d0d] border border-[#00ff41]/10 rounded-sm p-5 overflow-x-auto mb-6 font-mono text-sm">
+      <pre className="bg-[#100d16] border border-[#eae6da]/10 rounded-sm p-5 overflow-x-auto mb-6 font-mono text-sm">
         {children}
       </pre>
     ),
     ul: ({ children }) => (
-      <ul className="list-disc list-inside text-[#e0e0e0]/60 space-y-2 mb-6 marker:text-[#00ff41]/40 font-mono text-sm">
+      <ul className="list-disc list-inside text-[#e0e0e0]/60 space-y-2 mb-6 marker:text-[#d4af37]/50 font-mono text-sm">
         {children}
       </ul>
     ),
     ol: ({ children }) => (
-      <ol className="list-decimal list-inside text-[#e0e0e0]/60 space-y-2 mb-6 marker:text-[#00ff41]/40 font-mono text-sm">
+      <ol className="list-decimal list-inside text-[#e0e0e0]/60 space-y-2 mb-6 marker:text-[#d4af37]/50 font-mono text-sm">
         {children}
       </ol>
     ),
     blockquote: ({ children }) => (
-      <blockquote className="border-l-2 border-[#00ff41]/30 pl-5 italic text-[#e0e0e0]/40 my-8 font-mono text-sm">
+      <blockquote className="border-l-2 border-[#d4af37]/30 pl-5 italic text-[#e0e0e0]/40 my-8 font-mono text-sm">
         {children}
       </blockquote>
     ),

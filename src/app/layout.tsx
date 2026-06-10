@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import ClientLayout from "@/components/ClientLayout";
 import "./globals.css";
 
@@ -13,10 +13,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
-  title: "MuffinManLabs — PCB Design",
+  title: "MuffinManLabs — KiCad PCB Design",
   description:
-    "Embedded PCB designer. KiCad · ESP32 · JLCPCB production-ready boards — schematic capture, layout, and clean manufacturing packages. Embedded systems on the side.",
+    "Premium KiCad PCB design — five-plus years in the industry. Native KiCad 8–10 boards, pre-fab design reviews, and revisions, delivered as JLCPCB/PCBWay-ready packages with datasheet-grade documentation and a money-back guarantee.",
 };
 
 export default function RootLayout({
@@ -27,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0a0a0a] text-[#e0e0e0]`}
+        className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} antialiased bg-[#0d0c11] text-[#d6d3cd]`}
       >
         <div
           dangerouslySetInnerHTML={{

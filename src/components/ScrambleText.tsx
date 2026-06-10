@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 
-const CHARS = "0123456789ABCDEFvolatileuint32_t*GPIOABSRRmovr0r1ldr[]->;";
+const CHARS = "0123456789ABCDEFmilmmVIAGERBERDRCERC0402GND3V3CuENIG·";
 
 export default function ScrambleText({
   text,
@@ -13,6 +13,12 @@ export default function ScrambleText({
 }) {
   const [display, setDisplay] = useState(text);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
 
   const scramble = useCallback(() => {
     let iteration = 0;

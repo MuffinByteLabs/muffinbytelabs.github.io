@@ -40,10 +40,10 @@ export default async function BlogPost({
             Post not found
           </h1>
           <a
-            href="/#blog"
-            className="text-[#00ff41] hover:text-[#00ff41]/80 transition-colors"
+            href="/"
+            className="text-[#f0d488] hover:text-[#f0d488]/80 transition-colors"
           >
-            &larr; cd ../blog
+            &larr; back home
           </a>
         </div>
       </div>
@@ -56,10 +56,10 @@ export default async function BlogPost({
     <div className="min-h-screen pt-28 pb-24 px-8">
       <article className="max-w-3xl mx-auto">
         <a
-          href="/#blog"
-          className="inline-flex items-center gap-2 text-sm font-mono text-[#00ff41]/40 hover:text-[#00ff41] transition-colors duration-300 mb-10"
+          href="/"
+          className="inline-flex items-center gap-2 text-sm font-mono text-[#eae6da]/50 hover:text-[#f0d488] transition-colors duration-300 mb-10"
         >
-          <span className="text-[#a855f7]">&gt;</span> cd ../blog
+          &larr; back home
         </a>
 
         <h1
@@ -69,7 +69,7 @@ export default async function BlogPost({
           {post.frontmatter.title}
         </h1>
 
-        <time className="block text-xs font-mono text-[#00ff41]/30 mb-10">
+        <time className="block text-xs font-mono text-[#d4af37]/50 mb-10">
           {post.frontmatter.date}
           {post.frontmatter.readTime && ` · ${post.frontmatter.readTime}`}
         </time>

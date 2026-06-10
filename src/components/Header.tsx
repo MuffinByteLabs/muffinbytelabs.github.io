@@ -4,12 +4,11 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 
 const navLinks = [
-  { href: "/#boards", label: "./boards" },
-  { href: "/#skills", label: "./skills" },
-  { href: "/#process", label: "./process" },
-  { href: "/#contact", label: "./contact" },
-  { href: "/embedded", label: "./embedded" },
-  { href: "/memory-map", label: "./memory-map" },
+  { href: "/#services", label: "SERVICES" },
+  { href: "/#boards", label: "BOARDS" },
+  { href: "/#skills", label: "SKILLS" },
+  { href: "/#standard", label: "THE STANDARD" },
+  { href: "/#contact", label: "CONTACT" },
 ];
 
 export default function Header() {
@@ -24,23 +23,28 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 font-mono ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
-          ? "bg-[#0a0a0a]/90 backdrop-blur-md border-b border-[#00ff41]/10"
+          ? "bg-[#0d0c11]/85 backdrop-blur-md border-b border-[#eae6da]/8"
           : "bg-transparent"
       }`}
     >
-      <nav className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <nav className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
         <a href="/" className="flex items-center gap-3">
           <Image
             src="/MuffinManLabsLogo.png"
             alt="MuffinManLabs"
-            width={32}
-            height={32}
+            width={30}
+            height={30}
             className="rounded"
           />
-          <span className="text-sm text-[#00ff41] tracking-wider hidden sm:inline">
-            MuffinManLabs
+          <span className="hidden sm:flex items-baseline gap-2">
+            <span className="text-sm font-semibold tracking-wide text-[#eae6da]">
+              MuffinManLabs
+            </span>
+            <span className="font-mono text-[11px] tracking-[0.25em] text-[#d4af37]/80">
+              KICAD PCB DESIGN
+            </span>
           </span>
         </a>
 
@@ -50,9 +54,8 @@ export default function Header() {
             <li key={link.href}>
               <a
                 href={link.href}
-                className="text-xs tracking-wider text-[#00ff41]/50 hover:text-[#00ff41] transition-colors duration-300"
+                className="font-mono text-[11px] tracking-[0.2em] text-[#eae6da]/55 hover:text-[#f0d488] transition-colors duration-300"
               >
-                <span className="text-[#a855f7]">&gt; </span>
                 {link.label}
               </a>
             </li>
@@ -62,25 +65,25 @@ export default function Header() {
         {/* Mobile hamburger */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden font-mono text-[#00ff41]/60 hover:text-[#00ff41] text-sm transition-colors cursor-pointer"
+          className="md:hidden font-mono text-[#eae6da]/60 hover:text-[#f0d488] text-base transition-colors cursor-pointer"
           aria-label="Toggle menu"
+          aria-expanded={mobileOpen}
         >
-          {mobileOpen ? "[x]" : "[=]"}
+          {mobileOpen ? "✕" : "☰"}
         </button>
       </nav>
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden bg-[#0a0a0a]/98 backdrop-blur-md border-b border-[#00ff41]/10">
+        <div className="md:hidden bg-[#0d0c11]/98 backdrop-blur-md border-b border-[#eae6da]/8">
           <ul className="flex flex-col gap-4 px-6 py-6">
             {navLinks.map((link) => (
               <li key={link.href}>
                 <a
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className="text-sm tracking-wider text-[#00ff41]/50 hover:text-[#00ff41] transition-colors duration-300"
+                  className="font-mono text-xs tracking-[0.2em] text-[#eae6da]/55 hover:text-[#f0d488] transition-colors duration-300"
                 >
-                  <span className="text-[#a855f7]">&gt; </span>
                   {link.label}
                 </a>
               </li>

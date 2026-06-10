@@ -1,32 +1,40 @@
 @import "tailwindcss";
 
+/* Legacy components kept on disk but not mounted — exclude from the class scan
+   so their old-theme utilities don't ship in the production bundle. */
+@source not "../components/Hero.tsx";
+@source not "../components/About.tsx";
+@source not "../components/ChipPinout.tsx";
+@source not "../components/Projects.tsx";
+@source not "../components/Blog.tsx";
+@source not "../components/Contact.tsx";
+@source not "../components/HexTrail.tsx";
+@source not "../components/BootSequence.tsx";
+@source not "../components/SecretTerminal.tsx";
+@source not "../components/MalwareScanWidget.tsx";
+@source not "../components/AccessDenied.tsx";
+@source not "../components/CircuitTraces.tsx";
+
 :root {
-  --background: #0a0a0a;
-  --foreground: #e0e0e0;
-  --green: #00ff41;
-  --green-dim: #00cc33;
-  --purple: #a855f7;
-  --purple-dim: #7c3aed;
-  /* PCB visual language */
-  --soldermask: #0b3d2e;
-  --soldermask-lit: #10593f;
+  --background: #0d0c11;
+  --foreground: #d6d3cd;
+  /* PCB visual language — "Midnight Fab": plum soldermask + ENIG gold + copper */
+  --soldermask: #1f1430;
+  --soldermask-lit: #2b1c42;
   --copper: #b87333;
   --copper-bright: #e8a85c;
   --enig: #d4af37;
-  --enig-bright: #f3d27a;
-  --silk: #e8ead5;
-  --drill: #040804;
-  --comm: #00d4ff;
-  --error: #ff5f57;
+  --enig-bright: #f0d488;
+  --silk: #eae6da;
+  --drill: #0b0714;
+  --comm: #5ec8e5;
+  --signal: #3ddc84;
+  --error: #ff6b66;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-green: var(--green);
-  --color-green-dim: var(--green-dim);
-  --color-purple: var(--purple);
-  --color-purple-dim: var(--purple-dim);
   --color-soldermask: var(--soldermask);
   --color-soldermask-lit: var(--soldermask-lit);
   --color-copper: var(--copper);
@@ -36,8 +44,10 @@
   --color-silk: var(--silk);
   --color-drill: var(--drill);
   --color-comm: var(--comm);
+  --color-signal: var(--signal);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-fraunces);
 }
 
 html {
@@ -47,73 +57,29 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-mono), "Courier New", monospace;
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='17'%3E%3Crect x='0' y='13' width='8' height='3' fill='%2300ff41'/%3E%3C/svg%3E") 0 16, auto;
+  font-family: var(--font-geist-sans), sans-serif;
+  /* perfboard texture — a faint grid of plated holes */
+  background-image: radial-gradient(rgba(232, 168, 92, 0.045) 1px, transparent 1.3px);
+  background-size: 26px 26px;
 }
 
-/* CRT Scanlines overlay */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0.15) 0px,
-    rgba(0, 0, 0, 0.15) 1px,
-    transparent 1px,
-    transparent 3px
-  );
-  opacity: 0.4;
+/* Engraved-gold display text */
+.gold-text {
+  background: linear-gradient(180deg, #f6e3a3 0%, #d4af37 55%, #b08a28 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-/* CRT Flicker */
-@keyframes flicker {
-  0% { opacity: 0.97; }
-  5% { opacity: 0.95; }
-  10% { opacity: 0.98; }
-  15% { opacity: 0.96; }
-  20% { opacity: 0.99; }
-  50% { opacity: 0.96; }
-  80% { opacity: 0.98; }
-  90% { opacity: 0.95; }
-  100% { opacity: 0.97; }
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 9998;
-  pointer-events: none;
-  animation: flicker 0.15s infinite;
-  background: transparent;
-}
-
-/* Green text glow */
-.green-glow {
-  text-shadow:
-    0 0 10px rgba(0, 255, 65, 0.5),
-    0 0 20px rgba(0, 255, 65, 0.3),
-    0 0 40px rgba(0, 255, 65, 0.1);
-}
-
-/* Terminal divider */
+/* Copper hairline (used by Footer; animated section dividers use .trace-divider-*) */
 .terminal-divider {
   height: 1px;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(0, 255, 65, 0.3) 50%,
+    rgba(232, 168, 92, 0.35) 50%,
     transparent 100%
   );
-}
-
-/* Hex scroll animation */
-@keyframes hex-scroll {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-50%); }
 }
 
 /* Scrollbar */
@@ -122,156 +88,35 @@ body::before {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0a0a0a;
+  background: #0d0c11;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 65, 0.3);
+  background: rgba(212, 175, 55, 0.25);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 255, 65, 0.5);
+  background: rgba(212, 175, 55, 0.45);
 }
 
 /* Selection */
 ::selection {
-  background: rgba(0, 255, 65, 0.25);
-  color: var(--green);
-}
-
-/* Access denied popup fade */
-@keyframes fadeInOut {
-  0% { opacity: 0; transform: scale(0.95); }
-  10% { opacity: 1; transform: scale(1); }
-  80% { opacity: 1; transform: scale(1); }
-  100% { opacity: 0; transform: scale(0.95); }
-}
-
-/* Page glitch */
-@keyframes glitch-shift {
-  0% { transform: translateX(0); }
-  33% { transform: translateX(-3px); }
-  66% { transform: translateX(2px); }
-  100% { transform: translateX(0); }
-}
-
-@keyframes glitch-tear {
-  0% { clip-path: inset(40% 0 20% 0); transform: translateX(-2px); }
-  50% { clip-path: inset(10% 0 60% 0); transform: translateX(3px); }
-  100% { clip-path: inset(70% 0 5% 0); transform: translateX(-1px); }
-}
-
-/* Profile pic glitch on hover */
-@keyframes pic-glitch {
-  0% { clip-path: inset(0 0 0 0); transform: translate(0); }
-  10% { clip-path: inset(20% 0 60% 0); transform: translate(-4px, 2px); }
-  20% { clip-path: inset(0 0 0 0); transform: translate(0); }
-  30% { clip-path: inset(50% 0 10% 0); transform: translate(3px, -1px); }
-  40% { clip-path: inset(0 0 0 0); transform: translate(0); }
-  50% { clip-path: inset(10% 0 40% 0); transform: translate(-2px, 1px); }
-  60% { clip-path: inset(0 0 0 0); transform: translate(0); }
-  100% { clip-path: inset(0 0 0 0); transform: translate(0); }
-}
-
-.profile-pic-glitch:hover img {
-  animation: pic-glitch 0.3s steps(1) infinite;
-}
-
-/* Project card hover scanlines */
-.project-scanlines {
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 3px,
-    rgba(0, 255, 65, 0.06) 3px,
-    rgba(0, 255, 65, 0.06) 6px
-  );
-}
-
-.project-card {
-  transition: box-shadow 0.3s ease, background-color 0.3s ease;
-}
-
-.project-card:hover {
-  background-color: rgba(0, 255, 65, 0.03);
-  box-shadow:
-    0 0 20px rgba(0, 255, 65, 0.15),
-    0 0 40px rgba(0, 255, 65, 0.05),
-    inset 0 0 20px rgba(0, 255, 65, 0.02);
-}
-
-.profile-pic-glitch:hover::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 3px,
-    rgba(0, 255, 65, 0.08) 3px,
-    rgba(0, 255, 65, 0.08) 6px
-  );
-  mix-blend-mode: overlay;
-  animation: pic-glitch 0.2s steps(2) infinite;
-}
-
-/* Chip pinout idle animations */
-.chip-power-pulse {
-  animation: chipPowerPulse 3s ease-in-out infinite;
-}
-
-.chip-led-blink {
-  animation: chipLedBlink 2s ease-in-out infinite;
-}
-
-@keyframes chipPowerPulse {
-  0%, 100% { box-shadow: 0 0 4px var(--pin-glow); }
-  50% { box-shadow: 0 0 8px var(--pin-glow), 0 0 14px var(--pin-glow); }
-}
-
-@keyframes chipLedBlink {
-  0%, 42%, 58%, 100% { box-shadow: 0 0 4px var(--pin-glow); }
-  50% { box-shadow: 0 0 10px var(--pin-glow), 0 0 20px var(--pin-glow); }
-}
-
-/* Data flow dot animations */
-@keyframes chipDotLtoR {
-  0% { left: -3px; opacity: 0; }
-  15% { opacity: 1; }
-  85% { opacity: 1; }
-  100% { left: calc(100% - 3px); opacity: 0; }
-}
-
-@keyframes chipDotRtoL {
-  0% { left: calc(100% - 3px); opacity: 0; }
-  15% { opacity: 1; }
-  85% { opacity: 1; }
-  100% { left: -3px; opacity: 0; }
-}
-
-/* LED indicator on chip body and external LED component */
-.chip-led-indicator {
-  animation: chipLedIndicator 2s ease-in-out infinite;
-}
-
-@keyframes chipLedIndicator {
-  0%, 40%, 60%, 100% { opacity: 0.3; box-shadow: 0 0 2px var(--pin-glow); }
-  50% { opacity: 1; box-shadow: 0 0 6px var(--pin-glow), 0 0 12px var(--pin-glow); }
+  background: rgba(212, 175, 55, 0.3);
+  color: #f0d488;
 }
 
 /* ════════════════════════════════════════════════════════════════════════
    PCB DESIGN PAGE — board substrate, copper, silkscreen, power-up
    ════════════════════════════════════════════════════════════════════════ */
 
-/* FR-4 soldermask substrate with a faint fiberglass weave */
+/* FR-4 soldermask substrate with a faint fiberglass weave — midnight plum */
 .pcb-substrate {
   background-color: var(--soldermask);
   background-image:
-    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.14) 0px, rgba(0, 0, 0, 0.14) 1px, transparent 1px, transparent 5px),
-    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.03) 0px, rgba(255, 255, 255, 0.03) 1px, transparent 1px, transparent 5px),
-    radial-gradient(120% 120% at 50% 0%, rgba(16, 89, 63, 0.55) 0%, rgba(11, 61, 46, 0.9) 55%, rgba(5, 30, 22, 1) 100%);
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.16) 0px, rgba(0, 0, 0, 0.16) 1px, transparent 1px, transparent 5px),
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.025) 0px, rgba(255, 255, 255, 0.025) 1px, transparent 1px, transparent 5px),
+    radial-gradient(120% 120% at 50% 0%, rgba(43, 28, 66, 0.65) 0%, rgba(31, 20, 48, 0.92) 55%, rgba(15, 9, 26, 1) 100%);
 }
 
 /* hatched copper ground pour */
@@ -306,7 +151,7 @@ body::before {
   90% { opacity: 1; }
   100% { transform: translateY(110%); opacity: 0; }
 }
-.pcb-scan { animation: pcbScan 1.4s ease-in-out; }
+.pcb-scan { animation: pcbScan 1.4s ease-in-out forwards; }
 
 /* test-point continuity beep on hover */
 .pcb-testpoint {
@@ -314,21 +159,42 @@ body::before {
 }
 .pcb-testpoint:hover {
   transform: scale(1.15);
-  box-shadow: 0 0 8px rgba(0, 255, 65, 0.7), 0 0 16px rgba(0, 255, 65, 0.35);
+  box-shadow: 0 0 8px rgba(240, 212, 136, 0.7), 0 0 16px rgba(212, 175, 55, 0.4);
 }
 
-/* current flowing along a power rail */
-@keyframes pcbFlow {
-  0% { left: -6%; opacity: 0; }
-  8% { opacity: 1; }
-  92% { opacity: 1; }
-  100% { left: 106%; opacity: 0; }
+/* animated trace divider — copper hairline draws outward, center via lands */
+.trace-divider-line {
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(232, 168, 92, 0.4) 50%, transparent 100%);
+  transform: scaleX(0);
+  transition: transform 1.1s cubic-bezier(0.2, 0.6, 0.2, 1);
 }
-.pcb-flow-dot {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  animation: pcbFlow 2.4s linear infinite;
+.trace-divider-line.lit { transform: scaleX(1); }
+
+.trace-divider-via {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 38% 32%, #f0d488, #d4af37 60%, #8c6a18);
+  box-shadow: 0 0 0 2px #0d0c11;
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 0.4s ease 0.55s, transform 0.4s ease 0.55s;
+}
+.trace-divider-via.lit {
+  opacity: 1;
+  transform: scale(1);
+  animation: viaPing 0.9s ease-out 0.55s 1;
+}
+@keyframes viaPing {
+  0% { box-shadow: 0 0 0 2px #0d0c11, 0 0 0 0 rgba(240, 212, 136, 0.45); }
+  100% { box-shadow: 0 0 0 2px #0d0c11, 0 0 0 14px rgba(240, 212, 136, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trace-divider-line { transition: none; transform: scaleX(1); }
+  .trace-divider-via { transition: none; opacity: 1; transform: scale(1); animation: none; }
 }
 
 /* card flip */
