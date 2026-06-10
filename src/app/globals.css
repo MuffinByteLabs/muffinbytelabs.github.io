@@ -7,6 +7,17 @@
   --green-dim: #00cc33;
   --purple: #a855f7;
   --purple-dim: #7c3aed;
+  /* PCB visual language */
+  --soldermask: #0b3d2e;
+  --soldermask-lit: #10593f;
+  --copper: #b87333;
+  --copper-bright: #e8a85c;
+  --enig: #d4af37;
+  --enig-bright: #f3d27a;
+  --silk: #e8ead5;
+  --drill: #040804;
+  --comm: #00d4ff;
+  --error: #ff5f57;
 }
 
 @theme inline {
@@ -16,6 +27,15 @@
   --color-green-dim: var(--green-dim);
   --color-purple: var(--purple);
   --color-purple-dim: var(--purple-dim);
+  --color-soldermask: var(--soldermask);
+  --color-soldermask-lit: var(--soldermask-lit);
+  --color-copper: var(--copper);
+  --color-copper-bright: var(--copper-bright);
+  --color-enig: var(--enig);
+  --color-enig-bright: var(--enig-bright);
+  --color-silk: var(--silk);
+  --color-drill: var(--drill);
+  --color-comm: var(--comm);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -239,4 +259,91 @@ body::before {
 @keyframes chipLedIndicator {
   0%, 40%, 60%, 100% { opacity: 0.3; box-shadow: 0 0 2px var(--pin-glow); }
   50% { opacity: 1; box-shadow: 0 0 6px var(--pin-glow), 0 0 12px var(--pin-glow); }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   PCB DESIGN PAGE — board substrate, copper, silkscreen, power-up
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* FR-4 soldermask substrate with a faint fiberglass weave */
+.pcb-substrate {
+  background-color: var(--soldermask);
+  background-image:
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.14) 0px, rgba(0, 0, 0, 0.14) 1px, transparent 1px, transparent 5px),
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.03) 0px, rgba(255, 255, 255, 0.03) 1px, transparent 1px, transparent 5px),
+    radial-gradient(120% 120% at 50% 0%, rgba(16, 89, 63, 0.55) 0%, rgba(11, 61, 46, 0.9) 55%, rgba(5, 30, 22, 1) 100%);
+}
+
+/* hatched copper ground pour */
+.pcb-pour {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(184, 115, 51, 0.16) 0px,
+    rgba(184, 115, 51, 0.16) 1px,
+    transparent 1px,
+    transparent 6px
+  );
+}
+
+/* energized "current" pulse running a trace (CSS fallback for dot motion) */
+@keyframes pcbPulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+.pcb-pulse { animation: pcbPulse 1.6s ease-in-out infinite; }
+
+/* blinking command caret on the boot/status typewriter */
+@keyframes pcbCaret {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.pcb-caret { animation: pcbCaret 1s steps(1) infinite; }
+
+/* DRC scan-bar sweep across a board card */
+@keyframes pcbScan {
+  0% { transform: translateY(-10%); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(110%); opacity: 0; }
+}
+.pcb-scan { animation: pcbScan 1.4s ease-in-out; }
+
+/* test-point continuity beep on hover */
+.pcb-testpoint {
+  transition: box-shadow 0.25s ease, transform 0.2s ease;
+}
+.pcb-testpoint:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.7), 0 0 16px rgba(0, 255, 65, 0.35);
+}
+
+/* current flowing along a power rail */
+@keyframes pcbFlow {
+  0% { left: -6%; opacity: 0; }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { left: 106%; opacity: 0; }
+}
+.pcb-flow-dot {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  animation: pcbFlow 2.4s linear infinite;
+}
+
+/* card flip */
+.pcb-flip {
+  transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+  transform-style: preserve-3d;
+}
+.pcb-flip.flipped { transform: rotateY(180deg); }
+.pcb-face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.pcb-face-back { transform: rotateY(180deg); }
+
+/* reduce motion: hold the final lit state, drop the theatrics */
+@media (prefers-reduced-motion: reduce) {
+  .pcb-pulse,
+  .pcb-caret,
+  .pcb-scan { animation: none !important; }
+  .pcb-flip { transition: none !important; }
 }

@@ -14,8 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MuffinManLabs",
-  description: "Embedded systems engineer. Close to the hardware.",
+  title: "MuffinManLabs — PCB Design",
+  description:
+    "Embedded PCB designer. KiCad · ESP32 · JLCPCB production-ready boards — schematic capture, layout, and clean manufacturing packages. Embedded systems on the side.",
 };
 
 export default function RootLayout({

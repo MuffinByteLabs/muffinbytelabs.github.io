@@ -1,13 +1,14 @@
-import Hero from "@/components/Hero";
-import About from "@/components/About";
-import ChipPinout from "@/components/ChipPinout";
-import Projects from "@/components/Projects";
-import Blog from "@/components/Blog";
-import Contact from "@/components/Contact";
+import PCBHero from "@/components/pcb/PCBHero";
+import Deliverable from "@/components/pcb/Deliverable";
+import BoardsGallery from "@/components/pcb/BoardsGallery";
+import ProcessRail from "@/components/pcb/ProcessRail";
+import CapabilityMatrix from "@/components/pcb/CapabilityMatrix";
+import EmbeddedHeader from "@/components/pcb/EmbeddedHeader";
+import SubmitToFab from "@/components/pcb/SubmitToFab";
 
 function SectionDivider() {
   return (
-    <div className="max-w-4xl mx-auto px-8">
+    <div className="max-w-5xl mx-auto px-8">
       <div className="terminal-divider" />
     </div>
   );
@@ -16,17 +17,19 @@ function SectionDivider() {
 export default function Home() {
   return (
     <>
-      <Hero />
+      <PCBHero />
       <SectionDivider />
-      <About />
+      <Deliverable />
       <SectionDivider />
-      <ChipPinout />
+      <BoardsGallery />
       <SectionDivider />
-      <Projects />
+      <ProcessRail />
       <SectionDivider />
-      <Blog />
+      <CapabilityMatrix />
       <SectionDivider />
-      <Contact />
+      <EmbeddedHeader />
+      <SectionDivider />
+      <SubmitToFab />
     </>
   );
 }

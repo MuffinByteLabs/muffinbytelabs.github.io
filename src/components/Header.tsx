@@ -4,12 +4,11 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 
 const navLinks = [
-  { href: "/#home", label: "./home" },
-  { href: "/#about", label: "./about" },
-  { href: "/#hardware", label: "./hardware" },
-  { href: "/#projects", label: "./projects" },
-  { href: "/#blog", label: "./blog" },
+  { href: "/#boards", label: "./boards" },
+  { href: "/#skills", label: "./skills" },
+  { href: "/#process", label: "./process" },
   { href: "/#contact", label: "./contact" },
+  { href: "/embedded", label: "./embedded" },
   { href: "/memory-map", label: "./memory-map" },
 ];
 
