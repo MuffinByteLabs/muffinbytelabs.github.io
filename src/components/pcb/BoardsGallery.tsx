@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import ScrambleText from "../ScrambleText";
+import ScrollFadeIn from "../ScrollFadeIn";
+import SectionHeading from "./SectionHeading";
 import { PCB, BOARDS, type Board } from "./pcbData";
 import { BoardArt, type BoardLayout, type GerberLayer } from "./BoardSVG";
 import { useReducedMotion } from "./useReducedMotion";
@@ -105,19 +106,15 @@ const LAYER_TABS: { key: GerberLayer; label: string }[] = [
 
 export default function BoardsGallery() {
   return (
-    <section id="boards" className="relative py-20 px-6">
+    <section id="boards" className="relative py-24 sm:py-32 px-6">
       <div className="max-w-5xl mx-auto">
-        <div className="mb-10">
-          <p className="font-mono text-xs tracking-[0.25em] uppercase mb-3" style={{ color: PCB.enig }}>Boards</p>
-          <h2 className="text-3xl sm:text-4xl font-semibold" style={{ color: PCB.silk, fontFamily: "var(--font-fraunces), serif" }}>
-            <ScrambleText text="Three boards. Three client problems." />
-          </h2>
-          <p className="mt-4 text-base leading-8 text-[#d6d3cd]/70 max-w-3xl">
+        <ScrollFadeIn>
+          <SectionHeading eyebrow="Portfolio" title="Three boards. Three client problems." gold>
             Three builds covering the briefs clients actually send: a production sensor node, a
             high-current LED driver, and isolated 24V I/O. Toggle the Gerber layers and open the
             bring-up log on any board.
-          </p>
-        </div>
+          </SectionHeading>
+        </ScrollFadeIn>
 
         <div className="space-y-6">
           {BOARDS.map((b) => <BoardCard key={b.id} board={b} />)}
@@ -156,7 +153,8 @@ function BoardCard({ board }: { board: Board }) {
     decals = (
       <g>
         <line x1="56" y1="170" x2="190" y2="170" stroke={powered ? PCB.copperBright : PCB.copper}
-          strokeWidth={dynSw} strokeLinecap="round" opacity="0.9" />
+          strokeWidth={dynSw} strokeLinecap="round" opacity="0.9"
+          style={{ transition: "stroke-width 0.12s linear" }} />
         <text x="123" y="186" fontSize="7" fill={PCB.silk} textAnchor="middle" opacity="0.85"
           fontFamily="var(--font-geist-mono), monospace">5V POWER · {widthMils.toFixed(0)} mil @ 2oz</text>
       </g>
@@ -181,10 +179,10 @@ function BoardCard({ board }: { board: Board }) {
   return (
     <div
       ref={ref}
-      className="relative border rounded-lg overflow-hidden transition-all duration-500"
+      className="fab-card relative overflow-hidden"
       style={{
-        borderColor: powered ? `${board.accent}40` : "rgba(120,120,120,0.15)",
-        boxShadow: powered ? `0 0 30px ${board.accent}12` : "none",
+        borderColor: powered ? `${board.accent}40` : undefined,
+        boxShadow: powered ? `0 1px 0 rgba(234,230,218,0.06) inset, 0 18px 40px -24px rgba(0,0,0,0.8), 0 0 30px ${board.accent}12` : undefined,
       }}
     >
       {/* DRC scan-bar sweep on first reveal (unmounts when the sweep finishes) */}
@@ -194,15 +192,15 @@ function BoardCard({ board }: { board: Board }) {
           onAnimationEnd={() => setScanned(false)} />
       )}
 
-      <div className="grid md:grid-cols-2 gap-0">
+      <div className="grid lg:grid-cols-2 gap-0">
         {/* ── left : board art + layer toggle ── */}
-        <div className="p-5 pcb-substrate" style={{ borderRight: "1px solid rgba(0,0,0,0.4)" }}>
-          <div className="flex items-center justify-between mb-3">
+        <div className="p-5 pcb-substrate border-b lg:border-b-0 lg:border-r border-black/40">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-3">
             <span className="font-mono text-xs tracking-widest" style={{ color: PCB.silk }}>{board.id}</span>
-            <div className="flex gap-1">
+            <div className="flex flex-wrap gap-1">
               {LAYER_TABS.map((t) => (
                 <button key={t.key} onClick={() => setLayer(t.key)}
-                  className="font-mono text-[11px] px-2 py-1 rounded transition-all duration-200"
+                  className="font-mono text-[11px] px-2.5 py-1.5 rounded transition-all duration-200"
                   style={{
                     color: layer === t.key ? "#1a1405" : PCB.silk,
                     background: layer === t.key ? PCB.enig : "rgba(0,0,0,0.35)",
@@ -218,9 +216,9 @@ function BoardCard({ board }: { board: Board }) {
           {/* Board 2 trace-width calculator */}
           {board.id === "MML-02" && (
             <div className="mt-3 rounded p-3" style={{ background: "rgba(11,7,20,0.55)" }}>
-              <div className="flex items-center justify-between font-mono text-[11px]" style={{ color: PCB.silk }}>
+              <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between font-mono text-[11px]" style={{ color: PCB.silk }}>
                 <span>IPC-2221 trace width</span>
-                <span style={{ color: board.accent }}>{current.toFixed(1)} A → {widthMils.toFixed(0)} mil @ 2oz, ΔT 10°C</span>
+                <span className="tabular-nums" style={{ color: board.accent }}>{current.toFixed(1)} A → {widthMils.toFixed(0)} mil @ 2oz, ΔT 10°C</span>
               </div>
               <input type="range" min={1} max={10} step={0.2} value={current}
                 onChange={(e) => setCurrent(parseFloat(e.target.value))}
@@ -230,9 +228,12 @@ function BoardCard({ board }: { board: Board }) {
         </div>
 
         {/* ── right : details ── */}
-        <div className="p-5">
-          <h3 className="text-xl font-semibold" style={{ color: board.accent, fontFamily: "var(--font-fraunces), serif" }}>{board.name}</h3>
-          <p className="font-mono text-xs text-[#d6d3cd]/65 mt-1">{board.tagline}</p>
+        <div className="p-5 sm:p-6">
+          <div className="flex items-center gap-2.5">
+            <span aria-hidden className="block w-1 h-5 rounded-full" style={{ background: board.accent }} />
+            <h3 className="text-xl font-semibold" style={{ color: PCB.silk, fontFamily: "var(--font-fraunces), serif" }}>{board.name}</h3>
+          </div>
+          <p className="font-mono text-xs text-[#d6d3cd]/65 mt-1.5">{board.tagline}</p>
 
           <div className="mt-3 text-[14px] leading-7 text-[#d6d3cd]/80">
             <span className="font-mono text-[11px] tracking-[0.2em] mr-2" style={{ color: PCB.copperBright }}>THE BRIEF</span>
@@ -241,14 +242,14 @@ function BoardCard({ board }: { board: Board }) {
           <p className="mt-2 text-[13px] leading-7 text-[#d6d3cd]/65">{board.proves}</p>
 
           {/* specs */}
-          <div className="mt-4 grid grid-cols-2 gap-2 font-mono text-[11px]">
+          <div className="mt-4 grid grid-cols-1 min-[400px]:grid-cols-2 gap-2 font-mono text-[11px] auto-rows-fr">
             {[
               ["LAYERS", board.specs.layers],
               ["MCU", board.specs.mcu],
               ["POWER", board.specs.power],
               ["EXTRA", board.specs.extra],
             ].map(([k, v]) => (
-              <div key={k} className="border border-[#eae6da]/8 rounded px-2.5 py-2" style={{ background: "rgba(234,230,218,0.02)" }}>
+              <div key={k} className="border border-[#eae6da]/12 rounded px-2.5 py-2" style={{ background: "rgba(234,230,218,0.02)" }}>
                 <div style={{ color: PCB.enig }} className="opacity-75">{k}</div>
                 <div className="text-[#d6d3cd]/75 leading-5 mt-0.5">{v}</div>
               </div>
@@ -257,7 +258,7 @@ function BoardCard({ board }: { board: Board }) {
 
           {/* firmware + mfg badges */}
           <div className="mt-4 flex flex-wrap gap-2">
-            <span className="font-mono text-[11px] px-2 py-1 rounded" style={{ color: PCB.comm, border: `1px solid ${PCB.comm}40` }}>
+            <span className="font-mono text-[11px] px-2 py-1 rounded" style={{ color: PCB.copperBright, border: `1px solid ${PCB.copper}55` }}>
               firmware: {board.firmware}
             </span>
             {board.mfgPack.slice(0, 2).map((m) => (

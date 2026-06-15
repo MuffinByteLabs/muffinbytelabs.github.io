@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import ClientLayout from "@/components/ClientLayout";
 import "./globals.css";
@@ -18,10 +18,46 @@ const fraunces = Fraunces({
   subsets: ["latin"],
 });
 
+const TITLE = "MuffinManLabs — KiCad PCB Design";
+const DESCRIPTION =
+  "Premium KiCad PCB design — five-plus years in the industry. Native KiCad 8–10 boards, pre-fab design reviews, and revisions, delivered as JLCPCB/PCBWay-ready packages with datasheet-grade documentation and a money-back guarantee.";
+const SITE = "https://muffinmanlabs.github.io";
+
 export const metadata: Metadata = {
-  title: "MuffinManLabs — KiCad PCB Design",
-  description:
-    "Premium KiCad PCB design — five-plus years in the industry. Native KiCad 8–10 boards, pre-fab design reviews, and revisions, delivered as JLCPCB/PCBWay-ready packages with datasheet-grade documentation and a money-back guarantee.",
+  metadataBase: new URL(SITE),
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: "/" },
+  keywords: [
+    "KiCad PCB design",
+    "PCB layout",
+    "JLCPCB",
+    "PCBWay",
+    "ESP32 PCB",
+    "schematic capture",
+    "Gerber",
+    "PCB design freelancer",
+  ],
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: SITE,
+    siteName: "MuffinManLabs",
+    type: "website",
+    locale: "en_US",
+    images: [{ url: "/MuffinManLabsLogo.png", width: 1024, height: 1024, alt: "MuffinManLabs — KiCad PCB design" }],
+  },
+  twitter: {
+    card: "summary",
+    title: TITLE,
+    description: DESCRIPTION,
+    images: ["/MuffinManLabsLogo.png"],
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0d0c11",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({

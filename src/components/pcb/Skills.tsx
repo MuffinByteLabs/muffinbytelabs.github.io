@@ -1,35 +1,20 @@
-import ScrambleText from "../ScrambleText";
 import ScrollFadeIn from "../ScrollFadeIn";
+import SectionHeading from "./SectionHeading";
 import { PCB, SKILL_GROUPS } from "./pcbData";
 
 export default function Skills() {
   return (
-    <section id="skills" className="relative py-20 px-6">
+    <section id="skills" className="relative py-16 sm:py-20 px-6">
       <ScrollFadeIn>
         <div className="max-w-5xl mx-auto">
-          <div className="mb-10">
-            <p className="font-mono text-xs tracking-[0.25em] uppercase mb-3" style={{ color: PCB.enig }}>
-              Skills
-            </p>
-            <h2
-              className="text-3xl sm:text-4xl font-semibold"
-              style={{ color: PCB.silk, fontFamily: "var(--font-fraunces), serif" }}
-            >
-              <ScrambleText text="What I bring to your board." />
-            </h2>
-            <p className="mt-4 text-base leading-8 text-[#d6d3cd]/70 max-w-3xl">
-              The full toolkit, in the order your project will use it — design the circuit, lay out
-              the board, and hand your fab a package that works the first time.
-            </p>
-          </div>
+          <SectionHeading eyebrow="Skills" title="What I bring to your board.">
+            The full toolkit, in the order your project will use it — design the circuit, lay out the
+            board, and hand your fab a package that works the first time.
+          </SectionHeading>
 
-          <div className="grid md:grid-cols-3 gap-5">
+          <div className="grid md:grid-cols-3 gap-5 items-stretch">
             {SKILL_GROUPS.map((group, gi) => (
-              <div
-                key={group.title}
-                className="rounded-lg border p-6"
-                style={{ borderColor: "rgba(234,230,218,0.12)", background: "rgba(234,230,218,0.02)" }}
-              >
+              <div key={group.title} className="fab-card p-6 sm:p-7">
                 <div className="font-mono text-xs mb-1" style={{ color: PCB.copperBright }}>
                   {String(gi + 1).padStart(2, "0")}
                 </div>
@@ -39,7 +24,7 @@ export default function Skills() {
                 >
                   {group.title}
                 </h3>
-                <p className="font-mono text-[11px] mt-1 mb-5" style={{ color: "rgba(234,230,218,0.55)" }}>
+                <p className="font-mono text-[11px] mt-1 mb-5" style={{ color: "rgba(234,230,218,0.6)" }}>
                   {group.tagline}
                 </p>
 
@@ -54,7 +39,7 @@ export default function Skills() {
                       <span className="text-[13px] leading-6 text-[#d6d3cd]/80">
                         {s.name}
                         {s.detail && (
-                          <span className="font-mono text-[11px] ml-2" style={{ color: "rgba(232,168,92,0.75)" }}>
+                          <span className="font-mono text-[11px] ml-2" style={{ color: "rgba(232,168,92,0.8)" }}>
                             {s.detail}
                           </span>
                         )}

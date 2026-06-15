@@ -89,7 +89,7 @@ export function BoardArt({
       </defs>
 
       {/* ── MASK layer : board surface + pours ───────────────────────────── */}
-      <g opacity={op.mask}>
+      <g opacity={op.mask} style={{ transition: "opacity 0.35s ease" }}>
         <rect x="2" y="2" width={w - 4} height={h - 4} rx="7"
           fill={`url(#${idns}-mask)`} stroke="#160e24" strokeWidth="1.5" />
         {(layout.pours ?? []).map((p, i) => (
@@ -99,7 +99,7 @@ export function BoardArt({
       </g>
 
       {/* ── COPPER layer : traces + pads ─────────────────────────────────── */}
-      <g opacity={op.copper}>
+      <g opacity={op.copper} style={{ transition: "opacity 0.35s ease" }}>
         {(layout.traces ?? []).map((t, i) => (
           <path key={i} d={t.d} fill="none"
             stroke={traceColor(t.kind, powered)}
@@ -127,7 +127,7 @@ export function BoardArt({
       </g>
 
       {/* ── SILK layer : outlines, refdes, board frame, mounting rings ────── */}
-      <g opacity={op.silk} fontFamily="var(--font-geist-mono), monospace">
+      <g opacity={op.silk} fontFamily="var(--font-geist-mono), monospace" style={{ transition: "opacity 0.35s ease" }}>
         <rect x="6" y="6" width={w - 12} height={h - 12} rx="4"
           fill="none" stroke={PCB.silk} strokeWidth="0.7" opacity="0.55" />
         {(layout.ics ?? []).map((ic, i) => (
@@ -167,7 +167,7 @@ export function BoardArt({
       </g>
 
       {/* connector through-hole pads sit on copper+drill */}
-      <g opacity={Math.max(op.copper, op.drill)}>
+      <g opacity={Math.max(op.copper, op.drill)} style={{ transition: "opacity 0.35s ease" }}>
         {(layout.conns ?? []).flatMap((c, i) => {
           const n = Math.max(2, Math.round(c.w / 6));
           return Array.from({ length: n }).map((_, k) => (
@@ -180,7 +180,7 @@ export function BoardArt({
       </g>
 
       {/* ── LEDs (power-good / matrix) ───────────────────────────────────── */}
-      <g opacity={Math.max(op.copper, op.silk)}>
+      <g opacity={Math.max(op.copper, op.silk)} style={{ transition: "opacity 0.35s ease" }}>
         {(layout.leds ?? []).map((l, i) => {
           const c = l.color ?? accent;
           return (
@@ -199,7 +199,7 @@ export function BoardArt({
       {decals}
 
       {/* ── DRILL layer : mounting holes + vias ──────────────────────────── */}
-      <g opacity={op.drill}>
+      <g opacity={op.drill} style={{ transition: "opacity 0.35s ease" }}>
         {(layout.holes ?? []).map((hole, i) => (
           <g key={i}>
             <circle cx={hole.x} cy={hole.y} r="4.2" fill={padFill} />
@@ -252,11 +252,11 @@ function LedMatrix({ m, powered }: { m: Matrix; powered: boolean }) {
       const idx = r * m.cols + c;
       const color = palette[idx % palette.length];
       cells.push(
-        <rect key={idx} x={m.x + c * m.cell} y={m.y + r * m.cell}
+        <rect key={idx} className="pcb-led-cell" x={m.x + c * m.cell} y={m.y + r * m.cell}
           width={m.cell - 1} height={m.cell - 1} rx="0.6"
           fill={powered ? color : "#141414"}
           opacity={powered ? 0.55 + 0.45 * Math.abs(Math.sin(idx)) : 0.5}
-          style={powered ? { filter: `drop-shadow(0 0 1.5px ${color})` } : undefined} />
+          style={powered ? { filter: `drop-shadow(0 0 1.5px ${color})`, animation: `ledShimmer 2.4s ease-in-out ${(idx % 7) * 0.18}s infinite` } : undefined} />
       );
     }
   }

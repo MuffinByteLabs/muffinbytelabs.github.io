@@ -1,36 +1,21 @@
-import ScrambleText from "../ScrambleText";
 import ScrollFadeIn from "../ScrollFadeIn";
+import SectionHeading from "./SectionHeading";
 import { PCB, CONTACT_STEPS } from "./pcbData";
 
 export default function Contact() {
   return (
-    <section id="contact" className="relative py-20 px-6">
+    <section id="contact" className="relative py-24 sm:py-32 px-6">
       <ScrollFadeIn>
         <div className="max-w-5xl mx-auto">
-          <div className="mb-10">
-            <p className="font-mono text-xs tracking-[0.25em] uppercase mb-3" style={{ color: PCB.enig }}>
-              Contact
-            </p>
-            <h2
-              className="text-3xl sm:text-4xl font-semibold"
-              style={{ color: PCB.silk, fontFamily: "var(--font-fraunces), serif" }}
-            >
-              <ScrambleText text="Let's put your board into production." />
-            </h2>
-            <p className="mt-4 text-base leading-8 text-[#d6d3cd]/70 max-w-3xl">
-              Send a short brief and you&apos;ll have a fixed quote within 24 hours — no hourly
-              meters, no surprises.
-            </p>
-          </div>
+          <SectionHeading eyebrow="Contact" title="Let's put your board into production.">
+            Send a short brief and you&apos;ll have a fixed quote within 24 hours — no hourly meters,
+            no surprises.
+          </SectionHeading>
 
           {/* engagement steps */}
-          <div className="grid md:grid-cols-3 gap-5 mb-8">
+          <div className="grid md:grid-cols-3 gap-5 mb-8 items-stretch">
             {CONTACT_STEPS.map((s) => (
-              <div
-                key={s.num}
-                className="rounded-lg border p-6"
-                style={{ borderColor: "rgba(234,230,218,0.12)", background: "rgba(234,230,218,0.02)" }}
-              >
+              <div key={s.num} className="fab-card p-6 sm:p-7">
                 <div className="font-mono text-xs mb-2" style={{ color: PCB.copperBright }}>{s.num}</div>
                 <h3
                   className="text-lg font-semibold mb-1.5"
@@ -45,10 +30,11 @@ export default function Contact() {
 
           {/* guarantee banner */}
           <div
-            className="rounded-lg p-6 mb-10 flex flex-col sm:flex-row sm:items-center gap-4"
+            className="rounded-xl p-6 sm:p-7 mb-10 flex flex-col sm:flex-row sm:items-center gap-4"
             style={{
               border: "1px solid rgba(212,175,55,0.35)",
-              background: "linear-gradient(90deg, rgba(212,175,55,0.07), rgba(212,175,55,0.02))",
+              background: "linear-gradient(90deg, rgba(212,175,55,0.09), rgba(212,175,55,0.02))",
+              boxShadow: "0 1px 0 rgba(240,212,136,0.1) inset",
             }}
           >
             <div
@@ -79,23 +65,23 @@ export default function Contact() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
                 href="mailto:muffinbytelabs@gmail.com?subject=PCB%20project%20brief"
-                className="inline-block font-mono text-sm px-7 py-3 rounded-md transition-all duration-300"
+                className="pad-cta inline-block font-mono text-[13px] tracking-widest px-6 py-3.5 rounded-lg"
                 style={{
                   background: `linear-gradient(180deg, ${PCB.enigBright}, ${PCB.enig})`,
                   color: "#1a1405",
-                  boxShadow: "0 6px 18px rgba(212,175,55,0.25)",
+                  boxShadow: "0 4px 14px rgba(212,175,55,0.3)",
                 }}
               >
                 SEND THE BRIEF →
               </a>
               <a
-                href="https://github.com/muffinmanlabs"
+                href="https://github.com/muffinbytelabs"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block font-mono text-xs px-5 py-3 rounded-md border transition-colors hover:bg-[#d4af37]/10"
+                className="inline-block max-w-full break-words font-mono text-xs px-5 py-3.5 rounded-lg border transition-colors hover:bg-[#d4af37]/10"
                 style={{ color: PCB.enigBright, borderColor: "rgba(212,175,55,0.4)" }}
               >
-                portfolio source — github.com/muffinmanlabs
+                portfolio source — github.com/muffinbytelabs
               </a>
             </div>
             <p className="font-mono text-xs text-[#d6d3cd]/65 mt-4">

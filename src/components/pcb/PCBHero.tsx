@@ -68,7 +68,7 @@ export default function PCBHero() {
   }, []);
 
   return (
-    <section id="board" className="relative min-h-screen flex items-center justify-center px-5 pt-24 pb-16">
+    <section id="board" className="relative min-h-screen flex items-center justify-center px-6 pt-24 pb-16">
       <div className="w-full max-w-5xl mx-auto">
         {/* ── THE BOARD ─────────────────────────────────────────────────── */}
         <div
@@ -111,13 +111,18 @@ export default function PCBHero() {
           </div>
 
           {/* ── board content ── */}
-          <div className="relative z-10 px-6 sm:px-12 pt-16 pb-10 text-center">
+          <div className="relative z-10 px-6 sm:px-12 pt-14 pb-10 text-center">
             <HeroModule powered={powered} />
 
             {/* silkscreen name — engraved gold */}
             <h1
-              className="mt-6 text-5xl sm:text-7xl font-semibold gold-text"
-              style={{ fontFamily: "var(--font-fraunces), serif", letterSpacing: "0.01em" }}
+              className="mt-6 text-4xl min-[400px]:text-5xl sm:text-6xl md:text-7xl font-bold gold-text"
+              style={{
+                fontFamily: "var(--font-fraunces), serif",
+                letterSpacing: "-0.015em",
+                lineHeight: 0.95,
+                textShadow: "0 1px 0 rgba(0,0,0,0.5), 0 0 24px rgba(212,175,55,0.15)",
+              }}
             >
               MuffinManLabs
             </h1>
@@ -171,14 +176,15 @@ export default function PCBHero() {
         </div>
 
         {/* value prop on near-black substrate (legibility) */}
-        <p className="mt-8 mx-auto max-w-2xl text-center text-base leading-8 text-[#d6d3cd]/75">
+        <p className="mt-9 mx-auto max-w-[46ch] text-center text-lg sm:text-xl leading-relaxed text-[#d6d3cd]/85">
           Five-plus years in the PCB industry. I take a circuit idea or prototype and hand back a{" "}
           <span style={{ color: PCB.enig }}>clean, manufacturable production package</span> — native
           KiCad source, Gerbers, drill, BOM with LCSC part numbers, CPL, and DRC/ERC-clean proof —
           documented like a datasheet and organized to the file.
         </p>
-        <p className="mt-4 text-center font-mono text-xs tracking-widest" style={{ color: "rgba(232,168,92,0.65)" }}>
-          ▼ SERVICES · PORTFOLIO · THE PACKAGE · THE STANDARD
+        <p className="mt-5 text-center font-mono text-xs tracking-widest" style={{ color: "rgba(232,168,92,0.65)" }}>
+          <span className="bob inline-block mr-1.5">▼</span>
+          SERVICES · PORTFOLIO · THE PACKAGE · THE STANDARD
         </p>
       </div>
     </section>
@@ -189,16 +195,15 @@ function PadButton({ href, children, primary = false }: { href: string; children
   return (
     <a
       href={href}
-      className="group relative font-mono text-[13px] tracking-widest px-5 py-3 rounded-md transition-all duration-300"
+      className="pad-cta group relative font-mono text-[13px] tracking-widest px-6 py-3.5 rounded-lg"
       style={
         primary
           ? { background: `linear-gradient(180deg, ${PCB.enigBright}, ${PCB.enig})`, color: "#1a1405", boxShadow: "0 4px 14px rgba(212,175,55,0.3)" }
-          : { color: PCB.enig, border: `1px solid ${PCB.enig}`, background: "rgba(212,175,55,0.06)" }
+          : { color: PCB.enigBright, border: "1px solid rgba(212,175,55,0.4)", background: "rgba(212,175,55,0.06)" }
       }
     >
-      <span className="opacity-60 mr-1">{primary ? "▶" : "[ "}</span>
+      <span className="opacity-60 mr-1.5">{primary ? "▶" : "→"}</span>
       {children}
-      <span className="opacity-60 ml-1">{primary ? "" : " ]"}</span>
     </a>
   );
 }
@@ -209,7 +214,7 @@ function HeroModule({ powered }: { powered: boolean }) {
   const leftTraces = [40, 64, 88].map((y) => `M210 ${y} H120 a6 6 0 0 0 -6 6 V ${y + 25}`);
   const rightTraces = [40, 64, 88].map((y) => `M310 ${y} H400 a6 6 0 0 1 6 6 V ${y + 25}`);
   return (
-    <svg viewBox="0 0 520 150" width="100%" className="max-w-2xl mx-auto" role="img" aria-label="ESP32-S3 module footprint">
+    <svg viewBox="0 0 520 150" width="100%" className="max-w-3xl mx-auto" role="img" aria-label="ESP32-S3 module footprint">
       <defs>
         <radialGradient id="hero-enig" cx="38%" cy="32%" r="75%">
           <stop offset="0%" stopColor={PCB.enigBright} />

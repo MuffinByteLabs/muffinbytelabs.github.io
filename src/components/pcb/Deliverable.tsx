@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import ScrambleText from "../ScrambleText";
+import ScrollFadeIn from "../ScrollFadeIn";
+import SectionHeading from "./SectionHeading";
 import { PCB, PACKAGE_TREE, CLEAN_BADGES, type TreeNode } from "./pcbData";
+import { useReducedMotion } from "./useReducedMotion";
 
 type Row = { glyph: string; name: string; note?: string; isDir: boolean };
 
@@ -26,23 +28,18 @@ export default function Deliverable() {
   const [active, setActive] = useState<Row | null>(rows.find((r) => r.note) ?? null);
 
   return (
-    <section id="deliverable" className="relative py-20 px-6">
-      <div className="max-w-5xl mx-auto">
-        <div className="mb-10">
-          <p className="font-mono text-xs tracking-[0.25em] uppercase mb-3" style={{ color: PCB.enig }}>The Deliverable</p>
-          <h2 className="text-3xl sm:text-4xl font-semibold" style={{ color: PCB.silk, fontFamily: "var(--font-fraunces), serif" }}>
-            <ScrambleText text="The board isn't the product. The package is." />
-          </h2>
-          <p className="mt-4 text-base leading-8 text-[#d6d3cd]/70 max-w-3xl">
-            Anyone can route a pretty board — the difference shows in the hand-off. Every project
-            ships in the same predictable structure, and the tree below is the actual layout, file
-            for file. Hover or tap any file to see what the fab does with it.
-          </p>
-        </div>
+    <section id="deliverable" className="relative py-24 sm:py-32 px-6">
+      <ScrollFadeIn>
+       <div className="max-w-5xl mx-auto">
+        <SectionHeading eyebrow="The Deliverable" title="The board isn't the product. The package is.">
+          Anyone can route a pretty board — the difference shows in the hand-off. Every project ships
+          in the same predictable structure, and the tree below is the actual layout, file for file.
+          Hover or tap any file to see what the fab does with it.
+        </SectionHeading>
 
         <div className="grid md:grid-cols-2 gap-6 items-start">
           {/* file tree terminal */}
-          <div className="border border-[#eae6da]/10 rounded-md overflow-hidden" style={{ background: "rgba(18,14,26,0.55)" }}>
+          <div className="border border-[#eae6da]/12 rounded-xl overflow-hidden" style={{ background: "rgba(18,14,26,0.55)" }}>
             <div className="flex items-center gap-2 px-4 py-2 border-b border-[#eae6da]/10 bg-[#eae6da]/[0.03]">
               <span className="w-2 h-2 rounded-full bg-[#ff5f57]/60" />
               <span className="w-2 h-2 rounded-full bg-[#febc2e]/60" />
@@ -69,7 +66,7 @@ export default function Deliverable() {
 
           {/* probe readout + clean badges */}
           <div className="space-y-6">
-            <div className="rounded-md p-5 min-h-[120px]" style={{ background: "rgba(212,175,55,0.04)", border: "1px solid rgba(212,175,55,0.22)" }}>
+            <div className="rounded-xl p-5 min-h-[160px]" style={{ background: "rgba(212,175,55,0.04)", border: "1px solid rgba(212,175,55,0.22)" }}>
               <div className="flex items-center gap-2 mb-3">
                 <span className="w-2 h-2 rounded-full" style={{ background: PCB.green, boxShadow: `0 0 8px ${PCB.green}` }} />
                 <span className="font-mono text-[11px] tracking-widest" style={{ color: PCB.green }}>PROBE · CONTINUITY OK</span>
@@ -84,14 +81,16 @@ export default function Deliverable() {
             <Badges />
           </div>
         </div>
-      </div>
+       </div>
+      </ScrollFadeIn>
     </section>
   );
 }
 
 function Badges() {
+  const reduced = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
-  const [lit, setLit] = useState(false);
+  const [lit, setLit] = useState(reduced);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -108,9 +107,9 @@ function Badges() {
         <div
           key={b.label}
           title={b.note}
-          className="font-mono text-[11px] tracking-wider px-3 py-2 rounded border text-center transition-all duration-500"
+          className="font-mono text-[11px] tracking-wider px-3 py-2 rounded border text-center transition-all duration-500 motion-reduce:transition-none"
           style={{
-            transitionDelay: `${i * 80}ms`,
+            transitionDelay: reduced ? "0ms" : `${i * 80}ms`,
             color: lit ? PCB.green : "#46424c",
             borderColor: lit ? "rgba(61,220,132,0.35)" : "rgba(120,120,130,0.2)",
             boxShadow: lit ? "0 0 12px rgba(61,220,132,0.14)" : "none",

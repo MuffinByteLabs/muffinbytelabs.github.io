@@ -54,7 +54,7 @@ export default function Header() {
             <li key={link.href}>
               <a
                 href={link.href}
-                className="font-mono text-[11px] tracking-[0.2em] text-[#eae6da]/55 hover:text-[#f0d488] transition-colors duration-300"
+                className="relative font-mono text-[11px] tracking-[0.2em] text-[#eae6da]/55 hover:text-[#f0d488] transition-colors duration-300 after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[#f0d488] after:transition-transform after:duration-300 hover:after:scale-x-100 motion-reduce:after:transition-none"
               >
                 {link.label}
               </a>
@@ -65,7 +65,7 @@ export default function Header() {
         {/* Mobile hamburger */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden font-mono text-[#eae6da]/60 hover:text-[#f0d488] text-base transition-colors cursor-pointer"
+          className="md:hidden -mr-2 p-2 font-mono text-[#eae6da]/60 hover:text-[#f0d488] text-xl transition-colors cursor-pointer"
           aria-label="Toggle menu"
           aria-expanded={mobileOpen}
         >

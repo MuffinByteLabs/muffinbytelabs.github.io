@@ -50,8 +50,10 @@
   --font-serif: var(--font-fraunces);
 }
 
-html {
-  scroll-behavior: smooth;
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
@@ -69,6 +71,64 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* ── Shared premium card recipe (Services / Skills / Standard / Contact) ── */
+.fab-card {
+  position: relative;
+  border-radius: 12px;
+  border: 1px solid rgba(234, 230, 218, 0.1);
+  background: linear-gradient(180deg, rgba(43, 28, 66, 0.35), rgba(13, 12, 17, 0.55));
+  box-shadow: 0 1px 0 rgba(234, 230, 218, 0.06) inset, 0 18px 40px -24px rgba(0, 0, 0, 0.8);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease, background 0.3s ease;
+}
+/* copper top hairline that warms on hover */
+.fab-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(232, 168, 92, 0.5), transparent);
+  opacity: 0.55;
+  transition: opacity 0.3s ease;
+}
+.fab-card:hover {
+  border-color: rgba(212, 175, 55, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 1px 0 rgba(234, 230, 218, 0.08) inset, 0 14px 34px -18px rgba(0, 0, 0, 0.85);
+}
+.fab-card:hover::before { opacity: 1; }
+
+/* gold pad CTA — hover lift + brighten */
+.pad-cta {
+  transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.25s ease, filter 0.25s ease;
+}
+.pad-cta:hover { transform: translateY(-2px); filter: brightness(1.06); }
+.pad-cta:active { transform: translateY(0); }
+
+/* gentle bob on the hero scroll hint */
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+.bob { animation: bob 1.8s ease-in-out infinite; }
+
+/* WS2812B matrix shimmer once powered */
+@keyframes ledShimmer {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.95; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fab-card { transition: none; }
+  .fab-card:hover { transform: none; }
+  .pad-cta { transition: none; }
+  .pad-cta:hover { transform: none; }
+  .bob { animation: none; }
 }
 
 /* Copper hairline (used by Footer; animated section dividers use .trace-divider-*) */
@@ -197,19 +257,10 @@ body {
   .trace-divider-via { transition: none; opacity: 1; transform: scale(1); animation: none; }
 }
 
-/* card flip */
-.pcb-flip {
-  transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
-  transform-style: preserve-3d;
-}
-.pcb-flip.flipped { transform: rotateY(180deg); }
-.pcb-face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
-.pcb-face-back { transform: rotateY(180deg); }
-
 /* reduce motion: hold the final lit state, drop the theatrics */
 @media (prefers-reduced-motion: reduce) {
   .pcb-pulse,
   .pcb-caret,
-  .pcb-scan { animation: none !important; }
-  .pcb-flip { transition: none !important; }
+  .pcb-scan,
+  .pcb-led-cell { animation: none !important; }
 }
