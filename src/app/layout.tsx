@@ -18,10 +18,10 @@ const fraunces = Fraunces({
   subsets: ["latin"],
 });
 
-const TITLE = "MuffinManLabs — KiCad PCB Design";
+const TITLE = "MuffinByteLabs — KiCad PCB Design";
 const DESCRIPTION =
   "Premium KiCad PCB design — five-plus years in the industry. Native KiCad 8–10 boards, pre-fab design reviews, and revisions, delivered as JLCPCB/PCBWay-ready packages with datasheet-grade documentation and a money-back guarantee.";
-const SITE = "https://muffinmanlabs.github.io";
+const SITE = "https://muffinbytelabs.github.io";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
@@ -42,16 +42,16 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
     url: SITE,
-    siteName: "MuffinManLabs",
+    siteName: "MuffinByteLabs",
     type: "website",
     locale: "en_US",
-    images: [{ url: "/MuffinManLabsLogo.png", width: 1024, height: 1024, alt: "MuffinManLabs — KiCad PCB design" }],
+    images: [{ url: "/MuffinByteLabsLogo.png", width: 1024, height: 1024, alt: "MuffinByteLabs — KiCad PCB design" }],
   },
   twitter: {
     card: "summary",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/MuffinManLabsLogo.png"],
+    images: ["/MuffinByteLabsLogo.png"],
   },
 };
 

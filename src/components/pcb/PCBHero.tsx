@@ -124,7 +124,7 @@ export default function PCBHero() {
                 textShadow: "0 1px 0 rgba(0,0,0,0.5), 0 0 24px rgba(212,175,55,0.15)",
               }}
             >
-              MuffinManLabs
+              MuffinByteLabs
             </h1>
 
             {/* designator */}

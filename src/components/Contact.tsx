@@ -20,13 +20,13 @@ export default function Contact() {
 
           <div className="space-y-4 font-mono text-sm">
             <a
-              href="https://github.com/muffinmanlabs"
+              href="https://github.com/muffinbytelabs"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-3 text-[#00ff41]/60 hover:text-[#00ff41] transition-colors duration-300"
             >
               <span className="text-[#a855f7]">&gt;</span>
-              <span>github.com/muffinmanlabs</span>
+              <span>github.com/muffinbytelabs</span>
             </a>
           </div>
         </div>

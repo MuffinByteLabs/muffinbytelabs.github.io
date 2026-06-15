@@ -12,8 +12,8 @@ export default function Hero() {
           <div className="relative w-36 h-36 sm:w-44 sm:h-44 profile-pic-glitch">
             <div className="absolute -inset-1 bg-gradient-to-b from-[#00ff41]/30 to-[#a855f7]/20 rounded-full blur-sm" />
             <Image
-              src="/MuffinManLabsLogo.png"
-              alt="MuffinManLabs Logo"
+              src="/MuffinByteLabsLogo.png"
+              alt="MuffinByteLabs Logo"
               width={176}
               height={176}
               className="relative rounded-full object-cover w-36 h-36 sm:w-44 sm:h-44 border-2 border-[#00ff41]/20"
@@ -23,7 +23,7 @@ export default function Hero() {
 
         {/* Name */}
         <h1 className="text-5xl sm:text-7xl font-mono text-[#00ff41] mb-8 green-glow tracking-wider">
-          MuffinManLabs
+          MuffinByteLabs
         </h1>
 
         {/* Tagline */}

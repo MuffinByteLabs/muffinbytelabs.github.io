@@ -18,7 +18,7 @@ const HELP_TEXT = `Available commands:
   exit        Close terminal
   rm -rf      You wouldn't dare...`;
 
-const ABOUT_TEXT = `MuffinManLabs — embedded systems and firmware engineering.
+const ABOUT_TEXT = `MuffinByteLabs — embedded systems and firmware engineering.
 Writing C, talking to peripherals over SPI and I2C,
 debugging with JTAG probes. Building bare metal drivers,
 RTOS tasks, and custom firmware from scratch.`;
@@ -49,7 +49,7 @@ export default function SecretTerminal() {
       if (trimmed === "help") {
         addOutput(HELP_TEXT);
       } else if (trimmed === "whoami") {
-        addOutput("engineer@muffinmanlabs");
+        addOutput("engineer@muffinbytelabs");
       } else if (trimmed === "ls") {
         addOutput(LS_TEXT);
       } else if (trimmed === "cat about.txt") {
@@ -184,7 +184,7 @@ export default function SecretTerminal() {
         {/* Title bar */}
         <div className="flex items-center justify-between px-4 py-2 border-b border-[#00ff41]/20">
           <span className="font-mono text-xs text-[#00ff41]/60">
-            engineer@muffinmanlabs:~$
+            engineer@muffinbytelabs:~$
           </span>
           {!destroying && (
             <button

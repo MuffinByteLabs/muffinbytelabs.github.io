@@ -14,7 +14,7 @@ const bootMessages = [
   "Loading firmware v1.0...",
   "",
   "System ready.",
-  "Welcome to MuffinManLabs.",
+  "Welcome to MuffinByteLabs.",
 ];
 
 function sleep(ms: number) {

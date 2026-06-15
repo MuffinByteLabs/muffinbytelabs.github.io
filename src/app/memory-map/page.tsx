@@ -1,7 +1,7 @@
 import MemoryMapExplorer from "@/components/stm32f407_memory_map";
 
 export const metadata = {
-  title: "Memory Map Explorer | MuffinManLabs",
+  title: "Memory Map Explorer | MuffinByteLabs",
   description: "Interactive STM32F407VGT6 ARM Cortex-M4 memory map explorer",
 };
 

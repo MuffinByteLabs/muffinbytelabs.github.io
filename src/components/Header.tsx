@@ -32,15 +32,15 @@ export default function Header() {
       <nav className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
         <a href="/" className="flex items-center gap-3">
           <Image
-            src="/MuffinManLabsLogo.png"
-            alt="MuffinManLabs"
+            src="/MuffinByteLabsLogo.png"
+            alt="MuffinByteLabs"
             width={30}
             height={30}
             className="rounded"
           />
           <span className="hidden sm:flex items-baseline gap-2">
             <span className="text-sm font-semibold tracking-wide text-[#eae6da]">
-              MuffinManLabs
+              MuffinByteLabs
             </span>
             <span className="font-mono text-[11px] tracking-[0.25em] text-[#d4af37]/80">
               KICAD PCB DESIGN

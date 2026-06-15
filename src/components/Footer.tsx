@@ -4,7 +4,7 @@ export default function Footer() {
       <div className="max-w-5xl mx-auto terminal-divider mb-8" />
       <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
         <p className="text-xs text-[#eae6da]/60 tracking-wider">
-          &copy; {new Date().getFullYear()} MuffinManLabs
+          &copy; {new Date().getFullYear()} MuffinByteLabs
         </p>
         <a
           href="/memory-map"
