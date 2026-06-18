@@ -21,7 +21,7 @@ const fraunces = Fraunces({
 const TITLE = "MuffinByteLabs — KiCad PCB Design";
 const DESCRIPTION =
   "Premium KiCad PCB design — five-plus years in the industry. Native KiCad 8–10 boards, pre-fab design reviews, and revisions, delivered as JLCPCB/PCBWay-ready packages with datasheet-grade documentation and a money-back guarantee.";
-const SITE = "https://muffinbytelabs.github.io";
+const SITE = "https://muffinbytelabs.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
