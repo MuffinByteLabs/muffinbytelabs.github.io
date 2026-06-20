@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Legacy components kept on disk but not mounted — exclude from the class scan
+/* Legaccy components kept on disk but not mounted — exclude from the class scan
    so their old-theme utilities don't ship in the production bundle. */
 @source not "../components/Hero.tsx";
 @source not "../components/About.tsx";
