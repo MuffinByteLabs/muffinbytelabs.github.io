@@ -7,9 +7,10 @@ const SITE = "https://muffinbytelabs.com";
    stamped every page as modified-now on every rebuild — a lastmod signal
    search engines learn to distrust, which then also devalues the accurate
    per-post dates below. Bump these when the page's content actually changes. */
-const HOME_UPDATED = new Date("2026-08-23T00:00:00Z");
-const SERVICES_UPDATED = new Date("2026-08-23T00:00:00Z");
-const MEMORY_MAP_UPDATED = new Date("2026-08-23T00:00:00Z");
+const HOME_UPDATED = new Date("2026-10-03T00:00:00Z");
+const SERVICES_UPDATED = new Date("2026-10-03T00:00:00Z");
+const MEMORY_MAP_UPDATED = new Date("2026-10-03T00:00:00Z");
+const PCB2_UPDATED = new Date("2026-10-03T00:00:00Z");
 
 export const dynamic = "force-static";
 
@@ -29,6 +30,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     { url: `${SITE}/`, lastModified: HOME_UPDATED, changeFrequency: "monthly", priority: 1 },
+    { url: `${SITE}/work/stm32-industrial-io`, lastModified: PCB2_UPDATED, changeFrequency: "monthly", priority: 0.9 },
     { url: `${SITE}/services`, lastModified: SERVICES_UPDATED, changeFrequency: "monthly", priority: 0.8 },
     { url: `${SITE}/blog`, lastModified: newestPost, changeFrequency: "weekly", priority: 0.8 },
     { url: `${SITE}/memory-map`, lastModified: MEMORY_MAP_UPDATED, changeFrequency: "yearly", priority: 0.4 },

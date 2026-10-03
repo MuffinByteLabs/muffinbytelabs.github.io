@@ -45,8 +45,8 @@ const fs = require("fs");
   <image xlink:href="${markURI}" x="96" y="228" width="150" height="150"/>
 
   <text x="290" y="288" font-family="Georgia, 'Times New Roman', serif" font-size="82" fill="#f4efe6">MuffinByteLabs</text>
-  <text x="292" y="344" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="30" fill="#aca395">Ray Malik &#183; PCB design engineer, working in KiCad</text>
-  <text x="292" y="398" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="24" fill="#8c8372">ESP32 boards &#183; 2 and 4-layer &#183; fab-ready manufacturing packages</text>
+  <text x="292" y="344" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="30" fill="#aca395">Ray Malik &#183; freelance PCB design engineer</text>
+  <text x="292" y="398" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="24" fill="#8c8372">ESP32 &amp; STM32 boards &#183; four layers &#183; fab-ready manufacturing packages</text>
 
   <rect x="0" y="622" width="1200" height="8" fill="#dba64b" fill-opacity="0.85"/>
 </svg>`;

@@ -1,4 +1,6 @@
 import MemoryMapExplorer from "@/components/stm32f407_memory_map";
+import SectionHead from "@/components/ui/SectionHead";
+import Icon from "@/components/ui/Icon";
 
 const TITLE = "STM32F407 Memory Map Explorer | MuffinByteLabs";
 const DESCRIPTION =
@@ -18,7 +20,7 @@ export const metadata = {
     siteName: "Ray Malik · MuffinByteLabs",
     type: "website",
     locale: "en_US",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "MuffinByteLabs — KiCad PCB design" }],
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "MuffinByteLabs — PCB design" }],
   },
   twitter: {
     card: "summary_large_image",
@@ -40,73 +42,72 @@ const FEATURES: { name: string; note: string }[] = [
 
 export default function MemoryMapPage() {
   return (
-    <section className="px-6 pt-28 pb-20 sm:pt-32">
-      <div className="max-w-5xl mx-auto">
+    <section className="relative overflow-hidden px-6 pt-32 pb-20 sm:pt-36">
+      <div aria-hidden className="grid-bg absolute inset-0 -z-10" />
+      <div className="max-w-6xl mx-auto">
         {/* ── why this exists ──────────────────────────────────────────── */}
-        <span className="eyebrow">Side project &middot; a tool, not a product</span>
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] gap-x-14 gap-y-10 items-end">
+          <div>
+            <SectionHead
+              as="h1"
+              label="Side project · a tool, not a product"
+              title={
+                <>
+                  STM32F407 <em>Memory&nbsp;Map</em> Explorer
+                </>
+              }
+            />
+            <div className="mt-6 max-w-[64ch] flex flex-col gap-5">
+              <p className="m-0 text-[16px] leading-8" style={{ color: "var(--text-2)" }}>
+                This is a personal tool. I build my own firmware for the boards I design, and
+                bare-metal STM32 work means living inside a reference manual where the memory map,
+                the register tables and the clock-enable bits are hundreds of pages apart. So I
+                built the version I wanted: the whole 4&nbsp;GB Cortex-M4 address space as one
+                expandable tree, with the registers, the bus each peripheral sits on, and the
+                calculators I kept re-doing on paper.
+              </p>
 
-        <h1
-          className="display mt-3 text-[2.6rem] sm:text-[3.4rem]"
-          style={{ color: "var(--text)" }}
-        >
-          STM32F407 Memory&nbsp;Map Explorer
-        </h1>
+              <p className="m-0 text-[15px] leading-7" style={{ color: "var(--text-3)" }}>
+                It lives on this site because firmware-aware layout is a large part of what I
+                actually sell. Knowing which pin can be an ADC input, which peripherals share a bus,
+                and what the chip reads at boot is what decides where parts go on the board &mdash;
+                and the difference between a schematic that routes cleanly and one that fights you.
+              </p>
+            </div>
+          </div>
 
-        <div className="mt-6 max-w-[64ch] space-y-5">
-          <p className="text-[16px] leading-8" style={{ color: "var(--text-2)" }}>
-            This is a personal tool. I build my own firmware for the boards I
-            design, and bare-metal STM32 work means living inside a reference
-            manual where the memory map, the register tables and the clock-enable
-            bits are hundreds of pages apart. So I built the version I wanted:
-            the whole 4&nbsp;GB Cortex-M4 address space as one expandable tree,
-            with the registers, the bus each peripheral sits on, and the
-            calculators I kept re-doing on paper.
-          </p>
-
-          <p className="text-[15px] leading-7" style={{ color: "var(--text-3)" }}>
-            It lives on this site because firmware-aware layout is a large part
-            of what I actually sell. Knowing which pin can be an ADC input, which
-            peripherals share a bus, and what the chip reads at boot is what
-            decides where parts go on the board &mdash; and the difference
-            between a schematic that routes cleanly and one that fights you.
-          </p>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 m-0 p-0 list-none">
+            {FEATURES.map((f) => (
+              <li key={f.name} className="rounded-xl px-4 py-3.5" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+                <span className="flex items-center gap-2 text-[13.5px] font-medium leading-6" style={{ color: "var(--text)" }}>
+                  <span style={{ color: "var(--accent)" }}>
+                    <Icon name="check" size={14} />
+                  </span>
+                  {f.name}
+                </span>
+                <span className="block mt-1 text-[12.5px] leading-5" style={{ color: "var(--text-3)" }}>
+                  {f.note}
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <ul className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 m-0 p-0 list-none max-w-4xl">
-          {FEATURES.map((f) => (
-            <li
-              key={f.name}
-              className="py-3"
-              style={{ borderTop: "1px solid var(--border-soft)" }}
-            >
-              <span
-                className="block text-[13.5px] font-medium leading-6"
-                style={{ color: "var(--text)" }}
-              >
-                {f.name}
-              </span>
-              <span className="block text-[12.5px] leading-5" style={{ color: "var(--text-3)" }}>
-                {f.note}
-              </span>
-            </li>
-          ))}
-        </ul>
-
-        <p className="mt-7 text-[13px] leading-6 max-w-[70ch]" style={{ color: "var(--text-3)" }}>
-          Targets the STM32F407VGT6 as fitted to the Discovery board; addresses
-          and register offsets are taken from ST&rsquo;s RM0090 reference manual.
-          Blocks tagged <span style={{ color: "#44cc66", fontWeight: 600 }}>DISC</span> are the
-          ones actually wired on that board. The colour coding is functional
-          &mdash; each bus family keeps its own hue &mdash; so it does not follow
-          the rest of the site&rsquo;s palette, only its background.
+        <p className="mt-8 text-[13px] leading-6 max-w-[80ch]" style={{ color: "var(--text-3)" }}>
+          Targets the STM32F407VGT6 as fitted to the Discovery board; addresses and register
+          offsets are taken from ST&rsquo;s RM0090 reference manual. Blocks tagged{" "}
+          <span style={{ color: "#44cc66", fontWeight: 600 }}>DISC</span> are the ones actually
+          wired on that board. The colour coding is functional &mdash; each bus family keeps its own
+          hue &mdash; so it does not follow the rest of the site&rsquo;s palette, only its
+          background.
         </p>
 
         {/* ── the tool ─────────────────────────────────────────────────── */}
         <div
-          className="mt-10 sm:mt-12 overflow-hidden rounded-2xl"
+          className="mt-8 sm:mt-10 overflow-hidden rounded-2xl"
           style={{
             border: "1px solid var(--border)",
-            boxShadow: "var(--shadow)",
+            boxShadow: "var(--shadow-lift)",
             height: "min(820px, max(560px, 76vh))",
           }}
         >

@@ -7,11 +7,11 @@ excerpt: "The friction you notice during assembly disappears from memory within 
 ---
 Every board teaches you something during assembly and bring-up, and you will forget almost all of it. Not the big failures, you remember those. You forget the small friction: the terminal block you could barely get a screwdriver into, the reference designator hidden under a header, the test point you wished you had at midnight with a probe in each hand. Six weeks later you open the project to spin the next revision and you rediscover every one of them from scratch.
 
-The fix is boring and it works. A plain text file that lives in the repository next to the KiCad project, written while the board is still on the bench.
+The fix is boring and it works. A plain text file that lives in the repository next to the design files, written while the board is still on the bench.
 
 ## Write it during bring-up, not after
 
-REV_A_notes.md sits in the repo root, beside the .kicad_pro. It is not a design document and it is not a report. It is a running log, and the only rule is that entries get written the moment you notice something. If you wait until the end of bring-up, you capture the last hour of it and nothing else.
+REV_A_notes.md sits in the repo root, beside the project file. It is not a design document and it is not a report. It is a running log, and the only rule is that entries get written the moment you notice something. If you wait until the end of bring-up, you capture the last hour of it and nothing else.
 
 Three things per entry: what I observed, why it matters, what I would change.
 

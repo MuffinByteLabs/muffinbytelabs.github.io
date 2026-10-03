@@ -26,10 +26,14 @@ export default function ReadingProgress() {
   }, []);
 
   return (
-    <div aria-hidden className="fixed top-14 left-0 right-0 z-40 h-px">
+    <div aria-hidden className="fixed top-16 left-0 right-0 z-40 h-[2px]">
       <div
         className="h-full origin-left"
-        style={{ width: `${pct * 100}%`, background: "var(--text)" }}
+        style={{
+          width: `${pct * 100}%`,
+          background: "linear-gradient(90deg, var(--accent-deep), var(--accent-bright))",
+          boxShadow: "0 0 12px rgba(219,166,75,0.45)",
+        }}
       />
     </div>
   );

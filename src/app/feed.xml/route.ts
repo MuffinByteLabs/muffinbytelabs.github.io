@@ -37,7 +37,7 @@ export async function GET() {
     <title>Field Notes — Ray Malik</title>
     <link>${SITE}/blog</link>
     <atom:link href="${SITE}/feed.xml" rel="self" type="application/rss+xml"/>
-    <description>Practical notes on KiCad PCB design: layout, power, manufacturing packages, signal integrity, and board bring-up.</description>
+    <description>Practical notes on PCB design: layout, power, manufacturing packages, signal integrity, and board bring-up.</description>
     <language>en-us</language>
 ${items}
   </channel>

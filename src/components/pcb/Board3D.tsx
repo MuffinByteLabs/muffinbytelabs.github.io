@@ -43,10 +43,13 @@ export default function Board3D({
   src,
   poster,
   label,
+  showLabel = true,
 }: {
   src: string;
   poster?: string;
   label: string;
+  /** off inside a tab that already says "3D model" */
+  showLabel?: boolean;
 }) {
   const mountRef = useRef<HTMLDivElement>(null);
   const cleanupRef = useRef<(() => void) | null>(null);
@@ -480,8 +483,10 @@ export default function Board3D({
 
   return (
     <div>
-      <div className="flex items-baseline justify-between gap-3 mb-2.5">
-        <span className="eyebrow">3D model</span>
+      <div
+        className={`flex items-baseline justify-between gap-3 ${showLabel || state === "ready" ? "mb-2.5" : ""}`}
+      >
+        {showLabel ? <span className="eyebrow">3D model</span> : <span />}
         {state === "ready" && (
           <span className="flex items-center gap-3">
             <span className="hidden sm:inline text-[11.5px]" style={{ color: "var(--text-3)" }}>
@@ -530,7 +535,7 @@ export default function Board3D({
                 aria-hidden
                 fill
                 sizes="(max-width: 1024px) 100vw, 900px"
-                className="object-contain p-5 opacity-35"
+                className="object-contain p-5 opacity-80"
               />
             )}
             <div className="absolute inset-0 flex items-center justify-center">
@@ -544,13 +549,12 @@ export default function Board3D({
                   onPointerEnter={prefetch}
                   onFocus={prefetch}
                   disabled={state === "loading"}
-                  className="inline-flex items-center gap-2 text-[13px] px-4 py-2.5 rounded-full transition-transform"
-                  style={{
-                    background: "var(--text)",
-                    color: "var(--bg)",
-                    boxShadow: "0 8px 26px -10px rgba(0,0,0,0.9)",
-                  }}
+                  className="btn btn-light btn-sm"
                 >
+                  <svg viewBox="0 0 24 24" width={15} height={15} fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d="m12 2.5 8.5 4.75v9.5L12 21.5l-8.5-4.75v-9.5L12 2.5Z" />
+                    <path d="M12 21.5V12M20.5 7.25 12 12 3.5 7.25" />
+                  </svg>
                   {state === "loading" ? "Loading…" : "Rotate in 3D"}
                 </button>
               )}

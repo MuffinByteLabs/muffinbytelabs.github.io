@@ -1,3 +1,7 @@
+/* RETIRED, Oct 2026 — PCB 2 is now the STM32 Industrial I/O Controller,
+   presented through the drawings in src/components/pcb2/. This hand-drawn
+   layout of the earlier 2-layer ESP32 field I/O design is no longer rendered;
+   it is kept, like the other retired data, so restoring it is a render change. */
 import { PCB } from "./pcbData";
 import type { BoardLayout, Part, Trace } from "./BoardSVG";
 
@@ -83,7 +87,7 @@ export const MML02: BoardLayout = {
   radius: 1.5,
   scale: 1.45,
   layers: ["all", "silk", "copper", "plane", "mask", "drill"],
-  planeLabel: "B.Cu · unbroken GND under logic + converter",
+  planeLabel: "Bottom layer · unbroken GND under logic + converter",
 
   /* bottom copper is one ground under the logic side and the converter;
      the field side keeps its own pour, joined at a single star point */

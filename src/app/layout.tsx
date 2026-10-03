@@ -13,16 +13,18 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-/* one display face, used only for the name and section headings */
+/* one display face, used only for the name and section headings — with its
+   italic, which carries the one emphasised phrase in a heading */
 const instrument = Instrument_Serif({
   variable: "--font-instrument",
   subsets: ["latin"],
   weight: "400",
+  style: ["normal", "italic"],
 });
 
-const TITLE = "Ray Malik — PCB Design Engineer | KiCad";
+const TITLE = "Ray Malik — PCB Design Engineer";
 const DESCRIPTION =
-  "PCB design engineer working in KiCad. ESP32 boards — 2 and 4-layer, RF modules, USB, power paths and protected field I/O — taken from schematic capture to a manufacturing package a fab accepts first try.";
+  "Freelance PCB design engineer. ESP32 and STM32 boards — 4-layer, RF modules, USB, protected 24 V power and isolated industrial I/O — taken from schematic capture to a manufacturing package a fab accepts first try.";
 
 const SITE = "https://muffinbytelabs.com";
 
@@ -35,12 +37,17 @@ export const metadata: Metadata = {
     types: { "application/rss+xml": [{ url: "/feed.xml", title: "Field Notes" }] },
   },
   keywords: [
-    "KiCad PCB design",
+    "PCB design",
     "PCB layout",
     "JLCPCB",
     "PCBWay",
     "ESP32 PCB",
+    "STM32 PCB design",
     "4-layer PCB design",
+    "industrial I/O controller",
+    "RS-485 Modbus",
+    "CAN FD",
+    "4-20 mA input",
     "buck converter layout",
     "opto-isolated 24V IO",
     "schematic capture",
@@ -54,7 +61,7 @@ export const metadata: Metadata = {
     siteName: "Ray Malik · MuffinByteLabs",
     type: "website",
     locale: "en_US",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "MuffinByteLabs — KiCad PCB design" }],
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "MuffinByteLabs — PCB design" }],
   },
   twitter: {
     card: "summary_large_image",
@@ -65,7 +72,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0f0e0d",
+  themeColor: "#0d0c0b",
   colorScheme: "dark",
 };
 

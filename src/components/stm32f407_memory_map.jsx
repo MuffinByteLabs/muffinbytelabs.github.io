@@ -1306,11 +1306,12 @@ export default function MemoryMapExplorer() {
           <span style={{fontSize:13,fontWeight:700,color:"#dba64b",letterSpacing:1.5,textTransform:"uppercase"}}>STM32F407VGT6</span>
           <span style={{fontSize:11,color:"#5b544a"}}>Memory Map Explorer</span>
         </div>
-        <div style={{display:"flex",gap:6,alignItems:"center"}}>
-          <input value={searchQuery} onChange={e=>{setSearchQuery(e.target.value);if(!e.target.value)doSearch("")}} onKeyDown={e=>{if(e.key==="Enter")doSearch(searchQuery)}} placeholder="Search… (press Enter)" style={{width:260,background:"#1c1a17",border:"1px solid #3a352e",borderRadius:4,padding:"4px 8px",color:"#e6dfd2",fontSize:11,fontFamily:"var(--font-geist-sans),ui-sans-serif,system-ui,sans-serif",outline:"none"}}/>
+        {/* wraps on a phone: the search box takes its own line, the buttons drop below it */}
+        <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap",justifyContent:"flex-end",flex:"1 1 auto"}}>
+          <input value={searchQuery} onChange={e=>{setSearchQuery(e.target.value);if(!e.target.value)doSearch("")}} onKeyDown={e=>{if(e.key==="Enter")doSearch(searchQuery)}} placeholder="Search… (press Enter)" style={{flex:"1 1 220px",minWidth:0,maxWidth:260,background:"#1c1a17",border:"1px solid #3a352e",borderRadius:4,padding:"4px 8px",color:"#e6dfd2",fontSize:11,fontFamily:"var(--font-geist-sans),ui-sans-serif,system-ui,sans-serif",outline:"none"}}/>
           {searchQuery&&<button onClick={()=>{setSearchQuery("");doSearch("")}} style={{background:"#221f1a",border:"1px solid #3a352e",borderRadius:3,color:"#aca395",padding:"3px 8px",fontSize:10,cursor:"pointer"}}>✕</button>}
-          <button onClick={expandAll} style={{background:"#221f1a",border:"1px solid #2e2a25",borderRadius:4,color:"#8c8372",padding:"3px 10px",fontSize:11,cursor:"pointer",fontWeight:600}}>Expand All</button>
-          <button onClick={collapseAll} style={{background:"#221f1a",border:"1px solid #2e2a25",borderRadius:4,color:"#8c8372",padding:"3px 10px",fontSize:11,cursor:"pointer",fontWeight:600}}>Collapse All</button>
+          <button onClick={expandAll} style={{background:"#221f1a",border:"1px solid #2e2a25",borderRadius:4,color:"#8c8372",padding:"3px 10px",fontSize:11,cursor:"pointer",fontWeight:600,whiteSpace:"nowrap"}}>Expand All</button>
+          <button onClick={collapseAll} style={{background:"#221f1a",border:"1px solid #2e2a25",borderRadius:4,color:"#8c8372",padding:"3px 10px",fontSize:11,cursor:"pointer",fontWeight:600,whiteSpace:"nowrap"}}>Collapse All</button>
         </div>
       </div>
       {matches.size>0&&<div style={{fontSize:10,color:"#dba64b"}}>{matches.size} match{matches.size!==1?"es":""} found</div>}

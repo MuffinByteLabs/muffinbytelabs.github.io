@@ -305,7 +305,7 @@ def emit(d):
     add("  radius: 4.25,")
     add("  scale: 1,")
     add('  layers: ["all", "silk", "copper", "plane", "mask", "drill"],')
-    add('  planeLabel: "In1.Cu + In2.Cu · solid GND, no signals",')
+    add('  planeLabel: "L2 + L3 · solid GND, no signals",')
     add("")
     add("  /* both inner layers are solid ground; the only void is the all-layer")
     add("     keep-out under the antenna nose */")
@@ -355,7 +355,7 @@ def emit(d):
     for t in d["silk"]:
         r = f', rot: {t["rot"]}' if t.get("rot") else ""
         add(f'    {{ x: {t["x"]}, y: {t["y"]}, text: {json.dumps(t["text"])}, size: {t["size"]}{r} }},')
-    add('    { x: 31.25, y: 22.6, text: "B.SILK — ESP32-S3 PLANT MONITOR · REV A · 2026-08 · MuffinByteLabs.com", size: 1.35, back: true },')
+    add('    { x: 31.25, y: 22.6, text: "BACK SILK — ESP32-S3 PLANT MONITOR · REV A · 2026-08 · MuffinByteLabs.com", size: 1.35, back: true },')
     add("  ],")
     add("")
     add("  nets: [")

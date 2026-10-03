@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/gen-post-index.cjs",
     "dev": "next dev",
+    "prebuild": "node scripts/gen-post-index.cjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

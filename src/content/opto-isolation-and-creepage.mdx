@@ -7,7 +7,7 @@ excerpt: "An optocoupler only isolates if the layout does too: no copper on any 
 ---
 An optocoupler is rated for thousands of volts across its package, and it is trivially easy to throw that rating away with a ground pour that runs underneath it. Isolation is not a part you place. It is a distance you draw, defend on every layer, and then verify.
 
-On PCB 2 the inputs are PC817 optocouplers reading a 24 V field side. That board is where all of the following actually gets decided.
+On my 2-layer ESP32 field I/O design the inputs are PC817 optocouplers reading a 24 V field side. That design is where all of the following actually gets decided.
 
 ## Creepage and clearance are two different distances
 
@@ -25,7 +25,7 @@ Decide where the barrier runs before you route anything, then hold it absolutely
 - No inner-layer plane crossing it either. On 2 layers you can see the violation. On 4 layers, a ground plane on the inner layer is the thing that quietly bridges both sides while the outer layers look perfect.
 - Two separate ground nets that never touch. GND and FIELD_GND, no net tie, no zero-ohm link "for now", no shared mounting-hole ring stitching them together through the enclosure.
 
-In KiCad, draw a Rule Area over the barrier region with tracks, vias, pads and zone fill all disallowed, applied to every copper layer. Then add a custom DRC rule setting a minimum clearance between the two ground net classes, so the checker enforces the gap you intended rather than the default.
+In the layout tool, draw a keep-out rule area over the barrier region with tracks, vias, pads and zone fill all disallowed, applied to every copper layer. Then add a custom DRC rule setting a minimum clearance between the two ground net classes, so the checker enforces the gap you intended rather than the default.
 
 ## A slot buys distance you cannot otherwise get
 
@@ -54,7 +54,7 @@ Speed matters too. PC817 switching times are in the microseconds, so it is an on
 
 ## Say what the board actually claims
 
-PCB 2 runs at 24 V SELV. At that working voltage the standards do not demand large creepage at all, so the barrier there is doing a different job: breaking ground loops, keeping field-side transients out of the MCU ground, and demonstrating the technique done correctly.
+That design runs at 24 V SELV. At that working voltage the standards do not demand large creepage at all, so the barrier there is doing a different job: breaking ground loops, keeping field-side transients out of the MCU ground, and demonstrating the technique done correctly.
 
 So I describe it as industrial-style, not safety certified. No mains, no reinforced insulation claim, no specified material group, no agency testing. If an application does involve mains, that is a different project with certified isolation components, a defined pollution degree, a qualified stack-up and real testing. Stating which one a client is getting is part of the deliverable.
 

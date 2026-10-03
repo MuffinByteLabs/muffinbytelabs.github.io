@@ -1,295 +1,306 @@
-"use client";
-
 import Image from "next/image";
-import { useId, useState } from "react";
+import Link from "next/link";
 import Reveal from "./Reveal";
 import Board3D from "./Board3D";
-import { BOARDS, type Board } from "./pcbData";
-import GitHubMark from "./GitHubMark";
-import { BoardArt, type BoardLayout, type LayerKey } from "./BoardSVG";
-import { Stackup, STACK_2L, STACK_4L, type StackLayer } from "./Stackup";
-import { MML01 } from "./layoutMML01";
-import { MML02 } from "./layoutMML02";
+import BoardHeader from "./BoardHeader";
+import LayoutExplorer from "./LayoutExplorer";
+import RepoFiles from "./RepoFiles";
+import FlipPhoto from "./FlipPhoto";
+import { BOARDS, type BoardImage } from "./pcbData";
+import { Stackup, STACK_4L, STACK_PCB2 } from "./Stackup";
+import Tabs from "@/components/ui/Tabs";
+import Icon from "@/components/ui/Icon";
+import SectionHead from "@/components/ui/SectionHead";
+import ArchitectureDiagram from "@/components/pcb2/ArchitectureDiagram";
+import DomainMap, { DomainLegend } from "@/components/pcb2/DomainMap";
+import PowerTree from "@/components/pcb2/PowerTree";
+import { InputBudget, ServiceBudget } from "@/components/pcb2/Budgets";
+import { DESIGN_RULES, PCB2_IO, DOMAIN_COLOR, PCB2_SLUG } from "@/components/pcb2/data";
 
-const ART: Record<string, { layout: BoardLayout; stack: StackLayer[] }> = {
-  "PCB 1": { layout: MML01, stack: STACK_4L },
-  "PCB 2": { layout: MML02, stack: STACK_2L },
-};
+/* ════════════════════════════════════════════════════════════════════════
+   WORK — two boards as a pair of panels with the same shape: what it is,
+   its key numbers, and a good look at it behind a row of tabs.
 
-/* "PCB 1" → "pcb-1": used as the card's anchor (so a proposal can link one
-   board as /#pcb-1) and as the SVG id namespace, where a raw space would
-   break every url(#...) reference inside the board art */
-const slugId = (id: string) => id.toLowerCase().replace(/\s+/g, "-");
+   PCB 1 opens on a photograph of the assembled board that turns over to
+   show the back, then the 3D model,
+   the layout drawn from the board file, the renders, the stack-up and the
+   public repository. PCB 2 opens on the engineering drawings that decided
+   it, with the long version on its own case-study page.
 
-const LAYER_LABEL: Record<LayerKey, string> = {
-  all: "All",
-  silk: "Silk",
-  copper: "Copper",
-  plane: "Ground",
-  mask: "Mask",
-  drill: "Drill",
-};
+   Server-rendered; only the tabs, the 3D viewer, the layout explorer and
+   the architecture tracer ship JavaScript.
+   ════════════════════════════════════════════════════════════════════════ */
+
+const PCB1_NOTES: { title: string; body: string }[] = [
+  {
+    title: "Both inner layers are solid ground",
+    body: "No signals on either plane, so every trace has its return directly underneath.",
+  },
+  {
+    title: "A real 90 Ω USB pair",
+    body: "0.29 mm tracks, 0.20 mm gap, length-matched, with not a single via on either leg.",
+  },
+  {
+    title: "Twelve labelled test points",
+    body: "Nine SMD pads plus a through-hole UART recovery trio.",
+  },
+];
+
+/** a photo or render in a quiet frame, with its tag and one-line caption */
+function Figure({ im, wide = false }: { im: BoardImage; wide?: boolean }) {
+  return (
+    <figure className={`m-0 min-w-0 ${wide ? "sm:col-span-2" : ""}`}>
+      <div
+        className="relative overflow-hidden rounded-xl"
+        style={{ border: "1px solid var(--border)", background: "var(--bg-alt)" }}
+      >
+        <Image
+          src={im.src}
+          alt={im.alt}
+          width={im.width}
+          height={im.height}
+          className={`block w-full h-auto ${wide ? "sm:max-h-[520px] sm:object-contain" : ""}`}
+          sizes={wide ? "(max-width: 1152px) 100vw, 1060px" : "(max-width: 640px) 100vw, 520px"}
+        />
+        <span
+          className="absolute top-3 left-3 text-[10.5px] px-2 py-1 rounded-md mono tracking-wide"
+          style={{ color: "var(--text)", background: "rgba(10,9,8,0.72)", border: "1px solid var(--border)" }}
+        >
+          {im.tag}
+        </span>
+      </div>
+      <figcaption className="mt-2.5 text-[12.5px] leading-5" style={{ color: "var(--text-3)" }}>
+        {im.caption}
+      </figcaption>
+    </figure>
+  );
+}
 
 export default function BoardsGallery() {
+  const [pcb1, pcb2] = BOARDS;
+
   return (
     <section id="work" className="px-6 pb-24 sm:pb-32">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <Reveal>
-          <h2 className="display text-4xl sm:text-5xl mb-10 sm:mb-14" style={{ color: "var(--text)" }}>
-            Work
-          </h2>
+          <SectionHead
+            index="01"
+            label="Work"
+            title={
+              <>
+                Boards, <em>start to finish</em>
+              </>
+            }
+            lede="A closer look at two recent boards — each taken from a blank schematic to assembled hardware."
+          />
         </Reveal>
 
-        <div className="space-y-10 sm:space-y-14">
-          {BOARDS.map((b) => (
-            <Reveal key={b.id}>
-              <BoardCard board={b} />
-            </Reveal>
-          ))}
+        <div className="mt-12 sm:mt-14 space-y-10 sm:space-y-14">
+          {/* ── PCB 1 ─────────────────────────────────────────────────── */}
+          <Reveal>
+            <article id="pcb-1" className="card card-static edge-glow min-w-0">
+              <div className="px-5 sm:px-9 pt-7 sm:pt-9 pb-6">
+                <BoardHeader board={pcb1} index="01" />
+              </div>
+              <div className="px-3 sm:px-9 pb-6 sm:pb-9">
+                <Tabs
+                  label={`${pcb1.id} views`}
+                  items={[
+                    {
+                      key: "photos",
+                      label: "Photos",
+                      icon: "eye",
+                      content: pcb1.photos?.[1] ? <FlipPhoto front={pcb1.photos[0]} back={pcb1.photos[1]} /> : null,
+                    },
+                    {
+                      key: "3d",
+                      label: "3D model",
+                      icon: "cube",
+                      content: pcb1.model ? (
+                        <Board3D
+                          src={pcb1.model}
+                          poster={pcb1.images?.[0]?.src}
+                          label={`${pcb1.name} — rotatable 3D model`}
+                          showLabel={false}
+                        />
+                      ) : null,
+                    },
+                    {
+                      key: "layout",
+                      label: "Layout & nets",
+                      icon: "board",
+                      content: (
+                        <LayoutExplorer accent={pcb1.accent} name={pcb1.name} idBase="pcb-1" />
+                      ),
+                    },
+                    {
+                      key: "renders",
+                      label: "Renders",
+                      icon: "spark",
+                      content: (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                          {(pcb1.images ?? []).map((im, i) => (
+                            <Figure key={im.src} im={im} wide={i === 0} />
+                          ))}
+                        </div>
+                      ),
+                    },
+                    {
+                      key: "stack",
+                      label: "Stack-up",
+                      icon: "layers",
+                      content: (
+                        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-6 md:gap-10">
+                          <Stackup layers={STACK_4L} showLabel={false} />
+                          <ul className="m-0 p-0 list-none space-y-5 self-center">
+                            {PCB1_NOTES.map((n) => (
+                              <li key={n.title} className="flex gap-3.5">
+                                <span className="mt-0.5" style={{ color: "var(--accent)" }}>
+                                  <Icon name="check" size={17} />
+                                </span>
+                                <span>
+                                  <span className="block text-[14px] font-medium" style={{ color: "var(--text)" }}>
+                                    {n.title}
+                                  </span>
+                                  <span className="block mt-1 text-[13px] leading-6" style={{ color: "var(--text-2)" }}>
+                                    {n.body}
+                                  </span>
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ),
+                    },
+                    {
+                      key: "files",
+                      label: "Files",
+                      icon: "folder",
+                      content: <RepoFiles />,
+                    },
+                  ]}
+                />
+              </div>
+            </article>
+          </Reveal>
+
+          {/* ── PCB 2 ─────────────────────────────────────────────────── */}
+          <Reveal>
+            <article id="pcb-2" className="card card-static edge-glow min-w-0">
+              <div className="px-5 sm:px-9 pt-7 sm:pt-9 pb-6">
+                <BoardHeader board={pcb2} index="02" />
+              </div>
+              <div className="px-3 sm:px-9 pb-2">
+                <Tabs
+                  label={`${pcb2.id} views`}
+                  /* the architecture drawing scrolls sideways on a phone;
+                     the domain map fits one */
+                  mobileFirst="domains"
+                  items={[
+                    {
+                      key: "arch",
+                      label: "Architecture",
+                      icon: "flag",
+                      content: <ArchitectureDiagram compact />,
+                    },
+                    {
+                      key: "domains",
+                      label: "Isolation domains",
+                      icon: "isolation",
+                      content: (
+                        <div>
+                          <DomainMap id="dmap-home" />
+                          <DomainLegend />
+                        </div>
+                      ),
+                    },
+                    {
+                      key: "power",
+                      label: "Power tree",
+                      icon: "bolt",
+                      content: (
+                        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] gap-8 lg:gap-10">
+                          <PowerTree />
+                          <div className="space-y-8 lg:pt-1">
+                            <InputBudget />
+                            <ServiceBudget />
+                          </div>
+                        </div>
+                      ),
+                    },
+                    {
+                      key: "stack",
+                      label: "Stack-up",
+                      icon: "layers",
+                      content: (
+                        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-6 md:gap-10">
+                          <Stackup layers={STACK_PCB2} showLabel={false} total="1.6 mm FR-4 · 1 oz" />
+                          <div className="self-center">
+                            <span className="eyebrow">Design rules</span>
+                            <dl
+                              className="mt-3 m-0 grid grid-cols-2 gap-px rounded-xl overflow-hidden"
+                              style={{ background: "var(--border-soft)", border: "1px solid var(--border-soft)" }}
+                            >
+                              {DESIGN_RULES.map((r) => (
+                                <div key={r.label} className="px-4 py-3" style={{ background: "var(--surface)" }}>
+                                  <dt className="text-[11.5px]" style={{ color: "var(--text-3)" }}>
+                                    {r.label}
+                                  </dt>
+                                  <dd className="m-0 mt-1 mono text-[13px]" style={{ color: "var(--text)" }}>
+                                    {r.value}
+                                  </dd>
+                                </div>
+                              ))}
+                            </dl>
+                          </div>
+                        </div>
+                      ),
+                    },
+                  ]}
+                />
+              </div>
+
+              {/* ── the I/O, at a glance ───────────────────────────────── */}
+              <div className="px-5 sm:px-9 pt-8 pb-8 sm:pb-9">
+                <span className="eyebrow">I/O at a glance</span>
+                <ul
+                  className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px m-0 p-0 list-none rounded-xl overflow-hidden"
+                  style={{ background: "var(--border-soft)", border: "1px solid var(--border-soft)" }}
+                >
+                  {PCB2_IO.map((io) => (
+                    <li key={io.name} className="px-4 py-4 flex gap-3.5" style={{ background: "var(--surface)" }}>
+                      <span
+                        className="display text-[1.55rem] leading-none tabular-nums w-9 shrink-0"
+                        style={{ color: DOMAIN_COLOR[io.domain] }}
+                      >
+                        {io.count}
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-[13.5px] font-medium" style={{ color: "var(--text)" }}>
+                          {io.name}
+                        </span>
+                        <span className="block mt-0.5 text-[12px] leading-5" style={{ color: "var(--text-3)" }}>
+                          {io.part}
+                        </span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
+                  <Link href={PCB2_SLUG} className="btn btn-primary">
+                    The full case study
+                    <Icon name="arrowRight" size={16} className="nudge" />
+                  </Link>
+                  <span className="text-[13px]" style={{ color: "var(--text-3)" }}>
+                    The I/O, the architecture and the protection, on one page.
+                  </span>
+                </div>
+              </div>
+            </article>
+          </Reveal>
         </div>
       </div>
     </section>
-  );
-}
-
-/* ════════════════════════════════════════════════════════════════════════
-   One board — what it is, that it exists, and a good look at it.
-   ════════════════════════════════════════════════════════════════════════ */
-function BoardCard({ board }: { board: Board }) {
-  const uid = useId().replace(/:/g, "");
-  const [layer, setLayer] = useState<LayerKey>("all");
-  const [net, setNet] = useState<string | null>(null);
-
-  const art = ART[board.id];
-  const built = board.status.kind === "built";
-  const litNet = art.layout.nets?.find((n) => n.key === net) ?? null;
-
-  return (
-    <article id={slugId(board.id)} className="card overflow-hidden min-w-0">
-      {/* ── header ─────────────────────────────────────────────────────── */}
-      <div className="px-6 sm:px-8 pt-7 pb-6">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-          <span className="eyebrow">{board.id}</span>
-          <span
-            className="inline-flex items-center gap-1.5 text-[12px]"
-            style={{ color: built ? "var(--ok)" : "var(--pending)" }}
-          >
-            <span
-              aria-hidden
-              className="w-1.5 h-1.5 rounded-full"
-              style={{ background: built ? "var(--ok)" : "var(--pending)" }}
-            />
-            {board.status.label}
-          </span>
-        </div>
-
-        <h3 className="display mt-2.5 text-[1.9rem] sm:text-[2.25rem]" style={{ color: "var(--text)" }}>
-          {board.name}
-        </h3>
-
-        <p className="mt-3 text-[15px] leading-7 max-w-[62ch]" style={{ color: "var(--text-2)" }}>
-          {board.summary}
-        </p>
-
-        {/* the repo belongs to this board, so it is offered here as well as
-            in its own section — a visitor who stops at the card still gets it */}
-        {board.repo && (
-          <a
-            href={board.repo.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex max-w-full items-center gap-2.5 mt-5 text-[13px] px-3.5 py-2 rounded-full"
-            style={{
-              border: "1px solid var(--border)",
-              background: "var(--surface-2)",
-              color: "var(--text)",
-            }}
-          >
-            <GitHubMark size={14} />
-            {/* the owner segment is the first thing to go on a narrow phone —
-                the repo name is what identifies it, the owner is the site */}
-            <span className="font-mono min-w-0 truncate">
-              <span className="hidden sm:inline" style={{ color: "var(--text-3)" }}>
-                {board.repo.owner}/
-              </span>
-              {board.repo.name}
-            </span>
-            <span aria-hidden className="shrink-0" style={{ color: "var(--text-3)" }}>
-              &rarr;
-            </span>
-          </a>
-        )}
-
-        <ul className="mt-5 flex flex-wrap items-center gap-x-2.5 gap-y-2 m-0 p-0 list-none">
-          {board.specs.map((sp, i) => (
-            <li
-              key={sp}
-              className="flex items-center gap-2.5 text-[12.5px]"
-              style={{ color: "var(--text-2)" }}
-            >
-              {i > 0 && (
-                <span
-                  aria-hidden
-                  className="w-1 h-1 rounded-full"
-                  style={{ background: "var(--text-3)" }}
-                />
-              )}
-              {sp}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* ── the board itself ───────────────────────────────────────────── */}
-      <div
-        className="px-6 sm:px-8 py-7"
-        style={{ background: "var(--bg-alt)", borderTop: "1px solid var(--border-soft)" }}
-      >
-        {board.model && (
-          <div className="mb-8">
-            <Board3D
-              src={board.model}
-              poster={board.images?.[0]?.src}
-              label={`${board.name} — rotatable 3D model`}
-            />
-          </div>
-        )}
-
-        <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.7fr)] gap-8 min-w-0">
-          {/* layout viewer */}
-          <div className="min-w-0">
-            <Control
-              label="Layer"
-              labelId={`${uid}-layer`}
-              options={art.layout.layers.map((l) => ({ key: l, label: LAYER_LABEL[l] }))}
-              value={layer}
-              onChange={(k) => setLayer(k as LayerKey)}
-            />
-            <div className="mt-4">
-              <BoardArt
-                layout={art.layout}
-                layer={layer}
-                powered
-                accent={board.accent}
-                net={net}
-                idns={`${slugId(board.id)}-${uid}`}
-                label={`${board.name} — ${art.layout.w} by ${art.layout.h} millimetre board layout`}
-              />
-            </div>
-
-            <div className="mt-6">
-              <Control
-                label="Trace a net"
-                labelId={`${uid}-net`}
-                options={(art.layout.nets ?? []).map((n) => ({
-                  key: n.key,
-                  label: n.label,
-                  dot: n.color,
-                }))}
-                value={net ?? ""}
-                onChange={(k) => setNet((v) => (v === k ? null : k))}
-              />
-              {/* aria-live: pressing a net button swaps this text — without it
-                  the interaction is silent for a screen-reader user */}
-              <div
-                className="mt-3 rounded-xl p-4 min-h-[70px]"
-                style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-                aria-live="polite"
-              >
-                <p
-                  className="text-[12.5px] leading-6"
-                  style={{ color: litNet ? "var(--text-2)" : "var(--text-3)" }}
-                >
-                  {litNet ? litNet.note : "Pick a net to light it through the copper."}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* stackup */}
-          <div className="min-w-0">
-            <Stackup layers={art.stack} />
-          </div>
-        </div>
-      </div>
-
-      {/* ── renders ────────────────────────────────────────────────────── */}
-      {board.images && board.images.length > 0 && (
-        <div
-          className="px-6 sm:px-8 py-7 grid sm:grid-cols-2 gap-6"
-          style={{ borderTop: "1px solid var(--border-soft)" }}
-        >
-          {board.images.map((im) => (
-            <figure key={im.src} className="m-0 min-w-0">
-              <div
-                className="relative overflow-hidden rounded-xl"
-                style={{ border: "1px solid var(--border)" }}
-              >
-                <Image
-                  src={im.src}
-                  alt={im.alt}
-                  width={im.width}
-                  height={im.height}
-                  className="block w-full h-auto"
-                  sizes="(max-width: 640px) 100vw, 440px"
-                />
-                <span
-                  className="absolute top-3 left-3 text-[10.5px] px-2 py-1 rounded-md"
-                  style={{ color: "var(--text)", background: "rgba(10,9,8,0.72)" }}
-                >
-                  {im.tag}
-                </span>
-              </div>
-              <figcaption className="mt-3 text-[12.5px] leading-5" style={{ color: "var(--text-3)" }}>
-                {im.caption}
-              </figcaption>
-            </figure>
-          ))}
-        </div>
-      )}
-    </article>
-  );
-}
-
-function Control({
-  label,
-  labelId,
-  options,
-  value,
-  onChange,
-}: {
-  label: string;
-  /** ties the eyebrow to the button group, so a screen reader announces
-      "Layer, Copper, pressed" rather than a bare "Copper, pressed" */
-  labelId: string;
-  options: { key: string; label: string; dot?: string }[];
-  value: string;
-  onChange: (k: string) => void;
-}) {
-  return (
-    <div>
-      <span className="eyebrow block mb-2.5" id={labelId}>
-        {label}
-      </span>
-      <div className="flex flex-wrap gap-1.5" role="group" aria-labelledby={labelId}>
-        {options.map((o) => (
-          <button
-            key={o.key}
-            onClick={() => onChange(o.key)}
-            aria-pressed={value === o.key}
-            className="seg inline-flex items-center gap-1.5 text-[12px] px-2.5 py-1.5"
-          >
-            {o.dot && (
-              <span
-                aria-hidden
-                className="w-1.5 h-1.5 rounded-full shrink-0"
-                style={{ background: o.dot }}
-              />
-            )}
-            {o.label}
-          </button>
-        ))}
-      </div>
-    </div>
   );
 }

@@ -20,7 +20,7 @@ export const MML01: BoardLayout = {
   radius: 4.25,
   scale: 1,
   layers: ["all", "silk", "copper", "plane", "mask", "drill"],
-  planeLabel: "In1.Cu + In2.Cu · solid GND, no signals",
+  planeLabel: "L2 + L3 · solid GND, no signals",
 
   /* both inner layers are solid ground; the only void is the all-layer
      keep-out under the antenna nose */
@@ -566,7 +566,7 @@ export const MML01: BoardLayout = {
     { x: 37.15, y: 42.92, text: "SOIL", size: 1.15, rot: -90.0 },
     { x: 53.75, y: 26.5, text: "BME280", size: 1.15, rot: -90.0 },
     { x: 54.5, y: 35.38, text: "VEML7700", size: 1.15, rot: -90.0 },
-    { x: 31.25, y: 22.6, text: "B.SILK — ESP32-S3 PLANT MONITOR · REV A · 2026-08 · MuffinByteLabs.com", size: 1.35, back: true },
+    { x: 31.25, y: 22.6, text: "BACK SILK — ESP32-S3 PLANT MONITOR · REV A · 2026-08 · MuffinByteLabs.com", size: 1.35, back: true },
   ],
 
   nets: [

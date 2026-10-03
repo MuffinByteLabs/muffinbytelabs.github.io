@@ -17,11 +17,11 @@ Then the meter, in resistance mode, everything still unpowered:
 - Rail to rail: 5 V to 3V3, 24 V to 5 V. These should never read low.
 - Input to ground with the leads reversed, if the board claims reverse-polarity protection. Verify the claim now, while it is free.
 
-Continuity from the input terminal through the protection chain is worth another 30 seconds. On PCB 2 that path is screw terminal, polyfuse, bridge rectifier, TVS — four parts that can each be missing, backwards or cold-jointed.
+Continuity from the input terminal through the protection chain is worth another 30 seconds. On my 2-layer field I/O design that path is screw terminal, polyfuse, bridge rectifier, TVS — four parts that can each be missing, backwards or cold-jointed.
 
 ## First power: watch the current, not the board
 
-Use a bench supply with an adjustable current limit. Set the voltage to the nominal input, then set the limit just above what the board should idle at — for PCB 2 at 24 V, around 100 mA, generous for a buck's quiescent draw plus an idle LDO.
+Use a bench supply with an adjustable current limit. Set the voltage to the nominal input, then set the limit just above what the board should idle at — for that field I/O design at 24 V, around 100 mA, generous for a buck's quiescent draw plus an idle LDO.
 
 Bring the voltage up and watch the supply's current display, not the board. If it drops into constant current, the limit did its job: kill it and go find the short. That single habit is what stands between a rework and a scrapped board.
 
@@ -58,10 +58,10 @@ With the rails proven, bring up the digital plumbing:
 
 Load the smallest program that proves one fact. A blink, or a serial print. Then a single sensor read. Only then the real firmware.
 
-On PCB 2 the firmware comes up with the relay and MOSFET outputs unloaded, and each channel gets exercised one at a time before anything real is wired to it. On PCB 1, ESPHome goes on only after the I2C scan has already named both sensors.
+On the field I/O design the firmware comes up with the relay and MOSFET outputs unloaded, and each channel gets exercised one at a time before anything real is wired to it. On PCB 1, ESPHome goes on only after the I2C scan has already named both sensors.
 
 ## What makes this fast
 
-Test points on every rail and every bus, a power tree documenting expected voltage and current per branch, readable silkscreen labels, and a bring-up checklist committed alongside the KiCad project. That paperwork is not decoration. It is the difference between a 20-minute bring-up and a day of guessing.
+Test points on every rail and every bus, a power tree documenting expected voltage and current per branch, readable silkscreen labels, and a bring-up checklist committed alongside the design files. That paperwork is not decoration. It is the difference between a 20-minute bring-up and a day of guessing.
 
 > Power up into a current limit, prove one rail at a time, and never populate a load before the rail feeding it has been measured.

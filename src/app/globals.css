@@ -1,39 +1,66 @@
 @import "tailwindcss";
 
 /* ════════════════════════════════════════════════════════════════════════
-   One quiet neutral palette, one accent, nothing else. The boards are the
-   only saturated thing on the page — everything around them stays out of
-   their way.
+   MuffinByteLabs — design tokens.
 
    Dark by design: warm graphite rather than blue-black, so the copper and
    the ENIG gold on the boards sit in the same temperature as the page
-   instead of fighting it. The accent is that same gold.
+   instead of fighting it. The accent is that same gold. Everything else is
+   a neutral that stays out of the boards' way.
+
+   The diagram palette (--d-*) is functional, not decorative: each colour
+   names one electrical domain and means the same thing in every drawing on
+   the site — the architecture map, the isolation map and the power tree.
    ════════════════════════════════════════════════════════════════════════ */
 :root {
   color-scheme: dark;
 
-  /* warm graphite rather than screen black — the page has a temperature */
-  --bg: #0f0e0d;
-  --bg-alt: #161513;
-  --surface: #171614;
+  --bg: #0d0c0b;
+  --bg-alt: #121110;
+  --surface: #161513;
   --surface-2: #1c1a17;
+  --surface-3: #24211d;
   --border: #2e2a25;
-  --border-soft: #24211d;
+  --border-soft: #221f1b;
+  --border-strong: #3d372f;
   --text: #f4efe6;
-  --text-2: #aca395;
-  /* lifted from #7a7264: at 13px on --surface that was 3.97:1, under the 4.5:1
-     floor, and this token carries most of the small print on the site */
-  --text-3: #8c8372;
+  --text-2: #b1a899;
+  /* 4.6:1 on --surface at 13px — this token carries most of the small print */
+  --text-3: #8f8675;
+
   /* ENIG gold — the one accent, chosen to echo the pads on the boards */
   --accent: #dba64b;
-  --accent-soft: #241c0f;
+  --accent-bright: #f1c978;
+  --accent-deep: #a8792f;
+  --accent-soft: rgba(219, 166, 75, 0.1);
+  --accent-line: rgba(219, 166, 75, 0.32);
+  --copper: #c8814c;
+
   --ok: #4fc384;
-  --pending: #e2ab4e;
+  --pending: #eaa94c;
+  --danger: #f07167;
+
+  /* electrical domains, used by every diagram */
+  --d-field: #e3874f;   /* field power, VFIELD and the converters */
+  --d-main: #dba64b;    /* main-ground outputs */
+  --d-logic: #e9e2d4;   /* MCU and 3.3 V logic */
+  --d-analog: #6fcfe0;  /* analog inputs and output */
+  --d-di: #4fc7a3;      /* group-isolated digital inputs (DI_COM) */
+  --d-rs485: #67a9f0;   /* RS-485 island */
+  --d-can: #a58ff4;     /* CAN island */
+  --d-relay: #ee8089;   /* relay dry contacts */
+  --d-safety: #f07167;  /* hardware output permission */
+
+  --radius: 18px;
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+
   /* on a dark page a drop shadow barely reads; the lift comes from a
      hairline highlight along the top edge plus a deep, wide shadow */
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 14px 40px -22px rgba(0, 0, 0, 0.9);
-  --shadow-lift: 0 1px 2px rgba(0, 0, 0, 0.55), 0 26px 60px -26px rgba(0, 0, 0, 1);
-  --header-bg: rgba(15, 14, 13, 0.78);
+  --shadow-lift: 0 1px 2px rgba(0, 0, 0, 0.55), 0 30px 70px -30px rgba(0, 0, 0, 1);
+  --shadow-gold: 0 18px 50px -24px rgba(219, 166, 75, 0.5);
+  --header-bg: rgba(13, 12, 11, 0.74);
   --logo-mask: url("data:image/png;base64,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");
 }
 
@@ -51,171 +78,430 @@
   --font-serif: var(--font-instrument);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  html { scroll-behavior: smooth; }
+/* ════════════════════════════════════════════════════════════════════════
+   Base
+   ════════════════════════════════════════════════════════════════════════ */
+@layer base {
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+  }
+
+  /* the fixed header would otherwise eat the top of any anchored section */
+  [id] { scroll-margin-top: 5.5rem; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  /* The ambient wash and the film grain live on their own fixed layers
+     rather than on `background-attachment: fixed`, which forces a
+     full-page repaint on every scroll frame. These composite once and then
+     cost nothing. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background:
+      radial-gradient(110% 60% at 50% -12%, rgba(126, 96, 52, 0.24), rgba(126, 96, 52, 0) 62%),
+      radial-gradient(80% 50% at 88% 4%, rgba(64, 86, 106, 0.1), rgba(64, 86, 106, 0) 60%),
+      radial-gradient(70% 50% at 0% 100%, rgba(126, 96, 52, 0.07), rgba(126, 96, 52, 0) 70%);
+  }
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  ::selection { background: rgba(219, 166, 75, 0.26); color: var(--text); }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: #35302a;
+    border-radius: 6px;
+    border: 3px solid var(--bg);
+  }
+  ::-webkit-scrollbar-thumb:hover { background: #4a423a; }
 }
-
-/* the fixed header would otherwise eat the top of any anchored section */
-[id] { scroll-margin-top: 5rem; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
-
-/* The ambient wash lives on its own fixed layer rather than on
-   `background-attachment: fixed`, which forces a full-page repaint on every
-   scroll frame. This composites once and then costs nothing. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(115% 62% at 50% -10%, rgba(126, 96, 52, 0.22), rgba(126, 96, 52, 0) 62%),
-    radial-gradient(85% 50% at 84% 6%, rgba(64, 86, 106, 0.10), rgba(64, 86, 106, 0) 60%);
-}
-
-
-/* ── the mark ─────────────────────────────────────────────────────────────
-   The cupcake ships as a black-ink PNG, which on this page is a black shape
-   on a near-black header — invisible. Rather than keep a second white copy in
-   sync, the shape is used as a MASK and painted with currentColor, so it
-   takes whatever colour its context is. The mask is inlined as a 96px
-   alpha-only PNG (1.8 KB, ~2.3 KB gzipped in the stylesheet): no request, and
-   no frame where the unmasked block shows through as a coloured square while
-   the image is still in flight. 96px covers the 30px mark to 3x. */
-.logo {
-  display: inline-block;
-  flex-shrink: 0;
-  background: currentColor;
-  -webkit-mask: var(--logo-mask) center / contain no-repeat;
-  mask: var(--logo-mask) center / contain no-repeat;
-}
-
-/* ── hero photo pair — two prints laid on the desk ───────────────────────
-   Each print carries its own tilt on a custom property, so hover can zero
-   it without JS and the reduced-motion block can keep it without moving.
-   The gold ring is the same 6px wash the old portrait wore. */
-.hero-photo {
-  border: 1px solid var(--border);
-  box-shadow:
-    0 0 0 6px rgba(219, 166, 75, 0.06),
-    0 2px 4px rgba(0, 0, 0, 0.4),
-    0 26px 56px -24px rgba(0, 0, 0, 0.9);
-  transform: rotate(var(--tilt, 0deg));
-  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.35s ease;
-}
-.hero-photo:hover {
-  transform: rotate(0deg) translateY(-4px);
-  box-shadow:
-    0 0 0 6px rgba(219, 166, 75, 0.1),
-    var(--shadow-lift);
-  z-index: 3;
-}
-
-/* Display type: a proper serif, set tight. Body stays in the sans. */
-.display {
-  font-family: var(--font-instrument), ui-serif, Georgia, serif;
-  font-weight: 400;
-  letter-spacing: -0.014em;
-  line-height: 1.06;
-}
-
-/* small all-caps eyebrow, used sparingly */
-.eyebrow {
-  font-family: var(--font-geist-mono), monospace;
-  font-size: 10.5px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--text-3);
-}
-
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-  border-radius: 4px;
-}
-
-.skip-link {
-  position: fixed;
-  top: 0.5rem;
-  left: 0.5rem;
-  z-index: 100;
-  transform: translateY(-160%);
-  transition: transform 0.2s ease;
-  background: var(--text);
-  color: var(--bg);
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
-  font-size: 13px;
-}
-.skip-link:focus-visible { transform: translateY(0); }
-
-/* ── the one card recipe, used by the board panels ───────────────────── */
-.card {
-  background: var(--surface);
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0) 160px);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  box-shadow: var(--shadow);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-.card:hover {
-  border-color: #3a342d;
-  box-shadow: var(--shadow-lift);
-}
-
-/* Do not put `content-visibility: auto` on the board cards. It does skip the
-   layout and paint of ~700 off-screen SVG nodes each, but the cards then
-   report an estimated height until they are first rendered, and the header's
-   "#capability" link — which has to scroll past both of them — lands 224 px
-   past the section. Measured, tried, reverted. */
-
-/* ── quiet segmented control (layer + net switches) ──────────────────── */
-.seg {
-  border: 1px solid var(--border);
-  background: var(--surface-2);
-  color: var(--text-2);
-  border-radius: 7px;
-  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
-}
-.seg:hover { border-color: #453e35; color: var(--text); }
-.seg[aria-pressed="true"] {
-  background: var(--text);
-  border-color: var(--text);
-  color: var(--bg);
-}
-
-/* the header nav scrolls rather than colliding on a very narrow phone;
-   the scrollbar itself would be a grey slab across the header */
-.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
-.no-scrollbar::-webkit-scrollbar { display: none; }
-
-.link-quiet { color: var(--text-2); transition: color 0.2s ease; }
-.link-quiet:hover { color: var(--text); }
-
-::selection { background: rgba(219, 166, 75, 0.24); color: var(--text); }
-
-::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: #35302a;
-  border-radius: 6px;
-  border: 3px solid var(--bg);
-}
-::-webkit-scrollbar-thumb:hover { background: #4a423a; }
 
 /* ════════════════════════════════════════════════════════════════════════
-   Board diagrams — the only place the old PCB language survives, because
-   it belongs to the board itself rather than to the page.
+   Components. In a cascade layer, so a Tailwind utility on the same element
+   can still override any of these — an unlayered rule would beat it.
    ════════════════════════════════════════════════════════════════════════ */
-@keyframes pcbFlow { to { stroke-dashoffset: -24; } }
-.pcb-flow { animation: pcbFlow 1.4s linear infinite; }
+@layer components {
+  /* ── the mark ───────────────────────────────────────────────────────────
+     The cupcake ships as a black-ink PNG, which on this page is a black
+     shape on a near-black header — invisible. It is used as a MASK and
+     painted with currentColor, so it takes whatever colour its context is.
+     Inlined as a 96px alpha-only PNG: no request, no unmasked flash. */
+  .logo {
+    display: inline-block;
+    flex-shrink: 0;
+    background: currentColor;
+    -webkit-mask: var(--logo-mask) center / contain no-repeat;
+    mask: var(--logo-mask) center / contain no-repeat;
+  }
+
+  /* ── type ─────────────────────────────────────────────────────────────── */
+  .display {
+    font-family: var(--font-instrument), ui-serif, Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.014em;
+    line-height: 1.04;
+    text-wrap: balance;
+  }
+  .display em,
+  .display i {
+    font-style: italic;
+    color: var(--accent-bright);
+  }
+
+  .eyebrow {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  /* "01 ── Work": the index in gold, a hairline, then the label */
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .kicker b { color: var(--accent); font-weight: 500; }
+  .kicker::before {
+    content: none;
+  }
+  .kicker .rule {
+    width: 2.25rem;
+    height: 1px;
+    background: linear-gradient(90deg, var(--accent-line), transparent);
+  }
+
+  .lede {
+    color: var(--text-2);
+    font-size: 16.5px;
+    line-height: 1.85;
+    text-wrap: pretty;
+  }
+
+  .mono { font-family: var(--font-geist-mono), ui-monospace, monospace; }
+
+  .text-gradient {
+    background: linear-gradient(180deg, #fbf7f0 20%, #d8ccb6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* ── buttons ──────────────────────────────────────────────────────────── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    min-height: 44px;
+    padding: 0 1.25rem;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    white-space: nowrap;
+    transition: transform 0.25s var(--ease-out), box-shadow 0.25s ease, background 0.25s ease,
+      border-color 0.25s ease, color 0.2s ease;
+  }
+  .btn svg { transition: transform 0.25s var(--ease-out); }
+  .btn:hover svg.nudge { transform: translateX(3px); }
+  .btn:hover svg.nudge-down { transform: translateY(2px); }
+  .btn:hover svg.nudge-diag { transform: translate(2px, -2px); }
+
+  .btn-primary {
+    color: #1b1407;
+    background: linear-gradient(180deg, #f5d189 0%, #e3b05a 48%, #cf9840 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.45),
+      inset 0 -1px 0 rgba(90, 58, 10, 0.35),
+      0 10px 28px -12px rgba(219, 166, 75, 0.65);
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      inset 0 -1px 0 rgba(90, 58, 10, 0.35),
+      0 16px 36px -14px rgba(219, 166, 75, 0.8);
+  }
+
+  .btn-light {
+    color: var(--bg);
+    background: var(--text);
+    box-shadow: 0 8px 26px -12px rgba(0, 0, 0, 0.9);
+  }
+  .btn-light:hover { transform: translateY(-1px); background: #fffaf1; }
+
+  .btn-ghost {
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+    background: rgba(255, 255, 255, 0.025);
+  }
+  .btn-ghost:hover {
+    border-color: rgba(219, 166, 75, 0.45);
+    background: rgba(219, 166, 75, 0.06);
+  }
+
+  .btn-sm { min-height: 36px; padding: 0 0.95rem; font-size: 13px; }
+
+  .link-quiet { color: var(--text-2); transition: color 0.2s ease; }
+  .link-quiet:hover { color: var(--text); }
+
+  .link-gold {
+    color: var(--accent);
+    transition: color 0.2s ease;
+  }
+  .link-gold:hover { color: var(--accent-bright); }
+
+  /* ── chips ───────────────────────────────────────────────────────────── */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.32rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.025);
+    color: var(--text-2);
+    font-size: 12.5px;
+    line-height: 1.3;
+    white-space: nowrap;
+  }
+  .chip-mono {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.01em;
+  }
+
+  /* ── cards ────────────────────────────────────────────────────────────── */
+  .card {
+    background: var(--surface);
+    background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0) 160px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s var(--ease-out);
+  }
+  .card:hover {
+    border-color: #3a342d;
+    box-shadow: var(--shadow-lift);
+  }
+  .card-static:hover { border-color: var(--border); box-shadow: var(--shadow); }
+
+  /* a card that lifts and picks up a gold edge — for things you click */
+  .card-link:hover {
+    transform: translateY(-2px);
+    border-color: rgba(219, 166, 75, 0.38);
+    box-shadow: var(--shadow-lift), 0 0 0 1px rgba(219, 166, 75, 0.08);
+  }
+
+  /* the gold hairline that runs along the top of a feature card */
+  .edge-glow { position: relative; }
+  .edge-glow::before {
+    content: "";
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    top: -1px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(241, 201, 120, 0.65), transparent);
+    pointer-events: none;
+  }
+
+  .panel {
+    background: var(--bg-alt);
+    border: 1px solid var(--border-soft);
+    border-radius: 14px;
+  }
+
+  .hairline {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-strong) 15%, var(--border-strong) 85%, transparent);
+  }
+
+  /* an icon in a softly lit gold tile */
+  .icon-tile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    color: var(--accent-bright);
+    background: linear-gradient(180deg, rgba(219, 166, 75, 0.16), rgba(219, 166, 75, 0.05));
+    border: 1px solid rgba(219, 166, 75, 0.22);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    flex-shrink: 0;
+  }
+
+  /* ── hero photo pair ───────────────────────────────────────────────────
+     Square to the page; the depth comes from the border, a faint gold ring
+     and a long shadow, not from tilting the prints. */
+  .hero-photo {
+    border: 1px solid var(--border-strong);
+    box-shadow:
+      0 0 0 6px rgba(219, 166, 75, 0.05),
+      0 2px 4px rgba(0, 0, 0, 0.4),
+      0 30px 60px -24px rgba(0, 0, 0, 0.95);
+  }
+
+  /* the background grid behind the hero, faded out at the edges */
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 40px 40px;
+    -webkit-mask-image: radial-gradient(70% 60% at 50% 35%, #000 20%, transparent 75%);
+    mask-image: radial-gradient(70% 60% at 50% 35%, #000 20%, transparent 75%);
+  }
+
+  /* ── quiet segmented control (layer + net switches) ───────────────────── */
+  .seg {
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text-2);
+    border-radius: 8px;
+    transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  }
+  .seg:hover { border-color: #453e35; color: var(--text); }
+  .seg[aria-pressed="true"] {
+    background: var(--text);
+    border-color: var(--text);
+    color: var(--bg);
+  }
+
+  /* ── tabs ─────────────────────────────────────────────────────────────── */
+  .tablist {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.3rem;
+    border-radius: 14px;
+    background: var(--bg-alt);
+    border: 1px solid var(--border-soft);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tablist::-webkit-scrollbar { display: none; }
+  .tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 0.95rem;
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--text-3);
+    white-space: nowrap;
+    transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  }
+  .tab:hover { color: var(--text); }
+  .tab[aria-selected="true"] {
+    color: var(--text);
+    background: var(--surface-3);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 6px 16px -10px rgba(0, 0, 0, 0.9);
+  }
+  .tab[aria-selected="true"] svg { color: var(--accent); }
+
+  /* ── horizontal scroller for wide diagrams on a phone ─────────────────── */
+  .scroll-x {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    scrollbar-color: #3a342d transparent;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* tables in the case study */
+  .spec-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .spec-table th {
+    text-align: left;
+    font-weight: 500;
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    padding: 0.95rem 0.9rem 0.8rem 0;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+  }
+  .spec-table td {
+    padding: 0.8rem 0.9rem 0.8rem 0;
+    border-bottom: 1px solid var(--border-soft);
+    color: var(--text-2);
+    vertical-align: top;
+    line-height: 1.6;
+  }
+  .spec-table tr:last-child td { border-bottom: 0; }
+  .spec-table td:first-child { color: var(--text); }
+
+  /* the header nav scrolls rather than colliding on a very narrow phone */
+  .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+
+  .skip-link {
+    position: fixed;
+    top: 0.5rem;
+    left: 0.5rem;
+    z-index: 100;
+    transform: translateY(-200%);
+    transition: transform 0.2s ease;
+    background: var(--text);
+    color: var(--bg);
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-size: 13px;
+  }
+  .skip-link:focus-visible { transform: translateY(0); }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   Motion
+   ════════════════════════════════════════════════════════════════════════ */
+/* current along a trace: a short bright dash walking the path */
+@keyframes trace-run { to { stroke-dashoffset: -260; } }
+.trace-run {
+  stroke-dasharray: 14 246;
+  animation: trace-run 5.5s linear infinite;
+}
+
+/* Board diagrams — the old PCB language, kept because it belongs to the
+   boards themselves rather than to the page. */
+/* a lit net's pulse: one dash period (--pulse, in board millimetres) per
+   cycle, so the light runs at a steady ~14 mm/s whatever the route length */
+@keyframes netPulse { to { stroke-dashoffset: var(--pulse); } }
+/* animated once on the group: stroke-dashoffset inherits, so every route
+   under it moves together off a single animation */
+.net-pulse { animation: netPulse 1.15s linear infinite; }
 
 @keyframes pcbPulse {
   0%, 100% { opacity: 0.35; }
@@ -227,22 +513,291 @@ body::before {
    `transition`, so the reduced-motion block below can actually reach it */
 .xfade { transition: opacity 0.35s ease; }
 
+/* diagram dimming when one path is traced */
+.dg-el { transition: opacity 0.35s ease, filter 0.35s ease; }
+
 /* Section reveal on scroll. The hidden state is scoped to html[data-js] — a
    stamp set by an inline script in the layout — so the sections only hide
    when JavaScript demonstrably runs. Scripting disabled, a blocked bundle,
-   or a browser too old for the observer all degrade to visible content
-   rather than a blank page below the hero. */
+   or a browser too old for the observer all degrade to visible content. */
 html[data-js] .reveal {
   opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transform: translateY(16px);
+  transition: opacity 0.7s ease, transform 0.8s var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
 }
 html[data-js] .reveal.shown { opacity: 1; transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  .pcb-flow, .pcb-pulse { animation: none !important; }
+  .pcb-pulse, .trace-run { animation: none !important; }
+  .net-pulse { display: none; }
   html[data-js] .reveal { transition: none; opacity: 1; transform: none; }
-  .card, .seg, .link-quiet, .xfade { transition: none; }
-  .hero-photo { transition: none; }
-  .hero-photo:hover { transform: rotate(var(--tilt, 0deg)); }
+  .card, .seg, .link-quiet, .xfade, .btn, .tab, .dg-el { transition: none; }
+  .btn:hover, .card-link:hover { transform: none; }
+}
+
+/* SVG text inherits the site faces through classes — a CSS variable inside
+   a presentation attribute is not something every renderer resolves */
+.svg-mono { font-family: var(--font-geist-mono), ui-monospace, monospace; }
+.svg-serif { font-family: var(--font-instrument), ui-serif, Georgia, serif; }
+.svg-sans { font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif; }
+
+/* ── the power tree (PCB 2) ────────────────────────────────────────────── */
+.ptree, .ptree ul { list-style: none; margin: 0; padding: 0; }
+.ptree ul { margin-left: 13px; }
+.ptree ul > li { position: relative; padding-left: 22px; }
+.ptree ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-left: 1px solid var(--border-strong);
+}
+.ptree ul > li:last-child::before { bottom: auto; height: 27px; }
+.ptree ul > li::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 27px;
+  width: 16px;
+  border-top: 1px solid var(--border-strong);
+}
+.pnode {
+  position: relative;
+  display: flex;
+  gap: 0.75rem;
+  margin: 6px 0;
+  padding: 0.6rem 0.85rem 0.65rem 0.85rem;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+}
+.pnode-bar {
+  width: 3px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  align-self: stretch;
+  opacity: 0.9;
+}
+
+/* on a phone the tab row wraps into a two-up grid instead of scrolling a
+   label out of sight */
+@media (max-width: 639px) {
+  .tablist { flex-wrap: wrap; }
+  .tab { flex: 1 1 calc(50% - 0.25rem); justify-content: center; padding-inline: 0.6rem; }
+}
+
+/* ── the exploded layer stack (Deliverables) ───────────────────────────────
+   Seven flat SVG plates in one CSS 3D scene. The scene is laid back and
+   turned (rotateX, then rotateZ) like an exploded assembly drawing; each
+   plate sits at translateZ = (index - 3) × --gap, so changing that one
+   variable on the stage pulls the board apart or puts it back together.
+
+   Each plate is two boxes: the outer one carries the explode, with a
+   stagger, and the inner one the hover lift, with none — so a hover answers
+   at once instead of waiting out the stagger.
+
+   The labels are billboards: inside the plate, rotated by exactly the
+   inverse of the scene, so they face the reader while riding on their
+   plate's corner. */
+.lstack {
+  --pw: 300px;
+  --gap-open: 46px;
+  --gap: 2px;
+  position: relative;
+  height: 500px;
+  perspective: 2600px;
+}
+.lstack[data-open] { --gap: var(--gap-open); }
+/* no JavaScript, no switch — show it apart, since that is the point of it */
+html:not([data-js]) .lstack { --gap: var(--gap-open); }
+
+.lscene {
+  position: absolute;
+  left: 40%;
+  top: 52%;
+  width: var(--pw);
+  aspect-ratio: 62.5 / 44.5;
+  transform-style: preserve-3d;
+  transform: translate(-50%, -50%) rotateX(60deg) rotateZ(-36deg);
+}
+.lplate {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: translateZ(calc((var(--i) - 3) * var(--gap)));
+  transition: transform 1.15s var(--ease-out);
+  transition-delay: calc(var(--i) * 70ms);
+}
+/* putting it back together runs the stagger the other way, top down */
+.lstack:not([data-open]) .lplate { transition-delay: calc((6 - var(--i)) * 45ms); }
+.lplate-in {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.35s var(--ease-out);
+}
+.lplate:hover .lplate-in { transform: translateZ(14px); }
+.lplate img {
+  position: absolute;
+  max-width: none;
+  user-select: none;
+}
+.llabel {
+  position: absolute;
+  left: 100%;
+  top: 100%;
+  transform-origin: 0 0;
+  transform: rotateZ(36deg) rotateX(-60deg) translate(12px, -50%);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--text-2);
+  opacity: 0;
+  transition: opacity 0.4s ease, color 0.2s ease;
+}
+.llabel::before {
+  content: "";
+  width: 18px;
+  height: 1px;
+  background: var(--border-strong);
+}
+.llabel b {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-weight: 500;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+}
+.lstack[data-open] .llabel { opacity: 1; transition-delay: calc(450ms + var(--i) * 70ms), 0s; }
+html:not([data-js]) .llabel { opacity: 1; }
+.lplate:hover .llabel { color: var(--text); }
+.lplate:hover .llabel b { color: var(--accent); }
+.lstack-toggle {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+@media (max-width: 639px) {
+  .lstack { --pw: 164px; --gap-open: 28px; height: 320px; }
+  .lscene { left: 31%; }
+  .llabel { font-size: 10px; gap: 0.3rem; }
+  .llabel::before { width: 8px; }
+  .llabel b { font-size: 9px; }
+}
+
+/* ── the deliverable folder ────────────────────────────────────────────── */
+.ftree { position: relative; }
+.ftree-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 11.5rem) minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.25rem 1rem;
+  padding: 0.62rem 0 0.62rem 1.6rem;
+  border-top: 1px solid var(--border-soft);
+}
+.ftree-row:first-child { border-top: 0; }
+/* the tree's guide: a hairline down from the root, a tick into each row */
+.ftree-row::before {
+  content: "";
+  position: absolute;
+  left: 0.55rem;
+  top: 0;
+  bottom: 0;
+  border-left: 1px solid var(--border-strong);
+}
+.ftree-row:last-child::before { bottom: 50%; }
+.ftree-row::after {
+  content: "";
+  position: absolute;
+  left: 0.55rem;
+  top: 50%;
+  width: 0.7rem;
+  border-top: 1px solid var(--border-strong);
+}
+@media (max-width: 639px) {
+  .ftree-row { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Scroll-driven, where the browser can: the layers come apart as the
+   section scrolls up the screen and close again on the way back, instead of
+   opening once. --gap is registered so the browser can interpolate it, and
+   the per-plate transitions step aside so they do not lag the scroll.
+   Clicking Assemble / Explode sets data-manual and hands control back to
+   the switch. Browsers without scroll timelines keep the open-once switch. */
+@property --gap {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 2px;
+}
+@keyframes lstack-open {
+  from { --gap: 2px; }
+  to { --gap: var(--gap-open); }
+}
+@keyframes llabel-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .lstack:not([data-manual]) {
+      view-timeline-name: --lstack;
+      animation: lstack-open linear both;
+      animation-timeline: --lstack;
+      animation-range: cover 10% cover 46%;
+    }
+    .lstack:not([data-manual]) .lplate { transition: none; }
+    .lstack:not([data-manual]) .llabel {
+      animation: llabel-in linear both;
+      animation-timeline: --lstack;
+      animation-range: cover 34% cover 46%;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lplate, .lplate-in, .llabel { transition: none !important; }
+}
+
+/* ── the photo you can turn over (PCB 1) ───────────────────────────────── */
+.flip {
+  display: block;
+  width: 100%;
+  perspective: 1800px;
+  cursor: pointer;
+  border-radius: 14px;
+}
+.flip-tilt {
+  transform-style: preserve-3d;
+  transform: rotateX(var(--tx, 0deg)) rotateY(var(--ty, 0deg));
+  transition: transform 0.25s var(--ease-out);
+}
+.flip-card {
+  position: relative;
+  display: grid;
+  transform-style: preserve-3d;
+  transition: transform 0.85s cubic-bezier(0.45, 0, 0.2, 1);
+}
+.flip[data-flipped] .flip-card { transform: rotateY(180deg); }
+/* both faces share one grid cell, so the card takes the photo's own height */
+.flip-face {
+  grid-area: 1 / 1;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--bg-alt);
+  box-shadow: var(--shadow-lift);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.flip-back { transform: rotateY(180deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  .flip-tilt, .flip-card { transition: none; }
+  .flip-tilt { transform: none; }
 }

@@ -498,7 +498,56 @@ const BoardBase = memo(function BoardBase({
   );
 });
 
-/* ── the lit net: halo + core + flowing dashes, plus zone outlines ─────── */
+/* ── joining a net's segments into routes ───────────────────────────────
+   A board file stores copper as short two-point segments, so a dash pattern
+   drawn over them restarts every half-millimetre and nothing ever appears
+   to travel. Chaining segments that share an endpoint gives continuous
+   routes, and a pulse can then run the whole way along one. Anything that
+   is not a plain "M x y L x y" segment is passed through untouched. */
+function chainRoutes(d: string): string[] {
+  const segs: [number, number, number, number][] = [];
+  const loose: string[] = [];
+  for (const part of d.split(/(?=M)/)) {
+    const m = part.trim().match(/^M\s*(-?[\d.]+)[ ,]+(-?[\d.]+)\s*L\s*(-?[\d.]+)[ ,]+(-?[\d.]+)$/);
+    if (m) segs.push([+m[1], +m[2], +m[3], +m[4]]);
+    else if (part.trim()) loose.push(part.trim());
+  }
+  const key = (x: number, y: number) => `${x.toFixed(2)},${y.toFixed(2)}`;
+  const at = new Map<string, number[]>();
+  segs.forEach(([x1, y1, x2, y2], i) => {
+    for (const k of [key(x1, y1), key(x2, y2)]) at.set(k, [...(at.get(k) ?? []), i]);
+  });
+  const used = new Set<number>();
+  /* walk from a dead end (a pad) where there is one, so routes start at a part */
+  const order = segs
+    .map((_, i) => i)
+    .sort((a, b) => {
+      const ends = (i: number) =>
+        Math.min(at.get(key(segs[i][0], segs[i][1]))!.length, at.get(key(segs[i][2], segs[i][3]))!.length);
+      return ends(a) - ends(b);
+    });
+  const routes: string[] = [];
+  for (const start of order) {
+    if (used.has(start)) continue;
+    used.add(start);
+    let [x1, y1, x2, y2] = segs[start];
+    /* begin from whichever end is the dead end */
+    if (at.get(key(x1, y1))!.length > at.get(key(x2, y2))!.length) [x1, y1, x2, y2] = [x2, y2, x1, y1];
+    const pts: [number, number][] = [[x1, y1], [x2, y2]];
+    for (;;) {
+      const [cx, cy] = pts[pts.length - 1];
+      const next = (at.get(key(cx, cy)) ?? []).find((i) => !used.has(i));
+      if (next === undefined) break;
+      used.add(next);
+      const [a, b, c, e] = segs[next];
+      pts.push(key(a, b) === key(cx, cy) ? [c, e] : [a, b]);
+    }
+    routes.push("M" + pts.map(([x, y]) => `${x} ${y}`).join(" L"));
+  }
+  return [...routes, ...loose];
+}
+
+/* ── the lit net: halo + core + a travelling pulse, plus zone outlines ─── */
 function NetOverlay({ layout, net, s }: { layout: BoardLayout; net: Net; s: number }) {
   const match = net.nets
     ? (t: Trace) => !!t.net && net.nets!.includes(t.net)
@@ -518,7 +567,7 @@ function NetOverlay({ layout, net, s }: { layout: BoardLayout; net: Net; s: numb
     return [...runs.entries()];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [layout.traces, net, s]);
-  const allD = useMemo(() => byWidth.map(([, d]) => d).join(" "), [byWidth]);
+  const routes = useMemo(() => chainRoutes(byWidth.map(([, d]) => d).join(" ")), [byWidth]);
   const parts = (layout.parts ?? []).filter((p) => net.parts?.includes(p.ref));
 
   return (
@@ -548,9 +597,17 @@ function NetOverlay({ layout, net, s }: { layout: BoardLayout; net: Net; s: numb
           strokeWidth={w}
           strokeLinecap="round" strokeLinejoin="round" opacity="0.95" />
       ))}
-      <path className="pcb-flow" d={allD} fill="none" stroke="#fff"
-        strokeWidth={0.3 * s} strokeLinecap="round"
-        strokeDasharray={`${0.9 * s} ${2.6 * s}`} opacity="0.75" />
+      {/* the pulse: a soft glow in the net's colour with a white-hot core,
+          one dash every 16 mm, running each route end to end */}
+      <g className="net-pulse" fill="none" strokeLinecap="round" strokeDasharray={`${1.8 * s} ${14.2 * s}`}
+        style={{ "--pulse": `${-16 * s}` } as React.CSSProperties}>
+        {routes.map((d, i) => (
+          <g key={i}>
+            <path d={d} stroke={net.color} strokeWidth={1.4 * s} opacity="0.45" />
+            <path d={d} stroke="#fff" strokeWidth={0.38 * s} />
+          </g>
+        ))}
+      </g>
 
       {parts.map((p, i) => {
         const b = bodyBox(p);
