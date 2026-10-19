@@ -139,24 +139,6 @@ export const SERVICES: Service[] = [
   },
 ];
 
-/* ── what I turn down ──────────────────────────────────────────────────
-   A service list with no edges is a sales page. Rendered in the "What I
-   turn down" card on /services.
-   ────────────────────────────────────────────────────────────────────── */
-export const CAPABILITY_LIMITS_LEAD =
-  "Knowing where the line sits is part of the service — if your board is on the far side of it, you will hear that in the quote rather than halfway through.";
-
-export const CAPABILITY_LIMITS: string[] = [
-  "Mains-voltage design",
-  "Antenna design — pre-certified modules laid out to the vendor's rules instead",
-  "Controlled impedance beyond a USB 2.0 pair",
-  "BGA and HDI — blind and buried vias, via-in-pad",
-  "Precision analog — low-noise instrumentation and sub-millivolt front ends",
-  "Motor power stages",
-  "Medical and avionics",
-  "Firmware ownership — enough to bring a board up, not enough to ship your product",
-];
-
 /* ════════════════════════════════════════════════════════════════════════
    THE DELIVERABLE — one organized folder, the same shape on every job.
 

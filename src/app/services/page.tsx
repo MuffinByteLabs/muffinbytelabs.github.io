@@ -4,7 +4,7 @@ import Reveal from "@/components/pcb/Reveal";
 import ContactCTA from "@/components/pcb/ContactCTA";
 import Icon, { type IconName } from "@/components/ui/Icon";
 import SectionHead from "@/components/ui/SectionHead";
-import { SERVICES, CAPABILITY_LIMITS, CAPABILITY_LIMITS_LEAD } from "@/components/pcb/pcbData";
+import { SERVICES } from "@/components/pcb/pcbData";
 
 /* ════════════════════════════════════════════════════════════════════════
    Services — the five ways a job actually starts, ordered by how cheap
@@ -153,29 +153,6 @@ export default function ServicesPage() {
               </Reveal>
             ))}
           </div>
-
-          {/* ── the edge of the map ──────────────────────────────────────── */}
-          <Reveal>
-            <div className="card card-static mt-5 sm:mt-6 p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] gap-x-12 gap-y-6">
-              <div>
-                {/* a real heading, styled by the eyebrow class */}
-                <h2 className="eyebrow m-0">What I turn down</h2>
-                <p className="mt-3 mb-0 text-[14px] leading-7" style={{ color: "var(--text-2)" }}>
-                  {CAPABILITY_LIMITS_LEAD}
-                </p>
-              </div>
-              <ul className="flex flex-wrap gap-2 m-0 p-0 list-none content-start">
-                {CAPABILITY_LIMITS.map((l) => (
-                  <li key={l} className="chip text-[12.5px] whitespace-normal">
-                    <span style={{ color: "var(--text-3)" }}>
-                      <Icon name="close" size={12} />
-                    </span>
-                    {l}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Reveal>
         </div>
       </section>
 
