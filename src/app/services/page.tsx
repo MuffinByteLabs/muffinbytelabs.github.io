@@ -4,13 +4,14 @@ import Reveal from "@/components/pcb/Reveal";
 import ContactCTA from "@/components/pcb/ContactCTA";
 import Icon, { type IconName } from "@/components/ui/Icon";
 import SectionHead from "@/components/ui/SectionHead";
-import { SERVICES } from "@/components/pcb/pcbData";
+import { HOURLY_RATE, SERVICES } from "@/components/pcb/pcbData";
 
 /* ════════════════════════════════════════════════════════════════════════
    Services — the five ways a job actually starts, ordered by how cheap
    they are to try. The review leads because it is the door most clients
    come through: no fab spend, a fixed document at the end, and a real one
-   already published to read first.
+   already published to read first. Where a recent client job matches a
+   service, the card says so in one general line.
 
    Server-rendered prose; the only client JavaScript is the shared Reveal
    scroll-in that every section on the site uses.
@@ -82,7 +83,8 @@ function ServiceCard({ s, featured = false }: { s: (typeof SERVICES)[number]; fe
           <h2 className="display text-[1.85rem] sm:text-[2.1rem]" style={{ color: "var(--text)" }}>
             {s.title}
           </h2>
-          <span className="chip mt-3">
+          {/* the turnaround can be two short phrases — let it wrap on a phone */}
+          <span className="chip mt-3 whitespace-normal">
             <Icon name="clock" size={13} />
             {s.turnaround}
           </span>
@@ -102,6 +104,16 @@ function ServiceCard({ s, featured = false }: { s: (typeof SERVICES)[number]; fe
               </li>
             ))}
           </ul>
+          {/* one recent client job of this kind, kept general — see CLIENT_WORK */}
+          {s.recent && (
+            <p
+              className="mt-5 mb-0 pl-3.5 text-[13px] leading-6"
+              style={{ color: "var(--text-2)", borderLeft: "2px solid var(--accent-line)" }}
+            >
+              <span className="eyebrow block mb-0.5">Recently</span>
+              {s.recent}
+            </p>
+          )}
           {s.sample && (
             <p className="mt-5 mb-0">
               <ServiceLink sample={s.sample} />
@@ -131,10 +143,10 @@ export default function ServicesPage() {
               }
               lede={
                 <>
-                  Ordered by how little it costs to try me. Every one ends in writing &mdash; a
-                  findings document, or a full manufacturing package &mdash; and any design files
-                  delivered are native to the EDA tool you use, and yours outright. Where a claim can be checked against
-                  something public, the link is right on the card.
+                  Ordered by how little it costs to start. Each one ends in writing &mdash; a
+                  findings report or a full manufacturing package &mdash; and the design files are
+                  yours, in the EDA tool you use. A defined job gets a fixed price in writing;
+                  open-ended work is {HOURLY_RATE} an hour.
                 </>
               }
             />

@@ -1,34 +1,35 @@
 import Link from "next/link";
 import GitHubMark from "./GitHubMark";
 import Icon from "@/components/ui/Icon";
+import Unbroken from "@/components/ui/Unbroken";
 import type { Board } from "./pcbData";
 
 /* ════════════════════════════════════════════════════════════════════════
    The top of a board panel: what it is, its key numbers, and where to
-   read more. Shared by both boards so the two panels read as a pair.
+   read more. `BoardTitle` is the left half on its own, for a panel that
+   lays out the rest differently.
    ════════════════════════════════════════════════════════════════════════ */
-export default function BoardHeader({ board, index }: { board: Board; index: string }) {
+export function BoardTitle({ board }: { board: Board }) {
+  return (
+    <>
+      <span className="eyebrow" style={{ color: "var(--accent)" }}>
+        {board.id}
+      </span>
+      <h3 className="display mt-3 text-[2.15rem] sm:text-[2.7rem]" style={{ color: "var(--text)" }}>
+        <Unbroken>{board.name}</Unbroken>
+      </h3>
+      <p className="mt-3 mb-0 text-[15.5px] leading-7 max-w-[60ch]" style={{ color: "var(--text-2)" }}>
+        {board.summary}
+      </p>
+    </>
+  );
+}
+
+export default function BoardHeader({ board }: { board: Board }) {
   return (
     <header className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] gap-x-12 gap-y-6">
       <div className="min-w-0">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-          <span className="mono text-[11px] tracking-[0.16em]" style={{ color: "var(--accent)" }}>
-            {index}
-          </span>
-          <span className="eyebrow">{board.id}</span>
-        </div>
-        <h3 className="display mt-3 text-[2.15rem] sm:text-[2.7rem]" style={{ color: "var(--text)" }}>
-          {/* a hyphenated word ("Wi-Fi", "ESP32-S3") never breaks at its hyphen */}
-          {board.name.split(" ").map((word, i) => (
-            <span key={i}>
-              {i > 0 && " "}
-              {word.includes("-") ? <span className="whitespace-nowrap">{word}</span> : word}
-            </span>
-          ))}
-        </h3>
-        <p className="mt-3 mb-0 text-[15.5px] leading-7 max-w-[60ch]" style={{ color: "var(--text-2)" }}>
-          {board.summary}
-        </p>
+        <BoardTitle board={board} />
       </div>
 
       <div className="min-w-0 lg:pt-9 flex flex-col gap-5 lg:items-end">

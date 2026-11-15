@@ -3,7 +3,7 @@ import Link from "next/link";
 import Reveal from "@/components/pcb/Reveal";
 import ContactCTA from "@/components/pcb/ContactCTA";
 import Icon from "@/components/ui/Icon";
-import ArchitectureDiagram from "@/components/pcb2/ArchitectureDiagram";
+import Pcb2Drawings from "@/components/pcb2/Pcb2Drawings";
 import DomainMap from "@/components/pcb2/DomainMap";
 import PermissionGate from "@/components/pcb2/PermissionGate";
 import { PCB2, PCB2_SLUG, PCB2_STATS, PCB2_IO, DOMAIN_COLOR, FAULT_TARGETS } from "@/components/pcb2/data";
@@ -12,7 +12,8 @@ import { CONTACT_EMAIL } from "@/components/pcb/pcbData";
 /* ════════════════════════════════════════════════════════════════════════
    PCB 2 — the case study, cut to what a client reads in half a minute:
    what it connects to, how it is put together, and what it survives. The
-   power tree and stack-up are one click away on the homepage card.
+   four engineering drawings share one tabbed block, so the page stays
+   short for a skimmer and complete for a reader.
    ════════════════════════════════════════════════════════════════════════ */
 
 const TITLE = "STM32 Industrial I/O Controller — PCB 2 case study | Ray Malik";
@@ -207,9 +208,9 @@ export default function Pcb2CaseStudy() {
             n="02"
             label="Architecture"
             title="One MCU, five islands, one gate"
-            lede="Field wiring left and right, the STM32 in the middle, power across the top and the hardware permission along the bottom. Trace any path to see what it passes through."
+            lede="Field wiring left and right, the STM32 in the middle, power across the top and the hardware permission along the bottom. Trace any path to see what it passes through — or switch to the isolation map, the power tree or the stack-up."
           >
-            <ArchitectureDiagram />
+            <Pcb2Drawings />
           </Section>
 
           {/* 03 ─ protection */}
@@ -247,7 +248,7 @@ export default function Pcb2CaseStudy() {
             <div className="mt-12 flex flex-wrap items-center gap-3">
               <Link href="/#pcb-2" className="btn btn-ghost">
                 <Icon name="arrowLeft" size={16} />
-                Back to the work
+                Back to the boards
               </Link>
               <Link href="/#pcb-1" className="link-quiet text-[13.5px] px-2">
                 See PCB 1, the ESP32-S3 plant monitor &rarr;

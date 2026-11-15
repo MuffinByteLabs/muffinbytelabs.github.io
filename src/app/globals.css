@@ -801,3 +801,51 @@ html:not([data-js]) .llabel { opacity: 1; }
   .flip-tilt, .flip-card { transition: none; }
   .flip-tilt { transform: none; }
 }
+
+/* ── client work: the drawing at the top of each card ──────────────────── */
+.client-art {
+  height: 172px;
+  padding: 18px 20px;
+  background: var(--bg-alt);
+  border-bottom: 1px solid var(--border-soft);
+}
+/* the two wide cards on the top row have room for a larger drawing */
+@media (min-width: 1280px) {
+  .client-art-wide { height: 198px; }
+}
+/* on a phone the drawing is width-limited, so it gets only the height it uses */
+@media (max-width: 639px) {
+  .client-art { height: 158px; padding: 12px; }
+}
+
+/* ── how a project runs: numbered stages joined by one hairline ────────── */
+.step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 1rem;
+  padding-bottom: 1.2rem;
+}
+.step:last-child { padding-bottom: 0; }
+.step::before {
+  content: "";
+  position: absolute;
+  left: 16.5px;
+  top: 38px;
+  bottom: 4px;
+  width: 1px;
+  background: var(--accent-line);
+}
+.step:last-child::before { display: none; }
+.step-num {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11.5px;
+  color: var(--accent);
+  border: 1px solid var(--accent-line);
+  background: var(--accent-soft);
+}

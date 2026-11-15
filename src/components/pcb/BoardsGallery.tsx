@@ -2,33 +2,33 @@ import Image from "next/image";
 import Link from "next/link";
 import Reveal from "./Reveal";
 import Board3D from "./Board3D";
-import BoardHeader from "./BoardHeader";
+import BoardHeader, { BoardTitle } from "./BoardHeader";
 import LayoutExplorer from "./LayoutExplorer";
 import RepoFiles from "./RepoFiles";
 import FlipPhoto from "./FlipPhoto";
 import { BOARDS, type BoardImage } from "./pcbData";
-import { Stackup, STACK_4L, STACK_PCB2 } from "./Stackup";
+import { Stackup, STACK_4L } from "./Stackup";
 import Tabs from "@/components/ui/Tabs";
 import Icon from "@/components/ui/Icon";
 import SectionHead from "@/components/ui/SectionHead";
-import ArchitectureDiagram from "@/components/pcb2/ArchitectureDiagram";
-import DomainMap, { DomainLegend } from "@/components/pcb2/DomainMap";
-import PowerTree from "@/components/pcb2/PowerTree";
-import { InputBudget, ServiceBudget } from "@/components/pcb2/Budgets";
-import { DESIGN_RULES, PCB2_IO, DOMAIN_COLOR, PCB2_SLUG } from "@/components/pcb2/data";
+import DomainMap from "@/components/pcb2/DomainMap";
+import { PCB2_STATS, PCB2_SLUG } from "@/components/pcb2/data";
 
 /* ════════════════════════════════════════════════════════════════════════
-   WORK — two boards as a pair of panels with the same shape: what it is,
-   its key numbers, and a good look at it behind a row of tabs.
+   Two boards in full — the counterpart to the client work above it.
+   Client files are private; these two are Ray's own, so they can be looked
+   at as closely as a visitor likes.
 
-   PCB 1 opens on a photograph of the assembled board that turns over to
-   show the back, then the 3D model,
-   the layout drawn from the board file, the renders, the stack-up and the
-   public repository. PCB 2 opens on the engineering drawings that decided
-   it, with the long version on its own case-study page.
+   PCB 1 is the deep one: a photograph of the assembled board that turns
+   over, then the 3D model, the layout drawn from the board file, the
+   renders, the stack-up and the public repository, behind a row of tabs.
 
-   Server-rendered; only the tabs, the 3D viewer, the layout explorer and
-   the architecture tracer ship JavaScript.
+   PCB 2 is a short card — what it is, four numbers and its zoning map —
+   that hands off to its own case-study page, where the detailed drawings
+   live. On the homepage those drawings were the most crowded thing on it.
+
+   Server-rendered; only the tabs, the photo flip, the 3D viewer and the
+   layout explorer ship JavaScript.
    ════════════════════════════════════════════════════════════════════════ */
 
 const PCB1_NOTES: { title: string; body: string }[] = [
@@ -76,31 +76,31 @@ function Figure({ im, wide = false }: { im: BoardImage; wide?: boolean }) {
   );
 }
 
-export default function BoardsGallery() {
+export default function BoardsGallery({ index }: { index?: string }) {
   const [pcb1, pcb2] = BOARDS;
 
   return (
-    <section id="work" className="px-6 pb-24 sm:pb-32">
+    <section id="boards" className="px-6 pb-24 sm:pb-32">
       <div className="max-w-6xl mx-auto">
         <Reveal>
           <SectionHead
-            index="01"
-            label="Work"
+            index={index}
+            label="In full"
             title={
               <>
-                Boards, <em>start to finish</em>
+                Two boards, <em>in full</em>
               </>
             }
-            lede="A closer look at two recent boards — each taken from a blank schematic to assembled hardware."
+            lede="Client files are private. These two boards are my own, so you can look as closely as you like."
           />
         </Reveal>
 
-        <div className="mt-12 sm:mt-14 space-y-10 sm:space-y-14">
+        <div className="mt-10 sm:mt-12 space-y-5 sm:space-y-6">
           {/* ── PCB 1 ─────────────────────────────────────────────────── */}
           <Reveal>
             <article id="pcb-1" className="card card-static edge-glow min-w-0">
               <div className="px-5 sm:px-9 pt-7 sm:pt-9 pb-6">
-                <BoardHeader board={pcb1} index="01" />
+                <BoardHeader board={pcb1} />
               </div>
               <div className="px-3 sm:px-9 pb-6 sm:pb-9">
                 <Tabs
@@ -187,114 +187,36 @@ export default function BoardsGallery() {
           {/* ── PCB 2 ─────────────────────────────────────────────────── */}
           <Reveal>
             <article id="pcb-2" className="card card-static edge-glow min-w-0">
-              <div className="px-5 sm:px-9 pt-7 sm:pt-9 pb-6">
-                <BoardHeader board={pcb2} index="02" />
-              </div>
-              <div className="px-3 sm:px-9 pb-2">
-                <Tabs
-                  label={`${pcb2.id} views`}
-                  /* the architecture drawing scrolls sideways on a phone;
-                     the domain map fits one */
-                  mobileFirst="domains"
-                  items={[
-                    {
-                      key: "arch",
-                      label: "Architecture",
-                      icon: "flag",
-                      content: <ArchitectureDiagram compact />,
-                    },
-                    {
-                      key: "domains",
-                      label: "Isolation domains",
-                      icon: "isolation",
-                      content: (
-                        <div>
-                          <DomainMap id="dmap-home" />
-                          <DomainLegend />
-                        </div>
-                      ),
-                    },
-                    {
-                      key: "power",
-                      label: "Power tree",
-                      icon: "bolt",
-                      content: (
-                        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] gap-8 lg:gap-10">
-                          <PowerTree />
-                          <div className="space-y-8 lg:pt-1">
-                            <InputBudget />
-                            <ServiceBudget />
-                          </div>
-                        </div>
-                      ),
-                    },
-                    {
-                      key: "stack",
-                      label: "Stack-up",
-                      icon: "layers",
-                      content: (
-                        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-6 md:gap-10">
-                          <Stackup layers={STACK_PCB2} showLabel={false} total="1.6 mm FR-4 · 1 oz" />
-                          <div className="self-center">
-                            <span className="eyebrow">Design rules</span>
-                            <dl
-                              className="mt-3 m-0 grid grid-cols-2 gap-px rounded-xl overflow-hidden"
-                              style={{ background: "var(--border-soft)", border: "1px solid var(--border-soft)" }}
-                            >
-                              {DESIGN_RULES.map((r) => (
-                                <div key={r.label} className="px-4 py-3" style={{ background: "var(--surface)" }}>
-                                  <dt className="text-[11.5px]" style={{ color: "var(--text-3)" }}>
-                                    {r.label}
-                                  </dt>
-                                  <dd className="m-0 mt-1 mono text-[13px]" style={{ color: "var(--text)" }}>
-                                    {r.value}
-                                  </dd>
-                                </div>
-                              ))}
-                            </dl>
-                          </div>
-                        </div>
-                      ),
-                    },
-                  ]}
-                />
-              </div>
+              <div className="px-5 sm:px-9 py-7 sm:py-9 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] gap-x-12 gap-y-8 items-center">
+                <div className="min-w-0">
+                  <BoardTitle board={pcb2} />
 
-              {/* ── the I/O, at a glance ───────────────────────────────── */}
-              <div className="px-5 sm:px-9 pt-8 pb-8 sm:pb-9">
-                <span className="eyebrow">I/O at a glance</span>
-                <ul
-                  className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px m-0 p-0 list-none rounded-xl overflow-hidden"
-                  style={{ background: "var(--border-soft)", border: "1px solid var(--border-soft)" }}
-                >
-                  {PCB2_IO.map((io) => (
-                    <li key={io.name} className="px-4 py-4 flex gap-3.5" style={{ background: "var(--surface)" }}>
-                      <span
-                        className="display text-[1.55rem] leading-none tabular-nums w-9 shrink-0"
-                        style={{ color: DOMAIN_COLOR[io.domain] }}
-                      >
-                        {io.count}
-                      </span>
-                      <span className="min-w-0">
-                        <span className="block text-[13.5px] font-medium" style={{ color: "var(--text)" }}>
-                          {io.name}
+                  <ul className="mt-6 m-0 p-0 list-none grid grid-cols-2 gap-x-6 gap-y-4">
+                    {PCB2_STATS.map((s) => (
+                      <li key={s.label} className="min-w-0">
+                        <span className="block display text-[1.6rem] leading-none" style={{ color: "var(--text)" }}>
+                          {s.value}
                         </span>
-                        <span className="block mt-0.5 text-[12px] leading-5" style={{ color: "var(--text-3)" }}>
-                          {io.part}
+                        <span className="block mt-1.5 text-[12px] leading-[1.45]" style={{ color: "var(--text-3)" }}>
+                          {s.label}
                         </span>
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                      </li>
+                    ))}
+                  </ul>
 
-                <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
-                  <Link href={PCB2_SLUG} className="btn btn-primary">
-                    The full case study
+                  <Link href={PCB2_SLUG} className="btn btn-primary mt-8">
+                    Read the case study
                     <Icon name="arrowRight" size={16} className="nudge" />
                   </Link>
-                  <span className="text-[13px]" style={{ color: "var(--text-3)" }}>
-                    The I/O, the architecture and the protection, on one page.
-                  </span>
+                </div>
+
+                <div className="min-w-0">
+                  {/* the map is its own figure and draws its own panel */}
+                  <DomainMap id="dmap-home" fit />
+                  <p className="mt-3 mb-0 text-[12px] leading-5" style={{ color: "var(--text-3)" }}>
+                    How the board is zoned: main ground, and five islands that only an isolator, an
+                    isolated supply or a relay may cross.
+                  </p>
                 </div>
               </div>
             </article>

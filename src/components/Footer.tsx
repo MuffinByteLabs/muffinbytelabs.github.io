@@ -2,7 +2,7 @@ import Link from "next/link";
 import GitHubMark from "@/components/pcb/GitHubMark";
 import Icon from "@/components/ui/Icon";
 import CopyEmail from "@/components/CopyEmail";
-import { REPO, CONTACT_EMAIL, CONTACT_MAILTO } from "@/components/pcb/pcbData";
+import { REPO, CONTACT_EMAIL, CONTACT_MAILTO, UPWORK_URL } from "@/components/pcb/pcbData";
 import { PCB2_SLUG } from "@/components/pcb2/data";
 
 /* How to reach me, where the work lives, and nothing that tracks you. */
@@ -10,6 +10,7 @@ const COLUMNS: { title: string; links: { label: string; href: string; external?:
   {
     title: "Work",
     links: [
+      { label: "Client projects", href: "/#work" },
       { label: "PCB 1 · ESP32-S3 Plant Monitor", href: "/#pcb-1" },
       { label: "PCB 2 · STM32 Industrial I/O", href: PCB2_SLUG },
       { label: "PCB 1 on GitHub", href: REPO.url, external: true },
@@ -21,6 +22,7 @@ const COLUMNS: { title: string; links: { label: string; href: string; external?:
       { label: "Services", href: "/services" },
       { label: "Deliverables", href: "/#deliverables" },
       { label: "Field Notes", href: "/blog" },
+      { label: "Upwork profile", href: UPWORK_URL, external: true },
     ],
   },
   {

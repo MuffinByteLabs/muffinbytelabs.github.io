@@ -24,7 +24,7 @@ const instrument = Instrument_Serif({
 
 const TITLE = "Ray Malik — PCB Design Engineer";
 const DESCRIPTION =
-  "Freelance PCB design engineer. ESP32 and STM32 boards — 4-layer, RF modules, USB, protected 24 V power and isolated industrial I/O — taken from schematic capture to a manufacturing package a fab accepts first try.";
+  "Freelance PCB design engineer: new boards and pre-fab design reviews. ESP32 and STM32 boards — 4-layer, RF modules, USB, protected 24 V power and isolated industrial I/O — taken from schematic capture to a manufacturing package a fab accepts first try.";
 
 const SITE = "https://muffinbytelabs.com";
 

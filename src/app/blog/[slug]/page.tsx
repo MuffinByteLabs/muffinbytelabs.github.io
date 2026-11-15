@@ -145,7 +145,7 @@ export default async function BlogPost({
             </p>
           </div>
           <a href={CONTACT_MAILTO} className="btn btn-primary btn-sm shrink-0">
-            Start a board
+            Start a project
             <Icon name="arrowRight" size={14} className="nudge" />
           </a>
         </aside>

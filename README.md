@@ -2,7 +2,25 @@
 
 Portfolio and bidding site for **MuffinByteLabs** — Ray Malik, freelance PCB design engineer.
 
-Written for a client who skims for thirty seconds: hero → work → deliverables → contact. PCB 1 opens on photos of the assembled board, and its Files tab links into the full public project ([MuffinByteLabs/esp32s3-plant-monitor](https://github.com/MuffinByteLabs/esp32s3-plant-monitor)) — design source, the exact package uploaded to the fab, the firmware and the design reviews. PCB 2 — the STM32 Industrial I/O Controller — has a short case study at `/work/stm32-industrial-io`. The copy is tool-neutral: no page names an EDA tool.
+Written for a client who skims for thirty seconds: hero → client work → two boards in full → deliverables → contact.
+
+- **Client work** is five boards and circuits engineered for clients, each beside a generic drawing made for the site. See the rules below before touching it.
+- **Two boards in full** are Ray's own. PCB 1 opens on a photo of the assembled board that turns over, and its Files tab links into the full public project ([MuffinByteLabs/esp32s3-plant-monitor](https://github.com/MuffinByteLabs/esp32s3-plant-monitor)) — design source, the exact package uploaded to the fab, the firmware and the design reviews. PCB 2 — the STM32 Industrial I/O Controller — is a short card that leads to its case study at `/work/stm32-industrial-io`, where its four engineering drawings sit behind tabs.
+- The copy is tool-neutral: no page names an EDA tool.
+
+## Client work
+
+The projects in `CLIENT_WORK` (`src/components/pcb/pcbData.ts`) belong to clients and are shown with their agreement. Each card is finished work: what the board is, and what was engineered on it. The rules:
+
+- no client or company name and no product name;
+- no client images, renders, schematics or documents — the drawings in `ClientArt.tsx` are generic and were made for the site;
+- every sentence is engineering Ray did on that board.
+
+Anything more specific — a board render, a photo, a quote from the client — needs that client's say-so first.
+
+## Rate and Upwork
+
+The hourly rate (`HOURLY_RATE`) and the Upwork profile (`UPWORK_URL`) are declared once in `pcbData.ts`. The hero, the contact card, the footer, the services page and the structured data (`src/lib/schema.ts`) all read them from there — change them in one place.
 
 ## Stack
 
@@ -24,16 +42,17 @@ npm run build   # static export into out/
 
 | Path | What |
 |---|---|
-| `src/components/pcb/pcbData.ts` | Homepage content — boards (photos, renders), services, the deliverable folder, repo links |
+| `src/components/pcb/pcbData.ts` | Homepage content — client work, boards (photos, renders), services, the deliverable folder, the project steps, the rate, the Upwork and repo links |
+| `src/components/pcb/ClientWork.tsx`, `ClientArt.tsx` | The client-work section and its five generic drawings |
 | `src/components/pcb2/data.ts` | Everything on the PCB 2 case study, each number traced to the project's own engineering documents |
-| `src/components/pcb2/` | PCB 2 drawings: the traceable architecture diagram, the isolation-domain map, power tree, budgets, permission gate |
+| `src/components/pcb2/` | PCB 2 drawings: the traceable architecture diagram, the isolation-domain map, power tree, budgets, permission gate — grouped behind tabs by `Pcb2Drawings.tsx` |
 | `src/components/pcb/` | PCB 1 viewers (3D model, layout + net tracer, stack-up, repo files), the exploded layer stack, and the homepage sections |
-| `src/components/ui/` | Shared primitives — `Icon`, `Tabs`, `SectionHead` |
+| `src/components/ui/` | Shared primitives — `Icon`, `Tabs`, `SectionHead`, `Unbroken` (headings that never break at a hyphen) |
 | `src/app/work/stm32-industrial-io/` | The PCB 2 case-study page |
 
 ## Adding to PCB 2
 
-- **Photos** — add a `photos` array to `BOARDS[1]` in `pcbData.ts`, the same shape as PCB 1's, and give its card a Photos tab.
+- **Photos** — add a `photos` array to `BOARDS[1]` in `pcbData.ts`, the same shape as PCB 1's, and show them in its card in `BoardsGallery.tsx`.
 - **Repo published** — add a `repo` to `BOARDS[1]`, and the card header links straight to it.
 
 ## Scripts

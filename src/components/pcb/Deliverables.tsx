@@ -29,14 +29,14 @@ function zipFacts() {
   };
 }
 
-export default function Deliverables() {
+export default function Deliverables({ index }: { index?: string }) {
   const zip = zipFacts();
   return (
     <section id="deliverables" className="px-6 pb-24 sm:pb-32">
       <div className="max-w-6xl mx-auto">
         <Reveal>
           <SectionHead
-            index="02"
+            index={index}
             label="Deliverables"
             title={
               <>

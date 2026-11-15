@@ -6,10 +6,13 @@
    is the whole point of being indexed at all. Everything below is a fact
    stated elsewhere on the site.
 
-   Deliberately absent: aggregateRating, priceRange, postal address,
-   telephone. Structured data is a claim made to a search engine in a format
-   built for trust; inventing any of those is worse than omitting them.
+   Deliberately absent: aggregateRating, postal address, telephone.
+   Structured data is a claim made to a search engine in a format built for
+   trust; inventing any of those is worse than omitting them. priceRange is
+   the hourly rate the site itself states.
    ════════════════════════════════════════════════════════════════════════ */
+
+import { HOURLY_RATE, UPWORK_URL } from "@/components/pcb/pcbData";
 
 export const SITE = "https://muffinbytelabs.com";
 export const EMAIL = "muffinbytelabs@gmail.com";
@@ -27,7 +30,7 @@ const person = {
   email: `mailto:${EMAIL}`,
   image: `${SITE}/face_shot.webp`,
   jobTitle: "PCB Design Engineer",
-  sameAs: [GITHUB_ORG],
+  sameAs: [GITHUB_ORG, UPWORK_URL],
   description:
     "Freelance PCB design engineer — schematic capture, 2 and 4-layer layout, and the complete manufacturing package.",
   knowsAbout: [
@@ -58,10 +61,11 @@ export const homeSchema = {
       logo: `${SITE}/logo-mark.png`,
       image: `${SITE}/og.png`,
       founder: { "@id": PERSON_ID },
-      sameAs: [GITHUB_ORG],
+      sameAs: [GITHUB_ORG, UPWORK_URL],
       description:
         "Freelance PCB design: schematic capture, 2 and 4-layer layout, and a JLCPCB-ready manufacturing package — Gerbers, drill, BOM with real part numbers, CPL, and DRC/ERC-clean proof.",
       areaServed: "Worldwide — remote",
+      priceRange: `${HOURLY_RATE} per hour`,
       serviceType: [
         "PCB design",
         "PCB layout",

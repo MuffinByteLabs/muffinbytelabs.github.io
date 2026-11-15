@@ -39,15 +39,15 @@ export default function Header() {
   /* scroll-spy for the two home-page sections that have nav links */
   useEffect(() => {
     if (path !== "/" || typeof IntersectionObserver === "undefined") return;
-    const ids = ["work", "deliverables", "contact"];
+    const ids = ["work", "boards", "deliverables", "contact"];
     const els = ids.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
     const seen = new Map<string, boolean>();
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => seen.set(e.target.id, e.isIntersecting));
-        /* contact belongs to no nav link */
+        /* the boards belong to Work; contact belongs to no nav link */
         const first = ids.find((id) => seen.get(id));
-        setSection(first === "contact" ? null : (first ?? null));
+        setSection(first === "boards" ? "work" : first === "contact" ? null : (first ?? null));
       },
       { rootMargin: "-45% 0px -50% 0px" }
     );
@@ -145,7 +145,7 @@ export default function Header() {
               })}
             </ul>
             <a href={CONTACT_MAILTO} className="btn btn-primary btn-sm">
-              Start a board
+              Start a project
               <Icon name="arrowRight" size={14} className="nudge" />
             </a>
           </div>
@@ -196,7 +196,7 @@ export default function Header() {
             })}
           </ul>
           <a href={CONTACT_MAILTO} className="btn btn-primary w-full mt-6">
-            Start a board
+            Start a project
             <Icon name="arrowRight" size={16} />
           </a>
           <CopyEmail

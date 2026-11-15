@@ -1,6 +1,5 @@
 import Image from "next/image";
-import { CONTACT_MAILTO, REPO } from "./pcbData";
-import GitHubMark from "./GitHubMark";
+import { CONTACT_MAILTO, HOURLY_RATE, UPWORK_URL } from "./pcbData";
 import Icon from "@/components/ui/Icon";
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -8,12 +7,14 @@ import Icon from "@/components/ui/Icon";
 
    Two photographs: the person, and the person at the bench. Square to the
    page, no tags pinned to them — the work section below makes the case.
+   Two sentences of copy, two actions and one quiet line for clients who
+   would sooner hire through Upwork; everything else is further down.
 
    Server-rendered; no JavaScript, no motion.
    ════════════════════════════════════════════════════════════════════════ */
 
 const PROOF: { value: string; label: string; note: string }[] = [
-  { value: "24 h", label: "to a fixed quote", note: "scope, price and timeline in writing" },
+  { value: HOURLY_RATE, label: "per hour", note: "or a fixed price, quoted in writing within 24 hours" },
   { value: "100%", label: "money-back guarantee", note: "written into every signed contract" },
   { value: "0", label: "DRC / ERC errors at hand-off", note: "every package checked before it leaves" },
   { value: "Any", label: "EDA tool", note: "files delivered in the format your team uses" },
@@ -29,44 +30,42 @@ export default function Hero() {
       <div className="relative max-w-6xl mx-auto grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] gap-14 lg:gap-10 items-center">
         {/* ── the words ───────────────────────────────────────────────── */}
         <div className="text-center lg:text-left">
-          <span className="kicker justify-center lg:justify-start">
-            <span className="rule" aria-hidden />
-            Freelance PCB design
-          </span>
-
-          <h1 className="display text-gradient mt-6 text-[3.6rem] sm:text-[5rem] lg:text-[6.1rem] leading-[0.95]">
+          <h1 className="display text-gradient text-[3.6rem] sm:text-[5rem] lg:text-[6.1rem] leading-[0.95]">
             Ray Malik
           </h1>
 
           <p className="mt-5 text-lg sm:text-[1.3rem]" style={{ color: "var(--text)", letterSpacing: "-0.012em" }}>
-            PCB design engineer
+            Freelance PCB design engineer
           </p>
 
           <p className="lede mt-4 mx-auto lg:mx-0 max-w-[48ch] text-[16px] sm:text-[17px]">
-            I turn circuit ideas and prototypes into boards a factory can build &mdash; schematic,
-            layout and the complete manufacturing package. A computer-science degree underneath, so
-            the layout is drawn knowing what the firmware will ask of it.
+            I take a board from an idea to a package a factory can build from: schematic, layout
+            and manufacturing files. I also review existing designs before they are ordered.
           </p>
 
           <div className="mt-9 flex flex-wrap items-center justify-center lg:justify-start gap-3">
             <a href={CONTACT_MAILTO} className="btn btn-primary">
-              Start a board
+              Start a project
               <Icon name="arrowRight" size={16} className="nudge" />
             </a>
             <a href="#work" className="btn btn-ghost">
               See the work
               <Icon name="arrowDown" size={16} className="nudge-down" />
             </a>
+          </div>
+
+          <p className="mt-6 mb-0 text-[13.5px]" style={{ color: "var(--text-3)" }}>
+            Prefer to work through a platform?{" "}
             <a
-              href={REPO.url}
+              href={UPWORK_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="link-quiet inline-flex items-center gap-2 text-[13.5px] px-3 py-2"
+              className="link-gold inline-flex items-center gap-1 whitespace-nowrap"
             >
-              <GitHubMark size={15} />
-              GitHub
+              Hire me on Upwork
+              <Icon name="arrowUpRight" size={13} />
             </a>
-          </div>
+          </p>
         </div>
 
         {/* ── the photographs ─────────────────────────────────────────── */}

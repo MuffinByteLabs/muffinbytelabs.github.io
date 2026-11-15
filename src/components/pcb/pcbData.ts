@@ -46,6 +46,10 @@ export const CONTACT_MAILTO = `mailto:${CONTACT_EMAIL}?subject=${encodeURICompon
   ].join("\n")
 )}`;
 
+/* ---- Rate and where else to hire — declared once ---------------------- */
+export const HOURLY_RATE = "$30";
+export const UPWORK_URL = "https://www.upwork.com/freelancers/raymalik";
+
 /* ════════════════════════════════════════════════════════════════════════
    SERVICES — new boards, pre-fab reviews, and fixes to existing projects.
    ════════════════════════════════════════════════════════════════════════ */
@@ -57,6 +61,8 @@ export type Service = {
   turnaround: string;
   /** one link to public evidence of this exact kind of work, where it exists */
   sample?: { label: string; href: string; external?: boolean };
+  /** one recent client job of this kind, in general terms — see CLIENT_WORK */
+  recent?: string;
 };
 
 /* Ordered the way the work actually arrives: a review is the cheapest way
@@ -66,13 +72,14 @@ export const SERVICES: Service[] = [
   {
     id: "SVC-01",
     title: "Pre-fab design review",
-    desc: "A second set of eyes on your board before you spend money at the fab. A review is a document — and you can read the ones my own board went through before you pay for one.",
+    desc: "A second set of eyes before you pay the fab — whether the board was drawn by an experienced engineer, a first-time designer or an AI tool. You get a written report: what to change, why, and how to test it.",
     bullets: [
-      "DRC / ERC / DFM check against your fab's real capability sheet",
-      "Footprint & part sanity pass — stock, lifecycle, polarity, pin-1, keep-outs",
-      "Written findings ranked by severity, with a concrete recommendation on each",
+      "Schematic, layout and assembly files checked against the datasheets and your fab's capability sheet",
+      "Footprints, polarity, pin 1, part stock and lifecycle",
+      "Findings ranked by severity, each with a concrete fix",
     ],
-    turnaround: "most reviews back in 24–48h",
+    turnaround: "first findings in 1–2 days · full report in about a week",
+    recent: "A controller board ahead of its first order: 55 findings, grouped into 15 prioritized actions with a test plan.",
     sample: {
       label: "Read a real review",
       href: "https://github.com/MuffinByteLabs/esp32s3-plant-monitor/blob/main/docs/reviews/Design_Review_RevA_2026-07-20.md",
@@ -108,13 +115,14 @@ export const SERVICES: Service[] = [
   {
     id: "SVC-04",
     title: "New board, idea to fab",
-    desc: "From a concept, breadboard prototype, or draft schematic to a manufacturing-ready project.",
+    desc: "From a concept, a breadboard prototype or a draft schematic to a project your fab can build from.",
     bullets: [
       "Schematic capture + component selection from in-stock LCSC / Digi-Key parts",
       "Clean 2-layer & 4-layer layout — ESP32 and STM32, sensors, USB-C, protected power, isolated I/O",
       "Full JLCPCB / PCBWay package: Gerbers, drill, BOM with LCSC / Digi-Key part numbers, CPL, PDF schematic, 3D render",
     ],
     turnaround: "small boards in days, not weeks",
+    recent: "A precision measurement instrument, taken from a working prototype to its own custom board.",
     sample: {
       label: "A finished one, published in full",
       href: "https://github.com/MuffinByteLabs/esp32s3-plant-monitor",
@@ -125,6 +133,7 @@ export const SERVICES: Service[] = [
     id: "SVC-05",
     title: "Fix, revise & finish",
     desc: "Work inside your existing project, in your tool, without breaking what already works.",
+    recent: "A four-layer control board, re-routed by hand and released for factory assembly.",
     bullets: [
       "Schematic edits, re-routes, and Rev-B board revisions",
       "Power & thermal fixes — pours, thermal vias, trace widths sized to current",
@@ -136,6 +145,76 @@ export const SERVICES: Service[] = [
       href: "https://github.com/MuffinByteLabs/esp32s3-plant-monitor/blob/main/docs/RevB_Upgrade_Plan.md",
       external: true,
     },
+  },
+];
+
+/* ════════════════════════════════════════════════════════════════════════
+   CLIENT WORK — boards and circuits engineered for clients, shown with
+   their agreement.
+
+   ── THE RULES — read before editing ───────────────────────────────────
+   Each entry is finished work: what the board is, and what was engineered
+   on it.
+
+     · No client or company name and no product name.
+     · No client images, renders, schematics or documents. The drawings
+       beside each entry are generic and were made for this site; showing
+       a real render or photo needs that client's say-so first.
+     · Every sentence is engineering Ray did on that board — layout,
+       circuit design, schematic work, part selection, firmware — and
+       nothing he could not talk through in a client call.
+   ════════════════════════════════════════════════════════════════════════ */
+export type ClientProject = {
+  /** which illustration ClientArt draws beside it */
+  art: "board" | "controller" | "outputs" | "protection" | "instrument";
+  /** the kind of engineering it was */
+  kind: string;
+  title: string;
+  /** what the board is and what was engineered on it */
+  summary: string;
+  facts: string[];
+};
+
+export const CLIENT_WORK: ClientProject[] = [
+  {
+    art: "board",
+    kind: "PCB layout · manufacturing",
+    title: "Mixed-signal control board",
+    summary:
+      "A dense four-layer control board with parts on both sides: 12 V power monitoring, fan control, sensor inputs and a host interface. Routed by hand, sourced, and released for factory assembly.",
+    facts: ["4-layer", "≈ 180 parts, both sides", "0 rule-check errors at release"],
+  },
+  {
+    art: "controller",
+    kind: "Schematic · pre-production",
+    title: "Marine relay controller",
+    summary:
+      "An ESP32-based relay controller for 12 V marine systems: fused battery input, a sensor input, relay outputs and an isolated CAN bus. Delivered with a revised schematic, checked manufacturing files and a bring-up test plan.",
+    facts: ["ESP32", "Isolated CAN bus", "≈ 250 parts"],
+  },
+  {
+    art: "outputs",
+    kind: "Design engineering",
+    title: "Multi-output LED controller",
+    summary:
+      "A 12 V controller for addressable LED lighting in a consumer product. Specified the current limit, grounding, connectors and the sensor interface, and verified every revision connection by connection.",
+    facts: ["16 outputs", "12 V · 10 A"],
+  },
+  {
+    art: "protection",
+    kind: "Circuit design",
+    title: "USB-C power-path protection",
+    summary:
+      "The protection circuit for a 100 W USB-C link whose conductors can short in use: back-to-back switches, fault detection and a latch that holds the path open. Architecture, part selection and schematic.",
+    facts: ["20 V · 5 A", "Power in either direction"],
+  },
+  {
+    art: "instrument",
+    kind: "Prototype · firmware · PCB",
+    title: "Precision measurement instrument",
+    summary:
+      "Built first as a working prototype with its firmware and user manuals, then designed as its own custom board.",
+    facts: ["Hardware + firmware", "User manuals"],
   },
 ];
 
@@ -359,24 +438,38 @@ export const BOARDS: Board[] = [
 ];
 
 /* ════════════════════════════════════════════════════════════════════════
-   CONTACT — how a job starts
-   ════════════════════════════════════════════════════════════════════════ */
-export type Pillar = { num: string; title: string; body: string };
+   HOW A PROJECT RUNS — shown beside the contact card.
 
-export const CONTACT_STEPS: Pillar[] = [
+   A client is mostly buying reduced risk, and a visible process is what
+   reduces it: they can see that nothing gets drawn before they agree to
+   the price, and nothing gets ordered before they have reviewed it.
+   ════════════════════════════════════════════════════════════════════════ */
+export type Step = { num: string; title: string; body: string };
+
+export const PROJECT_STEPS: Step[] = [
   {
     num: "01",
     title: "Send the brief",
-    body: "What the board does, your target fab, and any files you already have — a paragraph is enough to start.",
+    body: "What the board does, your target fab and any files you have. A paragraph is enough.",
   },
   {
     num: "02",
-    title: "Fixed quote in 24h",
-    body: "Scope, price, and timeline in writing. NDA signed first if your project needs one.",
+    title: "Fixed quote within 24 hours",
+    body: `A fixed price for a defined job, or ${HOURLY_RATE} an hour for open-ended work. Scope and timeline in writing, the money-back guarantee in the contract, NDA first if you need one.`,
   },
   {
     num: "03",
-    title: "Contract, then work",
-    body: "A signed contract with the money-back guarantee written in: if delivery misses the agreed scope, you get a refund. Then the board gets built.",
+    title: "Schematic, then your review",
+    body: "You approve the circuit and the parts before any copper is drawn.",
+  },
+  {
+    num: "04",
+    title: "Layout, then your review",
+    body: "Placement first, routing second. You see both before anything is released.",
+  },
+  {
+    num: "05",
+    title: "The package",
+    body: "Checked manufacturing files your fab can build from, and the source files to keep.",
   },
 ];
