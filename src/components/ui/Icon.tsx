@@ -13,6 +13,7 @@ const PATHS = {
   check: <path d="M5 12.5l4.5 4.5L19 7.5" />,
   plus: <path d="M12 5v14M5 12h14" />,
   close: <path d="M6 6l12 12M18 6 6 18" />,
+  play: <path d="M8 5.7v12.6c0 .8.9 1.3 1.6.8l9.7-6.3a1 1 0 0 0 0-1.6L9.6 4.9C8.9 4.4 8 4.9 8 5.7Z" />,
   menu: <path d="M4 7.5h16M4 12h16M4 16.5h16" />,
   mail: (
     <>

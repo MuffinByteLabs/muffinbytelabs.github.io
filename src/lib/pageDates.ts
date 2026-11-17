@@ -8,7 +8,7 @@
    date when that page's content actually changes.
    ════════════════════════════════════════════════════════════════════════ */
 export const PAGE_DATES = {
-  home: "2026-11-16",
+  home: "2026-11-17",
   services: "2026-11-15",
   pcb2: { published: "2026-10-03", modified: "2026-11-15" },
   memoryMap: "2026-10-03",

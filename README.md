@@ -35,6 +35,16 @@ The hourly rate (`HOURLY_RATE`) and the Upwork profile (`UPWORK_URL`) are declar
 
 Cloudflare Web Analytics counts visits and page views, with no cookies and no tracking of individual visitors. The beacon and its site token sit at the end of `<body>` in `src/app/layout.tsx`, in production builds only (so `npm run dev` never counts as a visit); the numbers are in the Cloudflare dashboard under **Analytics → Web analytics**. The footer tells visitors ("anonymous stats"), so change the two together.
 
+## Spot the fault
+
+The homepage's mini game: a practice board with five layout mistakes and a 60-second clock. `src/components/pcb/SpotTheFault.tsx` is the card and its Play button. The game itself (`src/components/pcb/faultGame/`) is a separate JavaScript file that downloads only when someone presses Play, starting early when the pointer reaches the button, so the homepage carries none of its weight.
+
+- `faultGame/faults.ts`: the nine mistakes the board can carry, each with a title, an explanation and a click area. Each round switches on five of them at random.
+- `faultGame/FaultBoard.tsx`: the board, drawn so every mistake area exists both right and wrong. A new mistake needs both drawings and a click area that touches no other.
+- The board's copper is listed as data (`segs`, `smds`, `holes`, `vias`), so the ground pour can be cut around it automatically: everything that isn't ground is drawn into the pour's mask, fattened by the clearance. Add new copper to those lists, not as loose JSX, or the pour runs straight over it.
+- On a narrow screen the board turns a quarter-turn so it fills a phone. Clicks are mapped through that turn, so click areas stay in plain board units.
+- Explanations must stay accurate engineering: they are the part a client actually reads.
+
 ## Stack
 
 - [Next.js](https://nextjs.org) static export (`output: "export"`) — no server and no cookies; the one third-party request is the Cloudflare Web Analytics beacon
@@ -60,6 +70,7 @@ npm run build   # static export into out/
 | `src/components/pcb2/data.ts` | Everything on the PCB 2 case study, each number traced to the project's own engineering documents |
 | `src/components/pcb2/` | PCB 2 drawings: the traceable architecture diagram, the isolation-domain map, power tree, budgets, permission gate — grouped behind tabs by `Pcb2Drawings.tsx` |
 | `src/components/pcb/` | PCB 1 viewers (3D model, layout + net tracer, stack-up, repo files), the exploded layer stack, and the homepage sections |
+| `src/components/pcb/SpotTheFault.tsx`, `faultGame/` | The Spot the fault mini game: the homepage card, and the game it loads on Play |
 | `src/components/ui/` | Shared primitives — `Icon`, `Tabs`, `SectionHead`, `Unbroken` (headings that never break at a hyphen) |
 | `src/app/work/stm32-industrial-io/` | The PCB 2 case-study page |
 
