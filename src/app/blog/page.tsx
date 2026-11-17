@@ -2,6 +2,7 @@ import BlogIndex from "@/components/blog/BlogIndex";
 import SectionHead from "@/components/ui/SectionHead";
 import Icon from "@/components/ui/Icon";
 import { getAllPosts, getAllTags } from "@/lib/posts";
+import { blogSchema, jsonLd } from "@/lib/schema";
 
 const TITLE = "Field Notes — PCB Design Journal | Ray Malik";
 const DESCRIPTION =
@@ -37,6 +38,7 @@ export default function BlogPage() {
 
   return (
     <section className="relative overflow-hidden px-6 pt-32 sm:pt-36 pb-24">
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(blogSchema(posts, DESCRIPTION))} />
       <div aria-hidden className="grid-bg absolute inset-0 -z-10" />
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-6">

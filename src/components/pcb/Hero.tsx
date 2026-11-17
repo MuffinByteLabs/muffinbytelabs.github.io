@@ -30,13 +30,17 @@ export default function Hero() {
       <div className="relative max-w-6xl mx-auto grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] gap-14 lg:gap-10 items-center">
         {/* ── the words ───────────────────────────────────────────────── */}
         <div className="text-center lg:text-left">
-          <h1 className="display text-gradient text-[3.6rem] sm:text-[5rem] lg:text-[6.1rem] leading-[0.95]">
-            Ray Malik
+          {/* the name and the job in one heading, so the page's main heading
+              says what Ray does as well as who he is; it looks exactly as it
+              did when the job line was a paragraph of its own */}
+          <h1 className="m-0">
+            <span className="display text-gradient block text-[3.6rem] sm:text-[5rem] lg:text-[6.1rem] leading-[0.95]">
+              Ray Malik
+            </span>
+            <span className="block mt-5 text-lg sm:text-[1.3rem]" style={{ color: "var(--text)", letterSpacing: "-0.012em" }}>
+              Freelance PCB design engineer
+            </span>
           </h1>
-
-          <p className="mt-5 text-lg sm:text-[1.3rem]" style={{ color: "var(--text)", letterSpacing: "-0.012em" }}>
-            Freelance PCB design engineer
-          </p>
 
           <p className="lede mt-4 mx-auto lg:mx-0 max-w-[48ch] text-[16px] sm:text-[17px]">
             I take a board from an idea to a package a factory can build from: schematic, layout

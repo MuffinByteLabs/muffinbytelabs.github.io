@@ -47,7 +47,8 @@ export const CONTACT_MAILTO = `mailto:${CONTACT_EMAIL}?subject=${encodeURICompon
 )}`;
 
 /* ---- Rate and where else to hire — declared once ---------------------- */
-export const HOURLY_RATE = "$30";
+export const HOURLY_RATE_USD = 30;
+export const HOURLY_RATE = `$${HOURLY_RATE_USD}`;
 export const UPWORK_URL = "https://www.upwork.com/freelancers/raymalik";
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -471,5 +472,57 @@ export const PROJECT_STEPS: Step[] = [
     num: "05",
     title: "The package",
     body: "Checked manufacturing files your fab can build from, and the source files to keep.",
+  },
+];
+
+/* ════════════════════════════════════════════════════════════════════════
+   QUESTIONS CLIENTS ASK FIRST — the homepage FAQ (Faq.tsx).
+
+   The same words are published as FAQPage structured data and in
+   /llms.txt, so search engines and AI assistants quote exactly what the
+   page says. Every answer restates something the site already promises;
+   nothing new is promised here.
+   ════════════════════════════════════════════════════════════════════════ */
+export type FaqItem = {
+  q: string;
+  a: string;
+  /** one follow-on link under the answer */
+  link?: { label: string; href: string; external?: boolean; download?: boolean };
+};
+
+export const FAQ: FaqItem[] = [
+  {
+    q: "What kinds of boards do you design?",
+    a: "ESP32 and STM32 microcontroller boards, sensor and measurement boards, USB-C power and protection, relay and LED drivers, and isolated industrial I/O such as RS-485 and CAN. Two- and four-layer boards, ready for JLCPCB, PCBWay or your own fab.",
+  },
+  {
+    q: "How much does PCB design cost?",
+    a: `${HOURLY_RATE} an hour for open-ended work. A defined job, such as a new board, a design review or a redraw, gets a fixed price in writing within 24 hours of your brief, with a money-back guarantee in the contract.`,
+  },
+  {
+    q: "How long does a board take?",
+    a: "Small boards take days, not weeks. A design review returns first findings in 1–2 days and the full written report in about a week. A larger board gets its timeline in the fixed quote.",
+  },
+  {
+    q: "What do I get at the end?",
+    a: "A manufacturing package your fab can build from (Gerbers, drill files, a BOM with real part numbers, the pick-and-place file, a PDF schematic and 3D renders) plus the editable source files, which are yours. Every package passes its design-rule and electrical-rule checks with zero errors before it leaves.",
+    link: { label: "Download a sample package", href: DELIVERABLE_ZIP, download: true },
+  },
+  {
+    q: "Which design software do you work in?",
+    a: "Whichever your team uses. The source files come in your EDA tool's format, so you can open, change and revise them without me.",
+  },
+  {
+    q: "Can you start from a prototype or an existing design?",
+    a: "Yes. Jobs often start from a breadboard prototype, a draft schematic, a PDF of an old design, or a board someone else drew (or an AI tool generated) that needs checking or finishing before it is ordered.",
+  },
+  {
+    q: "Will you sign an NDA?",
+    a: "Yes, before you send any files. Client designs stay confidential: none of the client projects on this site names the client or shows their files.",
+  },
+  {
+    q: "Can I hire you through Upwork?",
+    a: "Yes. Email me directly, or hire me through Upwork if you would rather keep the contract on the platform.",
+    link: { label: "My Upwork profile", href: UPWORK_URL, external: true },
   },
 ];

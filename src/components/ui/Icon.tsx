@@ -11,6 +11,7 @@ const PATHS = {
   arrowDown: <path d="M12 5v14M6 13l6 6 6-6" />,
   arrowUpRight: <path d="M7 17 17 7M8.5 7H17v8.5" />,
   check: <path d="M5 12.5l4.5 4.5L19 7.5" />,
+  plus: <path d="M12 5v14M5 12h14" />,
   close: <path d="M6 6l12 12M18 6 6 18" />,
   menu: <path d="M4 7.5h16M4 12h16M4 16.5h16" />,
   mail: (

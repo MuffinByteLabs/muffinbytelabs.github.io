@@ -8,6 +8,7 @@ import DomainMap from "@/components/pcb2/DomainMap";
 import PermissionGate from "@/components/pcb2/PermissionGate";
 import { PCB2, PCB2_SLUG, PCB2_STATS, PCB2_IO, DOMAIN_COLOR, FAULT_TARGETS } from "@/components/pcb2/data";
 import { CONTACT_EMAIL } from "@/components/pcb/pcbData";
+import { jsonLd, pcb2Schema } from "@/lib/schema";
 
 /* ════════════════════════════════════════════════════════════════════════
    PCB 2 — the case study, cut to what a client reads in half a minute:
@@ -79,6 +80,12 @@ function Section({
 export default function Pcb2CaseStudy() {
   return (
     <article>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLd(
+          pcb2Schema({ path: PCB2_SLUG, headline: `${PCB2.name} — ${PCB2.id} case study`, description: DESCRIPTION })
+        )}
+      />
       {/* ── hero ──────────────────────────────────────────────────────── */}
       <header className="relative overflow-hidden px-6 pt-28 sm:pt-32 pb-4">
         <div aria-hidden className="grid-bg absolute inset-0 -z-10" />

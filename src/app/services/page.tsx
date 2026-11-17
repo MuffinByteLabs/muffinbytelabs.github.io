@@ -5,6 +5,7 @@ import ContactCTA from "@/components/pcb/ContactCTA";
 import Icon, { type IconName } from "@/components/ui/Icon";
 import SectionHead from "@/components/ui/SectionHead";
 import { HOURLY_RATE, SERVICES } from "@/components/pcb/pcbData";
+import { jsonLd, servicesSchema } from "@/lib/schema";
 
 /* ════════════════════════════════════════════════════════════════════════
    Services — the five ways a job actually starts, ordered by how cheap
@@ -17,9 +18,8 @@ import { HOURLY_RATE, SERVICES } from "@/components/pcb/pcbData";
    scroll-in that every section on the site uses.
    ════════════════════════════════════════════════════════════════════════ */
 
-const SVC_TITLE = "Services | Ray Malik — PCB Design Engineer";
-const SVC_DESCRIPTION =
-  "PCB design services: pre-fab design reviews, conversion of PDF, DXF and legacy designs into clean editable projects, board debug and bring-up, new boards from idea to fab, and Rev-B revisions.";
+const SVC_TITLE = "PCB Design Services: Layout, Reviews & Fab Files | Ray Malik";
+const SVC_DESCRIPTION = `PCB design services: new boards from idea to fab, pre-fab design reviews, redraws of old designs, bring-up help and Rev-B fixes. ${HOURLY_RATE}/hour or a fixed price.`;
 
 /* openGraph/twitter spelled out in full — Next does not merge them
    field-by-field with the layout, so leaving them off would share this
@@ -70,7 +70,7 @@ function ServiceLink({ sample }: { sample: NonNullable<(typeof SERVICES)[number]
 
 function ServiceCard({ s, featured = false }: { s: (typeof SERVICES)[number]; featured?: boolean }) {
   return (
-    <article className={`card h-full p-6 sm:p-8 flex flex-col ${featured ? "edge-glow" : ""}`}>
+    <article id={s.id.toLowerCase()} className={`card h-full p-6 sm:p-8 flex flex-col scroll-mt-28 ${featured ? "edge-glow" : ""}`}>
       <div className="flex items-start justify-between gap-4">
         <span className="icon-tile">
           <Icon name={ICON[s.id] ?? "spark"} size={20} />
@@ -129,6 +129,7 @@ export default function ServicesPage() {
   const [first, ...rest] = SERVICES;
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(servicesSchema(SVC_TITLE, SVC_DESCRIPTION))} />
       <section className="relative overflow-hidden px-6 pt-32 sm:pt-36 pb-20 sm:pb-24">
         <div aria-hidden className="grid-bg absolute inset-0 -z-10" />
         <div className="max-w-6xl mx-auto">

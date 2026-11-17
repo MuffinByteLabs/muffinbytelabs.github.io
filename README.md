@@ -22,6 +22,15 @@ Anything more specific — a board render, a photo, a quote from the client — 
 
 The hourly rate (`HOURLY_RATE`) and the Upwork profile (`UPWORK_URL`) are declared once in `pcbData.ts`. The hero, the contact card, the footer, the services page and the structured data (`src/lib/schema.ts`) all read them from there — change them in one place.
 
+## Search engines and AI assistants
+
+- **Structured data**: `src/lib/schema.ts` describes the person, the practice and its hourly offer, the services, the two boards, the homepage questions (FAQPage) and the breadcrumbs of every page. Facts only, and the repeated text is read from the same data the pages render.
+- **`/llms.txt` and `/llms-full.txt`**: the site as Markdown for AI assistants ([llmstxt.org](https://llmstxt.org)), generated at build time by `src/lib/llms.ts`.
+- **`robots.txt`**: open to every crawler, with the AI crawlers named one by one (`src/app/robots.ts`).
+- **Sitemap dates**: hand-maintained in `src/lib/pageDates.ts`, which the structured data also reads. Bump a date when that page's content changes.
+- **Google Search Console**: the property `https://muffinbytelabs.com/` is verified by the `verification.google` tag in `src/app/layout.tsx`. Keep the tag, or Search Console loses the site.
+- **IndexNow**: after each deploy, `scripts/indexnow.mjs` sends the sitemap's URLs to Bing and the other IndexNow engines. The key in the script must match the file `public/09d8636ab91637c33324b8bbb54b3ca1.txt`.
+
 ## Stack
 
 - [Next.js](https://nextjs.org) static export (`output: "export"`) — no server, no third-party requests, no cookies

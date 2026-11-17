@@ -47,6 +47,14 @@ export function getPostSlugs(): string[] {
   return getAllPosts().map((p) => p.slug);
 }
 
+/** A post's Markdown body with the frontmatter removed, for /llms-full.txt.
+    Build-time only, like everything else here. */
+export function getPostBody(slug: string): string {
+  const file = path.join(contentDir, `${slug}.mdx`);
+  if (!fs.existsSync(file)) return "";
+  return matter(fs.readFileSync(file, "utf-8")).content.trim();
+}
+
 /**
  * The post's own OG card if `scripts/gen-post-og.cjs` has generated one,
  * else the shared site card. Build-time only, like everything else here —

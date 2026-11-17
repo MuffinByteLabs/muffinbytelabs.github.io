@@ -849,3 +849,51 @@ html:not([data-js]) .llabel { opacity: 1; }
   border: 1px solid var(--accent-line);
   background: var(--accent-soft);
 }
+
+/* ── questions: native <details> rows, no JavaScript ───────────────────── */
+.faq-item + .faq-item { border-top: 1px solid var(--border-soft); }
+.faq-q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 1.4rem;
+  cursor: pointer;
+  list-style: none;
+  border-radius: 14px;
+}
+.faq-q::-webkit-details-marker { display: none; }
+/* the card's edge would clip a focus ring drawn outside the row */
+.faq-q:focus-visible { outline-offset: -3px; }
+.faq-q-text {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--text);
+  transition: color 0.2s ease;
+}
+.faq-q:hover .faq-q-text { color: var(--accent-bright); }
+.faq-plus {
+  flex: none;
+  display: inline-flex;
+  color: var(--accent);
+  transition: transform 0.25s ease;
+}
+.faq-item[open] .faq-plus { transform: rotate(45deg); }
+.faq-a { padding: 0 1.4rem 1.3rem; }
+.faq-a p {
+  margin: 0;
+  max-width: 62ch;
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--text-2);
+}
+@media (max-width: 639px) {
+  .faq-q { padding: 1rem 1.15rem; }
+  .faq-a { padding: 0 1.15rem 1.15rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .faq-plus,
+  .faq-q-text { transition: none; }
+}

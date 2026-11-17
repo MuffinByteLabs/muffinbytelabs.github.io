@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import ClientLayout from "@/components/ClientLayout";
+import { HOME_DESCRIPTION, HOME_TITLE, SITE } from "@/lib/schema";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -22,40 +23,57 @@ const instrument = Instrument_Serif({
   style: ["normal", "italic"],
 });
 
-const TITLE = "Ray Malik — PCB Design Engineer";
-const DESCRIPTION =
-  "Freelance PCB design engineer: new boards and pre-fab design reviews. ESP32 and STM32 boards — 4-layer, RF modules, USB, protected 24 V power and isolated industrial I/O — taken from schematic capture to a manufacturing package a fab accepts first try.";
-
-const SITE = "https://muffinbytelabs.com";
+/* the homepage's title and description live with the structured data,
+   which repeats them */
+const TITLE = HOME_TITLE;
+const DESCRIPTION = HOME_DESCRIPTION;
+/* a shared link already shows the site's name beside the title */
+const SHARE_TITLE = "Ray Malik — Freelance PCB Design Engineer";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
   title: TITLE,
   description: DESCRIPTION,
+  applicationName: "MuffinByteLabs",
+  authors: [{ name: "Ray Malik", url: SITE }],
+  creator: "Ray Malik",
+  publisher: "MuffinByteLabs",
+  /* proves ownership to Google Search Console (property https://muffinbytelabs.com/);
+     removing this tag un-verifies the site there */
+  verification: { google: "cXvxRu0L69sxh9nRR7rGnrDv9L3cL7iYSz3gzpLnIYc" },
+  /* every page may be indexed, quoted at any length and shown with a large
+     image, in search results and in the AI answers built from them; a page
+     inherits this unless it says otherwise */
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-snippet": -1, "max-image-preview": "large", "max-video-preview": -1 },
+  },
   alternates: {
     canonical: "/",
     types: { "application/rss+xml": [{ url: "/feed.xml", title: "Field Notes" }] },
   },
   keywords: [
-    "PCB design",
+    "freelance PCB designer",
+    "PCB design services",
+    "PCB design freelancer",
+    "hire a PCB designer",
     "PCB layout",
-    "JLCPCB",
-    "PCBWay",
-    "ESP32 PCB",
+    "PCB design review",
+    "schematic capture",
+    "ESP32 PCB design",
     "STM32 PCB design",
     "4-layer PCB design",
-    "industrial I/O controller",
-    "RS-485 Modbus",
+    "USB-C PCB design",
+    "JLCPCB",
+    "PCBWay",
+    "Gerber, BOM and CPL files",
+    "isolated industrial I/O",
+    "RS-485",
     "CAN FD",
-    "4-20 mA input",
-    "buck converter layout",
-    "opto-isolated 24V IO",
-    "schematic capture",
-    "Gerber",
-    "PCB design freelancer",
   ],
   openGraph: {
-    title: TITLE,
+    title: SHARE_TITLE,
     description: DESCRIPTION,
     url: SITE,
     siteName: "Ray Malik · MuffinByteLabs",
@@ -65,7 +83,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: TITLE,
+    title: SHARE_TITLE,
     description: DESCRIPTION,
     images: ["/og.png"],
   },

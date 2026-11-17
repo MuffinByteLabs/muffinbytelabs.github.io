@@ -5,8 +5,10 @@ import CopyEmail from "@/components/CopyEmail";
 import { REPO, CONTACT_EMAIL, CONTACT_MAILTO, UPWORK_URL } from "@/components/pcb/pcbData";
 import { PCB2_SLUG } from "@/components/pcb2/data";
 
-/* How to reach me, where the work lives, and nothing that tracks you. */
-const COLUMNS: { title: string; links: { label: string; href: string; external?: boolean }[] }[] = [
+/* How to reach me, where the work lives, and nothing that tracks you.
+   `me` marks a profile that is Ray's own (rel="me"), so anything reading
+   the links can tell that the profiles and this site are one person. */
+const COLUMNS: { title: string; links: { label: string; href: string; external?: boolean; me?: boolean }[] }[] = [
   {
     title: "Work",
     links: [
@@ -22,7 +24,7 @@ const COLUMNS: { title: string; links: { label: string; href: string; external?:
       { label: "Services", href: "/services" },
       { label: "Deliverables", href: "/#deliverables" },
       { label: "Field Notes", href: "/blog" },
-      { label: "Upwork profile", href: UPWORK_URL, external: true },
+      { label: "Upwork profile", href: UPWORK_URL, external: true, me: true },
     ],
   },
   {
@@ -30,7 +32,7 @@ const COLUMNS: { title: string; links: { label: string; href: string; external?:
     links: [
       { label: "STM32 Memory Map", href: "/memory-map" },
       { label: "RSS feed", href: "/feed.xml" },
-      { label: "GitHub", href: "https://github.com/MuffinByteLabs", external: true },
+      { label: "GitHub", href: "https://github.com/MuffinByteLabs", external: true, me: true },
     ],
   },
 ];
@@ -69,7 +71,7 @@ export default function Footer() {
                       <a
                         href={l.href}
                         target="_blank"
-                        rel="noopener noreferrer"
+                        rel={l.me ? "me noopener noreferrer" : "noopener noreferrer"}
                         className="link-quiet inline-flex items-center gap-1.5 text-[13.5px]"
                       >
                         {l.label === "GitHub" && <GitHubMark size={13} />}

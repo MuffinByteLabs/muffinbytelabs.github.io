@@ -1,6 +1,7 @@
 import MemoryMapExplorer from "@/components/stm32f407_memory_map";
 import SectionHead from "@/components/ui/SectionHead";
 import Icon from "@/components/ui/Icon";
+import { jsonLd, memoryMapSchema } from "@/lib/schema";
 
 const TITLE = "STM32F407 Memory Map Explorer | MuffinByteLabs";
 const DESCRIPTION =
@@ -43,6 +44,7 @@ const FEATURES: { name: string; note: string }[] = [
 export default function MemoryMapPage() {
   return (
     <section className="relative overflow-hidden px-6 pt-32 pb-20 sm:pt-36">
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(memoryMapSchema(DESCRIPTION))} />
       <div aria-hidden className="grid-bg absolute inset-0 -z-10" />
       <div className="max-w-6xl mx-auto">
         {/* ── why this exists ──────────────────────────────────────────── */}

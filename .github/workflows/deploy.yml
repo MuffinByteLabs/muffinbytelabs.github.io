@@ -40,3 +40,14 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  # Tell IndexNow (Bing, and the engines that share its index) every URL
+  # the site has. Runs after the deploy, so the sitemap and key file it
+  # points at are live. A failed ping never fails the deploy.
+  indexnow:
+    needs: deploy
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - run: node scripts/indexnow.mjs

@@ -39,15 +39,15 @@ export default function Header() {
   /* scroll-spy for the two home-page sections that have nav links */
   useEffect(() => {
     if (path !== "/" || typeof IntersectionObserver === "undefined") return;
-    const ids = ["work", "boards", "deliverables", "contact"];
+    const ids = ["work", "boards", "deliverables", "faq", "contact"];
     const els = ids.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
     const seen = new Map<string, boolean>();
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => seen.set(e.target.id, e.isIntersecting));
-        /* the boards belong to Work; contact belongs to no nav link */
+        /* the boards belong to Work; the questions and contact belong to no nav link */
         const first = ids.find((id) => seen.get(id));
-        setSection(first === "boards" ? "work" : first === "contact" ? null : (first ?? null));
+        setSection(first === "boards" ? "work" : first === "faq" || first === "contact" ? null : (first ?? null));
       },
       { rootMargin: "-45% 0px -50% 0px" }
     );
