@@ -96,7 +96,7 @@ export default function Footer() {
         >
           <span>&copy; {new Date().getFullYear()} MuffinByteLabs &middot; Ray Malik</span>
           <span className="mono text-[11px] tracking-wide">
-            Static site &middot; no cookies &middot; no trackers
+            Static site &middot; no cookies &middot; anonymous stats
           </span>
         </div>
       </div>

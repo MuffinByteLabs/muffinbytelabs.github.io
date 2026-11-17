@@ -119,6 +119,23 @@ export default function RootLayout({
           }}
         />
         <ClientLayout>{children}</ClientLayout>
+        {/* Cloudflare Web Analytics: visit and page-view counts, with no
+            cookies and no tracking of individual visitors. The numbers are
+            in the Cloudflare dashboard under Analytics → Web analytics. The
+            token only says which site a page view belongs to; it is public
+            by design. Cloudflare's own snippet uses type="module"; defer
+            runs this script at the same point (once the page is parsed) and
+            keeps Next's sync-script lint rule quiet. Page changes inside the
+            site count too: the beacon follows history.pushState by default.
+            Production builds only, so browsing the local dev server never
+            counts as a visit. */}
+        {process.env.NODE_ENV === "production" && (
+          <script
+            defer
+            src="https://static.cloudflareinsights.com/beacon.min.js"
+            data-cf-beacon='{"token": "cd0e864fa7c04980abfb9fe8abbeb1b8"}'
+          />
+        )}
       </body>
     </html>
   );

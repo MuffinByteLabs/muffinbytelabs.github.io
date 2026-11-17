@@ -31,9 +31,13 @@ The hourly rate (`HOURLY_RATE`) and the Upwork profile (`UPWORK_URL`) are declar
 - **Google Search Console**: the property `https://muffinbytelabs.com/` is verified by the `verification.google` tag in `src/app/layout.tsx`. Keep the tag, or Search Console loses the site.
 - **IndexNow**: after each deploy, `scripts/indexnow.mjs` sends the sitemap's URLs to Bing and the other IndexNow engines. The key in the script must match the file `public/09d8636ab91637c33324b8bbb54b3ca1.txt`.
 
+## Visitor analytics
+
+Cloudflare Web Analytics counts visits and page views, with no cookies and no tracking of individual visitors. The beacon and its site token sit at the end of `<body>` in `src/app/layout.tsx`, in production builds only (so `npm run dev` never counts as a visit); the numbers are in the Cloudflare dashboard under **Analytics → Web analytics**. The footer tells visitors ("anonymous stats"), so change the two together.
+
 ## Stack
 
-- [Next.js](https://nextjs.org) static export (`output: "export"`) — no server, no third-party requests, no cookies
+- [Next.js](https://nextjs.org) static export (`output: "export"`) — no server and no cookies; the one third-party request is the Cloudflare Web Analytics beacon
 - Tailwind CSS v4, one design-token sheet in `src/app/globals.css`: dark only, warm graphite + ENIG gold, plus a functional domain palette (`--d-*`) that means the same thing in every diagram on the site
 - Component classes (`.btn`, `.card`, `.chip`, `.tab`, …) live in a cascade layer, so a Tailwind utility on the same element always wins
 - MDX for the Field Notes blog (`src/content/*.mdx`, frontmatter drives the index, RSS at `/feed.xml`). `src/content/index.ts` is generated before every `dev` / `build` run and holds one lazy import per post, so opening a post compiles only that post
