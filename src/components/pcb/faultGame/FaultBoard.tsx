@@ -65,6 +65,13 @@ type Chip = { x: number; y: number; v?: boolean; label: string; lx: number; ly: 
 
 const d = (...pts: P[]) => "M" + pts.map(([x, y]) => `${x} ${y}`).join(" L");
 
+/** `items` without the ones `test` rejects. The type is given by the
+    caller (`keep<Seg>([...])`), so the array literal keeps its tuples and
+    string unions, which a plain `[...].filter()` would widen away. */
+function keep<T>(items: T[], test: (item: T) => boolean): T[] {
+  return items.filter(test);
+}
+
 function chipPads(c: Chip): Smd[] {
   return c.v
     ? [
@@ -168,12 +175,27 @@ function FaultBoard({ active, found, missed, misses, probe, portrait, innerRef, 
   const uid = "ftg" + useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const on = (id: FaultId) => active.includes(id);
 
+  /* In a crop (`view`), only the copper and parts that can show inside it
+     are drawn, so a Field Note with 18 crops doesn't carry 18 whole boards.
+     Each item's box includes its pour clearance, so the pour's mask is cut
+     exactly as before. With no crop (the game), everything is kept. */
+  const box = view?.split(/[\s,]+/).map(Number);
+  const near = (x0: number, y0: number, x1: number, y1: number) =>
+    !box || (x1 >= box[0] - 2 && x0 <= box[0] + box[2] + 2 && y1 >= box[1] - 2 && y0 <= box[1] + box[3] + 2);
+  const nearPts = (pts: P[], pad: number) =>
+    near(
+      Math.min(...pts.map((p) => p[0])) - pad,
+      Math.min(...pts.map((p) => p[1])) - pad,
+      Math.max(...pts.map((p) => p[0])) + pad,
+      Math.max(...pts.map((p) => p[1])) + pad
+    );
+
   /* the USB connector slides inward when it is the fault */
   const dx = on("setback") ? 46 : 0;
   const c3: P = on("farcap") ? [246, 318] : [334.5, 262];
   const c9: P = on("overlap") ? [194, 309] : [190, 329];
 
-  const chips: Chip[] = [
+  const chips = keep<Chip>([
     { x: 90, y: 65, label: "C8", lx: 90, ly: 54 },
     { x: 176, y: 128, label: "C7", lx: 176, ly: 117 },
     { x: 352.5, y: 134, label: "C1", lx: 378, ly: 122 },
@@ -187,10 +209,10 @@ function FaultBoard({ active, found, missed, misses, probe, portrait, innerRef, 
     { x: 520, y: 108, v: true, label: "R3", lx: 530, ly: 111, anchor: "start" },
     { x: 190, y: 301, label: "R4", lx: 190, ly: 291 },
     { x: c9[0], y: c9[1], label: "C9", lx: 166, ly: on("overlap") ? 318 : 332 },
-  ];
+  ], (c) => near(Math.min(c.x, c.lx) - 20, Math.min(c.y, c.ly) - 20, Math.max(c.x, c.lx) + 20, Math.max(c.y, c.ly) + 20));
 
   /* ── top copper ─────────────────────────────────────────────────────── */
-  const segs: Seg[] = [
+  const segs = keep<Seg>([
     // VBUS: USB-C to the regulator, the widest trace on the board
     { pts: [[60 + dx, 186], [136, 186], [148, 174], [148, 162]], w: 9 },
     { pts: [[148, 162], [148, 136]], w: on("neck") ? 2.4 : 9 },
@@ -271,13 +293,13 @@ function FaultBoard({ active, found, missed, misses, probe, portrait, innerRef, 
     { pts: [[86, 315], [82.5, 315]], w: 4, gnd: true },
     on("farcap") ? { pts: [[234, 318], [228.5, 318]], w: 4, gnd: true } : { pts: [[346.5, 262], [351.5, 262]], w: 4, gnd: true },
     ...(on("overlap") ? [] : [{ pts: [[198, 329], [207.5, 329]] as P[], w: 4, gnd: true }]),
-  ];
+  ], (s) => nearPts(s.pts, s.w / 2 + CLR));
 
   /* ── pads ───────────────────────────────────────────────────────────── */
   const qfn = Array.from({ length: 8 }, (_, i) => 308.5 + 9 * i);
   const qfnSide = Array.from({ length: 8 }, (_, i) => 168.5 + 9 * i);
 
-  const smds: Smd[] = [
+  const smds = keep<Smd>([
     // J1, USB-C: four signal pads
     { x: 60 + dx, y: 186, w: 10, h: 8 },
     { x: 60 + dx, y: 204.5, w: 10, h: 5 },
@@ -310,13 +332,13 @@ function FaultBoard({ active, found, missed, misses, probe, portrait, innerRef, 
     // test points: TP1 on 3V3, TP2 on ground
     { x: 410, y: 100, w: 10, h: 10, r: 5 },
     { x: 440, y: 100, w: 10, h: 10, r: 5 },
-  ];
+  ], (p) => near(p.x - p.w / 2 - CLR, p.y - p.h / 2 - CLR, p.x + p.w / 2 + CLR, p.y + p.h / 2 + CLR));
 
   const headerPins = ["3V3", "SDA", "SCL", "GND", "TX", "RX"];
-  const holes: Th[] = [
+  const holes = keep<Th>([
     ...headerPins.map((name, i) => ({ x: 585, y: 122.5 + 25 * i, r: 9, drill: 4, square: i === 0, spokes: name === "GND" })),
     ...[[46, 46], [594, 46], [46, 354], [594, 354]].map(([x, y]) => ({ x, y, r: 10, drill: 5.5, spokes: true })),
-  ];
+  ], (h) => near(h.x - h.r - CLR, h.y - h.r - CLR, h.x + h.r + CLR, h.y + h.r + CLR));
 
   /* ── vias ───────────────────────────────────────────────────────────── */
   const mountStitch: P[] = [[46, 46], [594, 46], [46, 354], [594, 354]].flatMap(([cx, cy]) =>
@@ -338,7 +360,7 @@ function FaultBoard({ active, found, missed, misses, probe, portrait, innerRef, 
     [520, 235],
   ];
 
-  const vias: ViaT[] = [
+  const vias = keep<ViaT>([
     // ground
     ...(
       [
@@ -363,7 +385,7 @@ function FaultBoard({ active, found, missed, misses, probe, portrait, innerRef, 
     // R3's jump under SDA to SCL
     ...(on("airwire") ? [] : ([[520, 130], [520, 160]] as P[]).map(([x, y]) => ({ x, y }))),
     ...stitch.map(([x, y]) => ({ x, y, gnd: true, small: true })),
-  ];
+  ], (v) => near(v.x - 4.5 - CLR, v.y - 4.5 - CLR, v.x + 4.5 + CLR, v.y + 4.5 + CLR));
 
   /* where the pour may not go: under U1, under the USB-C body, at the fiducials */
   const keepouts = [
@@ -373,7 +395,7 @@ function FaultBoard({ active, found, missed, misses, probe, portrait, innerRef, 
   const fiducials: P[] = [[596, 296], [64, 262]];
 
   /* thermal spokes: the ground pins that sit in the pour */
-  const spokes: { x: number; y: number; len: number; dirs: P[] }[] = [
+  const spokes = keep<{ x: number; y: number; len: number; dirs: P[] }>([
     { x: 440, y: 100, len: 5 + CLR + 1.8, dirs: [[1, 0], [-1, 0], [0, 1], [0, -1]] },
     ...holes.filter((h) => h.spokes).map((h) => ({
       x: h.x,
@@ -381,7 +403,7 @@ function FaultBoard({ active, found, missed, misses, probe, portrait, innerRef, 
       len: h.r + CLR + 1.8,
       dirs: (h.r === 9 ? [[1, 0], [-1, 0]] : [[1, 0], [-1, 0], [0, 1], [0, -1]]) as P[],
     })),
-  ];
+  ], (s) => near(s.x - s.len, s.y - s.len, s.x + s.len, s.y + s.len));
 
   return (
     <svg
@@ -583,11 +605,14 @@ function FaultBoard({ active, found, missed, misses, probe, portrait, innerRef, 
             {c.label}
           </Label>
         ))}
-        {headerPins.map((name, i) => (
-          <Label key={`p${name}`} x={601} y={125 + 25 * i} size={6.5} anchor="start">
-            {name}
-          </Label>
-        ))}
+        {headerPins.map(
+          (name, i) =>
+            near(599, 116 + 25 * i, 625, 128 + 25 * i) && (
+              <Label key={`p${name}`} x={601} y={125 + 25 * i} size={6.5} anchor="start">
+                {name}
+              </Label>
+            )
+        )}
 
         <Muffin x={402} y={322} />
         <text x={490} y={322} fontSize={12} textAnchor="middle" fill={SILK} fillOpacity={0.85} letterSpacing={2.5}>
