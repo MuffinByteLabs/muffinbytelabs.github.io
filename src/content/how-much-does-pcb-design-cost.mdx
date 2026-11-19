@@ -1,0 +1,75 @@
+---
+title: "What a PCB Design Costs, and What Moves the Price"
+seoTitle: "How Much Does PCB Design Cost? Hours and Prices"
+date: "2026-10-04"
+readTime: "6 min read"
+tag: "Planning"
+excerpt: "Typical hours and prices for a small, medium, large and dense board, what four layers and a radio add, and the costs outside the design."
+---
+Ask what a PCB design costs and the usual answer is "it depends". That's true, and it doesn't help you plan. So here are numbers instead: the hours typical boards take, what that comes to at my rate of $30 an hour, and what pushes a project up or down its range.
+
+These are the same ranges the [design cost estimator](/tools/pcb-design-cost-calculator) uses. They are typical figures for typical boards, not a quote. A real project gets a fixed price in writing once there is a brief.
+
+## Where the hours go
+
+A new board goes through the same stages every time, from idea to factory files:
+
+1. **Architecture and parts.** What the board has to do becomes a block diagram, then real parts: in stock, inside the budget, and small enough to fit.
+2. **Schematic.** Every connection drawn, plus the supporting parts each chip's datasheet asks for: decoupling, pull-ups, protection, test points.
+3. **Footprints.** Every part's pad pattern is checked against its datasheet, or drawn if it doesn't exist yet.
+4. **Placement.** Where each part sits. This stage decides how hard everything after it will be, so it deserves more time than it seems to need.
+5. **Routing.** The copper itself: power first, then the critical signals, then the rest.
+6. **Checks and outputs.** The rule checks and a review against the schematic and the enclosure. Then the files the factory needs: Gerbers, drill files, the bill of materials and the placement file.
+
+Skipping a stage doesn't remove its cost. It moves the cost to the second batch of boards.
+
+## Typical hours and prices
+
+These figures are for a new two-layer board, from idea to factory files:
+
+- **Small**, up to about 40 parts: one main chip, a connector or two, simple power. 14 to 28 hours, **$400 to $850**.
+- **Medium**, about 40 to 120 parts: a microcontroller with USB, power and a few sensors. 30 to 55 hours, **$900 to $1,650**.
+- **Large**, about 120 to 250 parts: several power rails, isolated inputs and outputs, many interfaces. 55 to 100 hours, **$1,650 to $3,000**.
+- **Dense**, over 250 parts, fine-pitch or BGA chips, or a very tight outline. 90 to 160 hours, **$2,700 to $4,800**.
+
+If the schematic is already finished, layout alone takes about 60 percent of those hours. A design review before you order is a written report on a design that already exists. It runs from $100 to $200 for a small board up to $500 to $800 for a dense one.
+
+## What adds to it
+
+Four layers add about 10 percent, and six or more add about 25 percent. More layers make routing easier, but the [stack-up](/tools/pcb-glossary#stack-up) has to be planned and the planes checked. Boards that need more layers also tend to carry denser parts.
+
+Some features add hours of their own, whatever the size of the board:
+
+- **USB, Ethernet or other fast signals:** 3 to 6 hours, for the pair routing, the impedance and the return paths.
+- **A radio,** such as Wi-Fi, Bluetooth or LoRa: 4 to 8 hours. That covers the antenna's keep-out zone, its place on the board edge, and the feed line if the antenna is a separate part.
+- **High current or power conversion:** 4 to 8 hours, for copper sizing, the switching loop and heat.
+- **Isolation, mains or high voltage:** 6 to 12 hours, for the barrier and its creepage and clearance distances.
+- **A tight enclosure or a fixed outline:** 3 to 6 hours, for the back-and-forth with the mechanical drawing.
+
+Take an ESP32-S3 board with USB-C and a handful of sensors, on four layers. It is a medium board with fast signals and a radio. That comes to 40 to 75 hours, or **$1,200 to $2,250**.
+
+## What moves a project within its range
+
+Where a project lands in its range mostly depends on how much is still undecided when the work starts.
+
+- **A clear brief.** Known parts, a known enclosure and known connectors put a project at the low end. "We'll work it out as we go" puts it at the top, or makes it hourly.
+- **Changes after layout starts.** Moving a connector on a routed board can undo a day of work. Settle the mechanical facts first: the outline, the mounting holes and which way each connector faces.
+- **Parts you can actually buy.** If a part goes out of stock in the middle of the design, it needs a new footprint, often a new circuit around it, and sometimes a new placement. Parts with several sources, in stock at your assembler, protect the schedule as much as the price.
+- **Feedback in one list.** Comments gathered into one list after each stage cost far less than a stream of single changes.
+- **The deliverables.** A 3D model for the enclosure designer, assembly drawings, a production panel and a test procedure are each real work. Say up front which ones you need.
+
+## Costs that aren't design
+
+In a hardware budget, the design is often not the biggest line:
+
+- **Prototype boards.** A handful of bare two-layer boards from a low-cost fab is cheap. Four layers, assembly and parts each add to that, and fast shipping can cost more than the boards themselves. Get a quote from your fab while the design is under way, not after it.
+- **A second revision.** If the first boards have a fault, fixing it costs another round of fabrication, assembly, parts and shipping, plus the weeks that takes. That is the case for a design review before the first order: it costs a fraction of a second revision.
+- **Certification.** Anything sold with a radio, or into a regulated market, needs testing. A pre-certified radio module avoids the most expensive part of that. The finished product usually still needs emissions testing of its own. Budget for it early, and ask a test lab about their lead time.
+
+## Fixed price or hourly?
+
+A defined job gets a fixed price. That covers a new board from a clear brief, a layout from a finished schematic, a review or a redraw. You know the number before the work starts, and if it takes longer, that's on me. Open-ended work is fairer by the hour, at $30: exploring options, for example, or chasing a fault whose cause isn't known yet.
+
+## Get a number for your board
+
+The [cost estimator](/tools/pcb-design-cost-calculator) gives a ballpark for your board's size, layer count and features in about a minute. For the real number, the [project brief builder](/tools/pcb-design-brief) turns your answers into a brief a designer can quote from. Send it to me and you'll have a fixed price in writing within 24 hours.

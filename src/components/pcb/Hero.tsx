@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { CONTACT_MAILTO, HOURLY_RATE, UPWORK_URL } from "./pcbData";
+import { BOOKING_URL, CONTACT_MAILTO, HOURLY_RATE, UPWORK_URL } from "./pcbData";
 import Icon from "@/components/ui/Icon";
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -58,15 +58,26 @@ export default function Hero() {
             </a>
           </div>
 
-          <p className="mt-6 mb-0 text-[13.5px]" style={{ color: "var(--text-3)" }}>
-            Prefer to work through a platform?{" "}
+          <p className="mt-6 mb-0 text-[13.5px] leading-6" style={{ color: "var(--text-3)" }}>
+            Rather talk first?{" "}
+            <a
+              href={BOOKING_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link-gold inline-flex items-center gap-1 whitespace-nowrap"
+            >
+              Book a 15-minute call
+              <Icon name="arrowUpRight" size={13} />
+            </a>
+            <span aria-hidden> &middot; </span>
+            or{" "}
             <a
               href={UPWORK_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="link-gold inline-flex items-center gap-1 whitespace-nowrap"
             >
-              Hire me on Upwork
+              hire me on Upwork
               <Icon name="arrowUpRight" size={13} />
             </a>
           </p>

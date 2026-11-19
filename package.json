@@ -10,7 +10,8 @@
     "start": "next start",
     "lint": "eslint",
     "og": "node scripts/gen-og-image.cjs",
-    "og:posts": "node scripts/gen-post-og.cjs"
+    "og:posts": "node scripts/gen-post-og.cjs",
+    "og:tools": "node scripts/gen-tool-og.cjs"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.1",

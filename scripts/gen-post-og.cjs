@@ -64,16 +64,17 @@ function wrap(text, fontSize, maxWidth) {
 
   /* prune cards whose post was renamed, deleted, or flipped back to draft —
      otherwise the old slug's PNG ships forever. public/og/ also holds the
-     designed page cards from render-og-cards.cjs, which are not posts and
-     must survive the prune. */
-  const PAGE_CARDS = new Set(["pcb-2.png"]);
+     designed page cards from render-og-cards.cjs and the tool cards from
+     gen-tool-og.cjs (tools.png, tool-*.png), which are not posts and must
+     survive the prune. */
+  const PAGE_CARDS = new Set(["pcb-2.png", "tools.png"]);
   const live = new Set(
     files
       .filter((f) => matter(fs.readFileSync(path.join(CONTENT, f), "utf-8")).data.draft !== true)
       .map((f) => f.replace(/\.mdx$/, ".png"))
   );
   for (const png of fs.readdirSync(OUT).filter((f) => f.endsWith(".png"))) {
-    if (!live.has(png) && !PAGE_CARDS.has(png)) {
+    if (!live.has(png) && !PAGE_CARDS.has(png) && !png.startsWith("tool-")) {
       fs.unlinkSync(path.join(OUT, png));
       console.log("pruned stale card:", png);
     }

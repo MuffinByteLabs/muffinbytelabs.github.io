@@ -5,17 +5,23 @@
 import type { ComponentType } from "react";
 
 export const POSTS: Record<string, () => Promise<{ default: ComponentType }>> = {
+  "2-layer-vs-4-layer-pcb": () => import("./2-layer-vs-4-layer-pcb.mdx"),
   "ap2112k-vs-ams1117": () => import("./ap2112k-vs-ams1117.mdx"),
   "bom-discipline": () => import("./bom-discipline.mdx"),
   "bring-up-order-smoke-rails-buses-firmware": () => import("./bring-up-order-smoke-rails-buses-firmware.mdx"),
   "buck-converter-layout-the-hot-loop": () => import("./buck-converter-layout-the-hot-loop.mdx"),
+  "choosing-a-buck-converter-inductor": () => import("./choosing-a-buck-converter-inductor.mdx"),
   "decoupling-placement-beats-value": () => import("./decoupling-placement-beats-value.mdx"),
+  "esp32-s3-strapping-pins": () => import("./esp32-s3-strapping-pins.mdx"),
   "firmware-constraints-behind-the-layout": () => import("./firmware-constraints-behind-the-layout.mdx"),
   "footprint-libraries-that-dont-rot": () => import("./footprint-libraries-that-dont-rot.mdx"),
   "ground-planes-and-return-paths": () => import("./ground-planes-and-return-paths.mdx"),
+  "how-much-does-pcb-design-cost": () => import("./how-much-does-pcb-design-cost.mdx"),
+  "how-to-write-a-pcb-design-brief": () => import("./how-to-write-a-pcb-design-brief.mdx"),
   "level-shifting-for-ws2812b": () => import("./level-shifting-for-ws2812b.mdx"),
   "one-pull-up-pair-per-i2c-bus": () => import("./one-pull-up-pair-per-i2c-bus.mdx"),
   "opto-isolation-and-creepage": () => import("./opto-isolation-and-creepage.mdx"),
+  "pcb-layout-mistakes-a-review-catches": () => import("./pcb-layout-mistakes-a-review-catches.mdx"),
   "protecting-the-input": () => import("./protecting-the-input.mdx"),
   "reading-your-fabs-capability-sheet": () => import("./reading-your-fabs-capability-sheet.mdx"),
   "rev-a-notes": () => import("./rev-a-notes.mdx"),

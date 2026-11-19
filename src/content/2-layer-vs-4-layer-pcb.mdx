@@ -1,0 +1,53 @@
+---
+title: "Two Layers or Four?"
+seoTitle: "2-Layer vs 4-Layer PCB: When to Pay for 4 Layers"
+date: "2026-08-21"
+readTime: "6 min read"
+tag: "Layout"
+excerpt: "What the two extra layers actually buy, the boards that need them, the boards that don't, and how to make a two-layer board behave as if it had a ground plane."
+---
+Almost every board starts with the same question, usually asked as a question about money: can this be two layers? Sometimes the honest answer is yes, and four would be money spent on nothing. Sometimes two layers save a little on every board and cost a whole second revision. Which one it is depends on what the extra layers are for.
+
+## What the two extra layers buy
+
+A four-layer board is usually a signal layer on each side with two planes inside. The common [stack-up](/tools/pcb-glossary#stack-up) runs top signals, a solid ground plane, a power plane, then bottom signals. Ground on both inner layers, with power routed as wide pours, is common too. What you pay for is the planes:
+
+- **A return path under every trace.** A signal's current comes back on the nearest plane, right underneath it. In a typical 1.6 mm four-layer board, the outer layers sit about 0.1 to 0.2 mm above the inner planes. On a 1.6 mm two-layer board, the nearest plane is the bottom pour, about ten times further away. The loop that a signal and its return enclose shrinks with that distance, and a smaller loop radiates less and picks up less.
+- **A low-inductance supply.** With a plane or wide pours beside the ground plane, every chip gets its supply through a via instead of a long trace. Every decoupling capacitor reaches ground the same way.
+- **[Controlled impedance](/tools/pcb-glossary#impedance).** With a thin, known dielectric under each outer trace, a fab can hit 50 or 90 ohms with traces of normal width. On a 1.6 mm two-layer board, a plain 50 ohm trace would be about 3 mm wide.
+- **Room to route.** Signals that would have cut the ground pour on two layers get layers of their own.
+
+## The boards that need four
+
+- **Fast interfaces where impedance matters:** high-speed USB at 480 Mbps, gigabit Ethernet, HDMI, DDR memory, and camera and display links. Full-speed USB, the kind built into the ESP32-S3, runs happily on two layers.
+- **Fine-pitch BGAs and dense QFNs.** Getting signals out from under the inner rows of balls takes layers and vias, and two layers run out quickly.
+- **Mixed-signal boards**, with a switching regulator, a radio and a sensitive analog input on the same board. A solid ground plane is the cheapest way to keep their return currents apart. [Ground planes and return paths](/blog/ground-planes-and-return-paths) shows why.
+- **Products that must pass emissions testing.** A solid ground plane is one of the most effective defences against radiated emissions. A failed test means a redesign and another booking at the lab.
+- **Boards where two layers would cut the ground into islands.** If the only way to route the board on two layers is to chop the bottom pour into pieces, the board has already answered the question.
+
+## The boards that don't
+
+- **Slow digital:** I2C, UART, SPI at a few MHz, buttons and LEDs.
+- **Module-based designs.** A certified radio module, with its own shielding and antenna, on a simple carrier board. An ESP32-S3 module on two layers is a very common design, as long as you keep the antenna's keep-out zone clear and give the module's ground pads plenty of vias.
+- **Power boards with few signals**, such as relay boards and LED drivers, where thicker copper matters more than more layers.
+- **Through-hole designs, kits and low-volume test fixtures.**
+
+## Making two layers behave
+
+If two layers is the right call, these rules make it work:
+
+1. **Treat the bottom as a ground plane that carries a few short jumps.** Route almost everything on top. When a trace has to cross underneath, keep it short so the pour it cuts stays in one piece.
+2. **Never let a cut block a return path.** A long bottom trace under a fast signal forces the return current to detour around it, and the loop that detour makes is an antenna.
+3. **Stitch the top ground pour to the bottom with vias**, generously along the board edge, around the radio, and beside the ground pins of chips and connectors.
+4. **Give every decoupling capacitor its own ground via**, right at its pad.
+5. **Keep a switching regulator's hot loop on one side**, with the input capacitor, the switch and the ground return all on top and tight together. [Buck converter layout: the hot loop](/blog/buck-converter-layout-the-hot-loop) has the details.
+
+## The cost question
+
+At prototype quantities from a low-cost fab, the price difference between two and four layers is usually small in absolute terms. At production volume it becomes a real cost per board. Get both quotes, since most fab websites give them in a minute. Then weigh the difference against what a second revision or a failed emissions test would cost.
+
+The design time barely changes. My [cost estimator](/tools/pcb-design-cost-calculator) adds about 10 percent for four layers, for planning the stack-up and checking the planes, and the routing itself often gets easier.
+
+## The short version
+
+Pay for four layers if the board has fast signals, fine-pitch parts, a radio next to analog circuits, or has to pass emissions testing. If it is slow, module-based or mostly power, two layers done carefully is fine. If you're still not sure, ask one question: can two layers keep the bottom ground in one piece?

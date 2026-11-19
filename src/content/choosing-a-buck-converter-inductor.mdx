@@ -1,0 +1,92 @@
+---
+title: "Picking the Inductor for a Buck Converter"
+seoTitle: "Choosing a Buck Converter Inductor: Isat, Irms, DCR"
+date: "2026-09-01"
+readTime: "7 min read"
+tag: "Power"
+excerpt: "One formula gives the inductance; three ratings pick the part. A worked 12 V to 3.3 V example: ripple, peak current, saturation, heating and winding loss."
+---
+The inductance is the easy part of a buck converter's inductor. One formula gives you a number, say 10 µH. Then you search for it and find hundreds of 10 µH parts, from a 2 mm chip to a 12 mm block, each datasheet listing two or three different currents. Choosing between them decides whether the converter runs cool, runs hot, or falls over the first time the output is shorted.
+
+## What the inductor is doing
+
+In a buck converter, the switch connects one end of the inductor to the input for part of each cycle, and to ground for the rest. While it sits on the input, the current through the inductor ramps up. While it sits on ground, the current ramps down. The load gets the average of that ramp, with a small triangle of ripple on top.
+
+The inductance sets how steep the ramps are, and so how big the ripple is:
+
+```text
+ripple   dI = Vout * (Vin - Vout) / (Vin * L * fsw)
+```
+
+The ripple is largest at the highest input voltage, so that is the voltage to design with. Rearranged to give the inductance for a ripple you choose:
+
+```text
+L = Vout * (Vin_max - Vout) / (dI * fsw * Vin_max)
+```
+
+The usual starting point is a ripple of 20 to 40 percent of the full load current. More ripple means a smaller, cheaper inductor, but a higher peak current, more output ripple and more loss in the core. Less ripple means a bigger inductor and a slower response when the load changes suddenly.
+
+## A worked example
+
+Take 12 V in, 3.3 V out, 2 A, switching at 500 kHz, and aim for 30 percent ripple, which is 0.6 A:
+
+```text
+L = 3.3 * (12 - 3.3) / (0.6 * 500,000 * 12) = 7.98 uH
+```
+
+Round up to the next common value, 10 µH. Rounding up lowers the ripple; rounding down would raise it. With 10 µH, the ripple works out at 0.48 A, or 24 percent of the load.
+
+Two currents come out of that, and the part has to handle both:
+
+- **Peak current** is the load plus half the ripple: 2 + 0.24 = **2.24 A**.
+- **RMS current** is the square root of (load squared, plus ripple squared over 12): about **2.0 A**. A small triangle of ripple adds almost nothing to the heating.
+
+## Saturation current: the hard limit
+
+An inductor's core can only store so much energy. Push the current past its saturation point and the inductance collapses. The current then ramps faster than the controller expects, which drives it higher still.
+
+Datasheets give this as Isat: the current at which the inductance has dropped by a set amount. Manufacturers don't agree on that amount; it is commonly somewhere from 10 to 30 percent, so read the footnote before you compare two parts.
+
+The core material matters too. A ferrite core holds its inductance almost up to Isat and then falls off sharply. A molded metal-powder core loses inductance gradually, which forgives a brief overload.
+
+The peak current, 2.24 A here, has to sit below Isat with some margin. But when the output is shorted, the current rises until the regulator's current limit stops it. If the inductor saturates below that limit, the current can shoot up before the limit reacts. That is why many regulator datasheets ask for an Isat above the switch current limit, not just above the calculated peak. If the regulator in the example limits at, say, 3.5 A, an inductor with an Isat of 3.5 A or more survives a short on the output without saturating.
+
+## Rated current: the heating limit
+
+The other current on the datasheet, often called Irms or Itemp, is a heating limit. It is the steady current that warms the part by a stated amount, typically 20 or 40 °C, on the manufacturer's test board. It has nothing to do with saturation, and a part can pass one limit and fail the other.
+
+For a buck converter, the RMS current is close to the load current: 2.0 A in the example. Choose a rated current comfortably above it. Your board is not the manufacturer's test board, and the air inside an enclosure is rarely 25 °C.
+
+## DCR: the power lost in the winding
+
+The winding's resistance, its DCR, turns current into heat:
+
+```text
+P = Irms^2 * DCR = 2.0^2 * 0.030 = 0.12 W
+```
+
+With a 30 mΩ part, that is 0.12 W out of the 6.6 W the converter delivers, so 1.8 percent of the efficiency is lost in the copper alone. A smaller part with 100 mΩ would lose 0.4 W, about 6 percent, and you would feel it with a finger.
+
+The core loses energy on every cycle too, and that loss grows with the ripple and the frequency. It isn't a single number on the datasheet, but most inductor manufacturers publish calculators that estimate the total loss for your operating point. Use one to compare your last two or three candidates.
+
+## Shielded or not
+
+An unshielded inductor spreads its magnetic field into everything around it. A semi-shielded one spreads less, and a shielded one keeps most of it inside. Near sensitive analog circuits, near an antenna, or on a crowded board, use a shielded part. Shielded or not, don't run sensitive traces directly under it.
+
+## Read the regulator's datasheet first
+
+Many regulators are internally compensated: their control loop was designed around a particular range of inductance. Outside that range, the loop can respond badly to load changes or become unstable. If the datasheet recommends an inductance, or a table of them for different output voltages, start there. The formula above is for checking it, and for the regulators that leave the choice to you.
+
+## Layout, briefly
+
+The inductor connects to the switch node, the noisiest copper on the board. Place it right next to the regulator's switch pin, keep the switch node's copper only as large as the current needs, and keep the feedback trace well away from it. [Buck converter layout: the hot loop](/blog/buck-converter-layout-the-hot-loop) covers the rest.
+
+## The checklist
+
+1. **Inductance** from the formula at the highest input voltage and 20 to 40 percent ripple, rounded to a standard value, or the value the regulator's datasheet recommends.
+2. **Saturation current** above the peak current with margin, and above the switch current limit if the board has to survive a short.
+3. **Rated current** comfortably above the RMS current.
+4. **DCR** low enough that the copper loss fits your efficiency budget.
+5. **Shielded** if anything sensitive is nearby.
+
+The [buck converter calculator](/tools/buck-converter-calculator) does the arithmetic in this note for your own numbers, including the peak and RMS currents, and sizes the input and output capacitors too.

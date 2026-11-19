@@ -1,0 +1,56 @@
+---
+title: "ESP32-S3 Strapping Pins: What GPIO0, 3, 45 and 46 Do at Boot"
+seoTitle: "ESP32-S3 Strapping Pins: GPIO0, GPIO3, GPIO45, GPIO46"
+date: "2026-09-23"
+readTime: "6 min read"
+tag: "Firmware"
+excerpt: "GPIO0, 3, 45 and 46 are read at reset to set the boot mode, the flash voltage and the JTAG source. What each one decides, and how to wire them so the board boots."
+---
+Four pins on the ESP32-S3 lead a double life. For a few milliseconds after reset, the chip reads them to decide how to start: whether to run your code or wait for new firmware, what voltage to give the flash, where JTAG comes from. After that they are ordinary GPIOs. Wire something to one of them without thinking about those few milliseconds, and you get a board that boots on the bench and not in the field, or never boots at all.
+
+## How strapping works
+
+At reset, each strapping pin's level is sampled and latched, and the latch keeps that value until the chip is powered down. The level comes from whatever is connected to the pin. With nothing connected, it comes from the pin's internal weak pull-up or pull-down.
+
+The timing is short but real: the pins must hold their level for at least 3 ms after the EN pin goes high. After that, the chip releases them and they behave like any other GPIO.
+
+## The four pins
+
+- **GPIO0** has a weak pull-up, so it reads high with nothing connected. Together with GPIO46 it picks the boot mode.
+- **GPIO46** has a weak pull-down, so it reads low. It is the other half of the boot mode, and it can also switch the boot messages off.
+- **GPIO45** has a weak pull-down, so it reads low. It sets the flash supply voltage: low for 3.3 V, high for 1.8 V.
+- **GPIO3** floats. It picks where JTAG comes from, but only if an eFuse tells the chip to look at it.
+
+## GPIO0 and GPIO46: run, or wait for firmware
+
+With GPIO0 high at reset, the chip boots from flash and runs your code; GPIO46 doesn't matter. With GPIO0 and GPIO46 both low, it enters download mode instead, and waits for new firmware over USB or the UART. GPIO0 low with GPIO46 high is not a valid combination.
+
+That is why GPIO0 is the BOOT button on nearly every ESP32-S3 board: a pull-up keeps it high, and holding the button while pressing reset pulls it low. Two rules follow:
+
+- **Give GPIO0 a pull-up**, even though it has a weak internal one. Espressif's design guidelines recommend it.
+- **Don't put a large capacitor on GPIO0.** At power-up the capacitor holds the pin low while it charges, and the chip can wake up in download mode and sit there.
+
+GPIO46 has a second job: together with an eFuse, it can decide whether the boot ROM prints its startup messages. With the eFuses left at their defaults, the messages print regardless, so most designs only need GPIO46 to be low at reset.
+
+## GPIO45: the flash voltage
+
+GPIO45 tells the chip what voltage to supply to its flash: low for 3.3 V, high for 1.8 V. Most modules, including the common WROOM-1 parts, carry 3.3 V flash, and the internal pull-down selects 3.3 V for you.
+
+Pull GPIO45 high at reset on one of those modules and the flash is powered at 1.8 V. It can't be read, and the module won't boot. Anything you attach to GPIO45 must be low or floating while the chip starts. The exception is a module whose flash voltage has been fixed by an eFuse, where GPIO45 no longer matters; your module's datasheet says if yours is one.
+
+## GPIO3: almost always free
+
+GPIO3 can choose between JTAG over USB and JTAG on dedicated pins, but only if an eFuse has been burned to make it do so. On a chip with default eFuses it is ignored at boot, and in practice it is an ordinary GPIO. It is the one strapping pin with no pull resistor switched on at reset, though, so if you use it as an input, give it a defined level: an external resistor, or its internal pull switched on by your code.
+
+## Wiring rules that keep the board booting
+
+1. **Use strapping pins for signals that don't care about reset**: an LED, a button whose idle level matches the default, an output that nothing reacts to in the first few milliseconds.
+2. **Check every pull resistor and every chip output** that connects to a strapping pin. A sensor that drives its output high at power-up, or a level shifter with a pull-up, can flip a strapping pin without anyone noticing.
+3. **Watch for back-powering.** If another board drives a strapping pin before the ESP32-S3 is powered, the pin can be at the wrong level at the exact moment it is sampled.
+4. **Keep the BOOT button and its pull-up on GPIO0**, even on a production board. It makes recovery from a bad firmware update a button press instead of a rework job.
+
+## The other pins worth checking
+
+Strapping pins are not the only ESP32-S3 pins with a catch. GPIO19 and GPIO20 carry native USB. GPIO35 to GPIO37 belong to the PSRAM on modules with octal PSRAM. The ADC2 inputs share hardware with Wi-Fi, so their readings can fail while Wi-Fi is running. And GPIO1 to GPIO20 can glitch for about 60 µs while the chip powers up, mostly low, which matters if one of them drives a relay or a MOSFET gate.
+
+The [ESP32-S3 pin planner](/tools/esp32-s3-pinout) shows all of this for your exact module and setup, pin by pin. The facts in this note come from Espressif's ESP32-S3-WROOM-1 datasheet and the ESP32-S3 Hardware Design Guidelines; check the latest versions for your part number before a design goes to production.

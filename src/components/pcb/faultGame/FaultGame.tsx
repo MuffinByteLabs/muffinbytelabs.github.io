@@ -10,8 +10,12 @@ import {
   ROUND_SIZE,
   distanceToFault,
   pickRound,
+  weeklyRound,
   type FaultId,
 } from "./faults";
+import { copyText } from "@/components/tools/clipboard";
+
+const SHARE_URL = "https://muffinbytelabs.com/#spot-the-fault";
 
 /* ════════════════════════════════════════════════════════════════════════
    Spot the fault: the game itself. Only ever loaded by SpotTheFault, when
@@ -109,7 +113,11 @@ function Timer({
 
 export default function FaultGame({ onClose }: { onClose: () => void }) {
   const [round, setRound] = useState(0);
-  const [active, setActive] = useState<FaultId[]>(() => pickRound());
+  /* the first game is this week's board, the same for everyone until
+     Monday, so scores can be compared; "Play again" deals random ones */
+  const [weekly, setWeekly] = useState(true);
+  const [active, setActive] = useState<FaultId[]>(() => weeklyRound());
+  const [shared, setShared] = useState<"" | "copied" | "fail">("");
   const [phase, setPhase] = useState<Phase>("countdown");
   const [count, setCount] = useState(COUNT_FROM);
   const [found, setFound] = useState<FaultId[]>([]);
@@ -300,7 +308,26 @@ export default function FaultGame({ onClose }: { onClose: () => void }) {
     });
   }
 
+  async function share() {
+    const n = found.length;
+    const text = weekly
+      ? `I found ${n} of ${ROUND_SIZE} layout mistakes on this week's Spot the fault board${outcome === "all" ? `, with ${fmt(leftAtEnd)} to spare` : ""}. Can you beat that?`
+      : `I found ${n} of ${ROUND_SIZE} layout mistakes in Spot the fault, a 60-second PCB review game. Can you beat that?`;
+    if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
+      try {
+        await navigator.share({ text, url: SHARE_URL });
+        return;
+      } catch {
+        /* cancelled, or not allowed here: fall back to copying */
+      }
+    }
+    setShared((await copyText(`${text} ${SHARE_URL}`)) ? "copied" : "fail");
+    setTimeout(() => setShared(""), 2600);
+  }
+
   function again() {
+    setWeekly(false);
+    setShared("");
     setActive((prev) => pickRound(prev));
     setFound([]);
     setFoundAt({});
@@ -329,7 +356,7 @@ export default function FaultGame({ onClose }: { onClose: () => void }) {
     <div ref={rootRef} className="ftg" data-phase={phase}>
       <div className="ftg-head">
         <div>
-          <span className="eyebrow">Mini game</span>
+          <span className="eyebrow">{weekly ? "This week's board · new every Monday" : "Mini game · a random board"}</span>
           <h2 className="display ftg-title">
             Spot the <em>fault</em>
           </h2>
@@ -362,9 +389,13 @@ export default function FaultGame({ onClose }: { onClose: () => void }) {
                 </div>
               </dl>
               <div className="ftg-result-actions">
-                <button type="button" className="btn btn-primary btn-sm" onClick={again}>
+                <button type="button" className="btn btn-primary btn-sm" onClick={share}>
+                  <Icon name={shared === "copied" ? "check" : "share"} size={15} />
+                  {shared === "copied" ? "Copied: paste it anywhere" : shared === "fail" ? "Couldn't copy" : "Share your score"}
+                </button>
+                <button type="button" className="btn btn-ghost btn-sm" onClick={again}>
                   <Icon name="flip" size={15} />
-                  Play again
+                  Play a new board
                 </button>
                 <a href="/services#svc-01" className="link-gold inline-flex items-center gap-1.5 text-[13.5px] font-medium">
                   Get your board reviewed

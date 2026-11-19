@@ -1,5 +1,6 @@
 import {
   BOARDS,
+  BOOKING_URL,
   CLIENT_WORK,
   CONTACT_EMAIL,
   DELIVERABLE_ZIP,
@@ -9,11 +10,13 @@ import {
   PROJECT_STEPS,
   REPO,
   SERVICES,
+  UPWORK_STATS,
   UPWORK_URL,
 } from "@/components/pcb/pcbData";
 import { PCB2, PCB2_SLUG, PCB2_STATS } from "@/components/pcb2/data";
 import { getAllPosts, getPostBody } from "@/lib/posts";
 import { SITE } from "@/lib/schema";
+import { MEMORY_MAP_TOOL, TOOLS, TOOLS_HUB } from "@/lib/tools";
 
 /* ════════════════════════════════════════════════════════════════════════
    /llms.txt and /llms-full.txt — the site as plain Markdown for AI
@@ -33,7 +36,8 @@ const FACTS = [
   `Price: ${HOURLY_RATE} an hour for open-ended work. A defined job gets a fixed price in writing within 24 hours, with a money-back guarantee written into the contract.`,
   "Files: delivered in the client's own EDA tool. Every manufacturing package passes its DRC and ERC checks with zero errors before it is handed over.",
   "Works remotely with clients anywhere, and signs an NDA before any files are shared when asked.",
-  `Hire: email ${CONTACT_EMAIL}, or through Upwork at ${UPWORK_URL}`,
+  `Hire: email ${CONTACT_EMAIL}, book a 15-minute call at ${BOOKING_URL}, or hire through Upwork at ${UPWORK_URL}`,
+  `Reviews: ${UPWORK_STATS.rating} from ${UPWORK_STATS.reviews} client reviews on Upwork, ${UPWORK_STATS.jobSuccess} Job Success.`,
 ];
 
 const abs = (p: string) => (p.startsWith("http") ? p : `${SITE}${p}`);
@@ -151,11 +155,27 @@ function notesFull(): string[] {
   ];
 }
 
+/** the free tools, by audience; all run in the browser, nothing stored */
+function tools(): string[] {
+  const line = (t: { path: string; name: string; blurb: string }) => `- [${t.name}](${SITE}${t.path}): ${t.blurb}`;
+  return [
+    "## Free tools",
+    "",
+    `All at [${SITE}${TOOLS_HUB.path}](${SITE}${TOOLS_HUB.path}). Free, no sign-up, nothing stored.`,
+    "",
+    "For engineers:",
+    ...TOOLS.filter((t) => t.audience === "engineers").map(line),
+    line(MEMORY_MAP_TOOL),
+    "",
+    "For product teams:",
+    ...TOOLS.filter((t) => t.audience === "clients").map(line),
+  ];
+}
+
 function optional(full: boolean): string[] {
   return [
     "## Optional",
     "",
-    `- [STM32F407 Memory Map Explorer](${SITE}/memory-map): a free interactive tool for the STM32F407 address space, with register views and address, bit-band and baud-rate calculators.`,
     `- [RSS feed](${SITE}/feed.xml): new Field Notes as they are published.`,
     ...(full
       ? []
@@ -168,7 +188,7 @@ function join(sections: string[][]): string {
 }
 
 export function llmsTxt(): string {
-  return join([head(), pages(), services(false), clientWork(), questions(), notesList(), optional(false)]);
+  return join([head(), pages(), services(false), clientWork(), questions(), notesList(), tools(), optional(false)]);
 }
 
 export function llmsFullTxt(): string {
@@ -182,6 +202,7 @@ export function llmsFullTxt(): string {
     projectSteps(),
     questions(),
     notesFull(),
+    tools(),
     optional(true),
   ]);
 }

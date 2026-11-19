@@ -158,9 +158,11 @@ type Props = {
   probe: { x: number; y: number } | null;
   portrait: boolean;
   innerRef: Ref<SVGGElement>;
+  /** a crop of the board, as a viewBox in board units (landscape only) */
+  view?: string;
 };
 
-function FaultBoard({ active, found, missed, misses, probe, portrait, innerRef }: Props) {
+function FaultBoard({ active, found, missed, misses, probe, portrait, innerRef, view }: Props) {
   /* ids for the gradients, mask and filter, unique to this board, so two
      boards on one page can never borrow each other's pour */
   const uid = "ftg" + useId().replace(/[^a-zA-Z0-9_-]/g, "");
@@ -383,7 +385,7 @@ function FaultBoard({ active, found, missed, misses, probe, portrait, innerRef }
 
   return (
     <svg
-      viewBox={portrait ? `0 0 ${BOARD_H} ${BOARD_W}` : `0 0 ${BOARD_W} ${BOARD_H}`}
+      viewBox={portrait ? `0 0 ${BOARD_H} ${BOARD_W}` : (view ?? `0 0 ${BOARD_W} ${BOARD_H}`)}
       className="ftg-svg"
       aria-hidden
       style={{ fontFamily: "var(--font-geist-mono), ui-monospace, monospace" }}

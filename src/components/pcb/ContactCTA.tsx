@@ -1,7 +1,7 @@
 import Reveal from "./Reveal";
 import Icon from "@/components/ui/Icon";
 import CopyEmail from "@/components/CopyEmail";
-import { CONTACT_EMAIL, CONTACT_MAILTO, PROJECT_STEPS, UPWORK_URL } from "./pcbData";
+import { BOOKING_URL, CONTACT_EMAIL, CONTACT_MAILTO, PROJECT_STEPS, UPWORK_URL } from "./pcbData";
 
 /* ════════════════════════════════════════════════════════════════════════
    The close: one card with the one action on the left, and how a project
@@ -60,6 +60,18 @@ export default function ContactCTA({
                   <CopyEmail email={CONTACT_EMAIL} className="btn btn-ghost" />
                 </div>
                 <p className="mt-5 mb-0 text-[13.5px]" style={{ color: "var(--text-3)" }}>
+                  Rather talk it through first?{" "}
+                  <a
+                    href={BOOKING_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="link-gold inline-flex items-center gap-1 whitespace-nowrap"
+                  >
+                    Book a 15-minute call
+                    <Icon name="arrowUpRight" size={13} />
+                  </a>
+                </p>
+                <p className="mt-2 mb-0 text-[13.5px]" style={{ color: "var(--text-3)" }}>
                   Rather keep the contract on a platform?{" "}
                   <a
                     href={UPWORK_URL}

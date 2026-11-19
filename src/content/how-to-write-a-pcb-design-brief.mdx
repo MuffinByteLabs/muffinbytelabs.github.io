@@ -1,0 +1,97 @@
+---
+title: "What to Put in a PCB Design Brief"
+seoTitle: "How to Write a PCB Design Brief a Designer Can Quote"
+date: "2026-09-12"
+readTime: "6 min read"
+tag: "Planning"
+excerpt: "The seven things a designer needs to know before they can give you a fixed price, why “not sure yet” is a useful answer, and what you can leave out."
+---
+A designer can only price what they can see. A message that says "I need a PCB for my project" gets back a list of questions, or an hourly rate with a wide estimate. A page that answers the right questions gets back a fixed price.
+
+This is what goes on that page. You don't need every answer. "Not sure yet" is a useful answer too, because it tells the designer which decisions are part of the job.
+
+## 1. What it does, in two sentences
+
+Describe the product's job and who uses it, not the circuit. Compare "a soil-moisture logger that runs for months on two AA cells and reports once an hour over Wi-Fi" with a parts list. The sentence already implies a battery budget, a sleep current, a radio and an enclosure.
+
+Then say where it lives: indoors, outdoors, in a vehicle, in a factory, worn on the body. That sets the temperature range, the protection against moisture and static, and whether vibration matters.
+
+## 2. Where the project stands
+
+An idea, a breadboard prototype, a schematic, an existing board that needs changes, or a finished design to review: each of these is a different job with a different price.
+
+If you have a working prototype, send it along, even as photos of the breadboard. Its wiring and its firmware show exactly what the board has to do, and that is worth more than any description.
+
+## 3. Power
+
+Say where the power comes from: USB-C, a battery, a wall adapter, a 12 V or 24 V supply, or mains. Mains changes the whole job, because it brings isolation and safety distances, so say so first.
+
+Then say what the board has to drive. Motors, LED strips, heaters and anything else that draws real current need their current written down. On a battery-powered product, give the battery life you need. It drives the choice of parts from the very first day.
+
+## 4. The main parts
+
+- **The main chip or module**, if it is already chosen, and why. Existing firmware is a good reason to keep it.
+- **The connections:** Wi-Fi, Bluetooth, USB, Ethernet, CAN, RS-485, LoRa, cellular or GPS.
+- **Everything else:** sensors, displays, motors, buttons and connectors, with part numbers or datasheet links for anything unusual.
+
+If you have no preference, write "no preference". The designer can then choose parts for cost and availability, and that is usually a good thing.
+
+## 5. Size, shape and enclosure
+
+Give the largest board that fits, where the mounting holes must go, which edges the connectors face, and how tall the parts can be. Then say whether the enclosure is an off-the-shelf box, a custom design, or an existing product the board has to fit.
+
+If the board must fit something that already exists, send its drawing, its measurements or a 3D file. That saves more back-and-forth than anything else in the brief.
+
+## 6. Quantities and cost per board
+
+Say how many prototypes you need, how many boards the first production run will be, and the cost per board you are aiming for, if you have one. Ten boards assembled by hand and ten thousand assembled by machine are different designs. The quantity changes the parts, the packages, the test points and the panel.
+
+If you already use a manufacturer, name it. Its capabilities set the design rules.
+
+## 7. Deadline, budget and certifications
+
+If the deadline is a real date, like a trade show or a funding milestone, say so. It decides what gets done first.
+
+A budget range helps more than people expect. With one, a designer can suggest the version of the project that fits it, instead of quoting a version that doesn't.
+
+Then name any certifications the product needs, such as CE, FCC or UL, and any medical or automotive standards. They change clearances, parts and layout rules from the start, and they are far cheaper planned in than fixed later.
+
+## What you can leave out
+
+- **A schematic, a block diagram or part numbers.** None of these are needed for a quote. Working them out can be part of the job.
+- **The right vocabulary.** Describe what the board does in plain words. If you want the common terms anyway, the [PCB glossary](/tools/pcb-glossary) explains them.
+- **Anything confidential, at first.** If the project is confidential, say so in your first message and ask for an NDA before you send details. A first brief can describe what the board must do without saying what the product is.
+
+## A short example
+
+```text
+PCB PROJECT BRIEF: Greenhouse sensor node
+
+1. WHAT IT IS
+Measures soil moisture and air temperature and reports once an hour over Wi-Fi.
+Used by / where: growers, on a stake in the soil
+Environment: Indoors, Battery-powered for months
+
+2. WHERE IT STANDS
+Starting point: A breadboard or dev-kit prototype
+What exists already: an ESP32-S3 dev kit with our firmware, a soil probe and a temperature sensor
+
+3. POWER
+Power from: Battery
+Notes: two AA cells; USB only for setup
+
+4. SIZE AND ENCLOSURE
+Board size limit: 60 x 40 mm
+Enclosure: An off-the-shelf box
+
+5. QUANTITIES AND COST
+Prototypes: 10
+First production run: 500
+Target cost per board: under $15, assembled
+```
+
+A dozen lines, and a designer knows the chip, the radio, the power source, the size and the volumes. That is enough for a fixed price, and enough to ask the right follow-up questions.
+
+## Write yours
+
+The [project brief builder](/tools/pcb-design-brief) asks these questions one at a time and formats your answers into a brief like the one above. Nothing you type leaves your browser until you send it. If you want a ballpark before you write anything, the [cost estimator](/tools/pcb-design-cost-calculator) gives one in about a minute.

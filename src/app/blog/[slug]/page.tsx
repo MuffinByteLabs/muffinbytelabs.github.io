@@ -5,6 +5,7 @@ import { getAllPosts, formatDate, postOgImage } from "@/lib/posts";
 import { jsonLd, postSchema } from "@/lib/schema";
 import Icon from "@/components/ui/Icon";
 import { CONTACT_MAILTO } from "@/components/pcb/pcbData";
+import { POST_TOOLS, toolBySlug } from "@/lib/tools";
 import { POSTS } from "@/content";
 
 export function generateStaticParams() {
@@ -28,7 +29,7 @@ export async function generateMetadata({
   const url = `/blog/${post.slug}`;
   const og = postOgImage(post.slug);
   return {
-    title: `${post.title} | Field Notes`,
+    title: `${post.seoTitle ?? post.title} | Field Notes`,
     description: post.excerpt,
     authors: [{ name: "Ray Malik" }],
     alternates: { canonical: url },
@@ -78,6 +79,8 @@ export default async function BlogPost({
 
   const related = posts.filter((p) => p.tag === post.tag && p.slug !== post.slug).slice(0, 3);
   const more = related.length > 0 ? related : posts.filter((p) => p.slug !== post.slug).slice(0, 3);
+  /* the free tool that continues this note, if one does */
+  const tool = POST_TOOLS[post.slug] ? toolBySlug(POST_TOOLS[post.slug]) : null;
   /* one lazy import per post (src/content/index.ts, generated before every
      dev and build run), so opening a post compiles that post alone */
   const load = POSTS[slug];
@@ -132,9 +135,29 @@ export default async function BlogPost({
           <MDXContent />
         </div>
 
+        {tool && (
+          <Link href={tool.path} className="card card-link group mt-16 p-5 sm:p-6 flex items-center gap-4">
+            <span className="tl-card-icon shrink-0" aria-hidden>
+              <Icon name={tool.icon} size={20} />
+            </span>
+            <span className="min-w-0">
+              <span className="eyebrow">Free tool</span>
+              <span className="block mt-1 text-[15.5px] font-semibold tracking-[-0.012em]" style={{ color: "var(--text)" }}>
+                {tool.name}
+              </span>
+              <span className="block mt-0.5 text-[13.5px] leading-6" style={{ color: "var(--text-2)" }}>
+                {tool.blurb}
+              </span>
+            </span>
+            <span className="ml-auto shrink-0 transition-transform group-hover:translate-x-1" style={{ color: "var(--accent)" }} aria-hidden>
+              <Icon name="arrowRight" size={16} />
+            </span>
+          </Link>
+        )}
+
         {/* ── who wrote it, and what to do next ─────────────────────────── */}
         <aside
-          className="mt-16 rounded-2xl p-6 sm:p-7 flex flex-col sm:flex-row sm:items-center gap-5 justify-between"
+          className={`${tool ? "mt-5" : "mt-16"} rounded-2xl p-6 sm:p-7 flex flex-col sm:flex-row sm:items-center gap-5 justify-between`}
           style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
         >
           <div>

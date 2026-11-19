@@ -50,6 +50,27 @@ export const CONTACT_MAILTO = `mailto:${CONTACT_EMAIL}?subject=${encodeURICompon
 export const HOURLY_RATE_USD = 30;
 export const HOURLY_RATE = `$${HOURLY_RATE_USD}`;
 export const UPWORK_URL = "https://www.upwork.com/freelancers/raymalik";
+/** a 15-minute video call, booked on Ray's own Cal.com page */
+export const BOOKING_URL = "https://cal.com/raymalik/15min";
+
+/* ---- Reviews -------------------------------------------------------------
+   Quoted word for word from Ray's public Upwork profile (read 2026-11-19).
+   Short excerpts only, and no client names, under the same rule as the
+   client work below; each links to the profile, where the full reviews
+   are public. Update the numbers when the profile changes. */
+export const UPWORK_STATS = { rating: "5.0", reviews: 2, jobSuccess: "100%" };
+export const REVIEWS: { quote: string; project: string; date: string }[] = [
+  {
+    quote: "Ray came through in a surprisingly big way… several others failed.",
+    project: "Precision measurement instrument",
+    date: "2026-10-07",
+  },
+  {
+    quote: "He tries to understand not only tasks he assigned for but also entire project…",
+    project: "PCB circuit design advice",
+    date: "2026-10-03",
+  },
+];
 
 /* ════════════════════════════════════════════════════════════════════════
    SERVICES — new boards, pre-fab reviews, and fixes to existing projects.
@@ -498,6 +519,7 @@ export const FAQ: FaqItem[] = [
   {
     q: "How much does PCB design cost?",
     a: `${HOURLY_RATE} an hour for open-ended work. A defined job, such as a new board, a design review or a redraw, gets a fixed price in writing within 24 hours of your brief, with a money-back guarantee in the contract.`,
+    link: { label: "Get a ballpark for your board", href: "/tools/pcb-design-cost-calculator" },
   },
   {
     q: "How long does a board take?",

@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { getAllPosts } from "@/lib/posts";
 import { PAGE_DATES, isoDate } from "@/lib/pageDates";
 import { SITE } from "@/lib/schema";
+import { TOOLS, TOOLS_HUB } from "@/lib/tools";
 
 /* The page dates are hand-maintained in src/lib/pageDates.ts (the
    structured data reads the same ones); each post carries its own date. */
@@ -25,6 +26,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE}/services`, lastModified: isoDate(PAGE_DATES.services), changeFrequency: "monthly", priority: 0.8 },
     { url: `${SITE}/blog`, lastModified: newestPost, changeFrequency: "weekly", priority: 0.8 },
     { url: `${SITE}/memory-map`, lastModified: isoDate(PAGE_DATES.memoryMap), changeFrequency: "yearly", priority: 0.4 },
+    { url: `${SITE}${TOOLS_HUB.path}`, lastModified: isoDate(TOOLS_HUB.date), changeFrequency: "monthly", priority: 0.7 },
+    ...TOOLS.map((t) => ({
+      url: `${SITE}${t.path}`,
+      lastModified: isoDate(t.date),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
     ...posts.map((p) => ({
       url: `${SITE}/blog/${p.slug}`,
       lastModified: isoDate(p.date),

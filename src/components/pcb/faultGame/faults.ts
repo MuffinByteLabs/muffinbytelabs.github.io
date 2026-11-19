@@ -130,6 +130,38 @@ export function distanceToFault(f: Fault, p: { x: number; y: number }) {
   return best;
 }
 
+/** the ISO week a date falls in (weeks start on Monday, in UTC) */
+export function isoWeek(d = new Date()): { year: number; week: number } {
+  const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  const day = t.getUTCDay() || 7;
+  t.setUTCDate(t.getUTCDate() + 4 - day);
+  const yearStart = Date.UTC(t.getUTCFullYear(), 0, 1);
+  return { year: t.getUTCFullYear(), week: Math.ceil(((t.getTime() - yearStart) / 86400000 + 1) / 7) };
+}
+
+/** mulberry32: a tiny seeded random generator, so a seed always deals the same board */
+function seeded(seed: number) {
+  let a = seed | 0;
+  return () => {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** this week's board: the same ROUND_SIZE faults for everyone until Monday */
+export function weeklyRound(d = new Date()): FaultId[] {
+  const { year, week } = isoWeek(d);
+  const rand = seeded(year * 100 + week);
+  const ids = FAULTS.map((f) => f.id);
+  for (let i = ids.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [ids[i], ids[j]] = [ids[j], ids[i]];
+  }
+  return ids.slice(0, ROUND_SIZE);
+}
+
 /** ROUND_SIZE faults at random, never the same set twice in a row */
 export function pickRound(previous?: readonly FaultId[]): FaultId[] {
   const same = (a: readonly FaultId[], b: readonly FaultId[]) =>

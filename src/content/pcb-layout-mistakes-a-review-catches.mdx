@@ -1,0 +1,91 @@
+---
+title: "Nine Layout Mistakes a Design Review Catches"
+seoTitle: "PCB Layout Mistakes: 9 a Design Review Catches"
+date: "2026-10-15"
+readTime: "7 min read"
+tag: "Layout"
+excerpt: "A pinched power trace, a far-off decoupling cap, a label on a pad, an unrouted airwire: nine layout mistakes that reach production, drawn right and wrong."
+---
+import FaultCompare from "@/components/pcb/faultGame/FaultCompare";
+
+The mistakes that cost a second batch of boards are rarely exotic. They are small, they look almost right, and most of them get past the design rule check, because a rule check only knows the rules someone typed into it. A review is a person reading the layout the way the factory, the assembler and the current will.
+
+Here are nine I look for on every board, each drawn on the same practice board twice: once right, once wrong. They are the nine mistakes in [Spot the fault](/#spot-the-fault), so you can try finding them yourself afterwards.
+
+## 1. A power trace pinched thin
+
+<FaultCompare fault="neck" />
+
+The trace carrying the board's supply runs wide, then squeezes through a gap between two parts, then widens again. The router was happy, because the narrow section still clears the fab's minimum width. But the whole current flows through that neck, so it runs hot and drops voltage, and at worst it behaves like a fuse.
+
+The fix is to size the whole path to its current, not just most of it, or move a part so the trace doesn't have to squeeze. The [trace width calculator](/tools/pcb-trace-width-calculator) gives the width for a current and a temperature rise.
+
+## 2. A decoupling capacitor far from its pin
+
+<FaultCompare fault="farcap" />
+
+The capacitor is in the schematic, it is on the board, and it is connected. It is also on the far side of the board, at the end of a long thin trace. A decoupling capacitor works by supplying fast bursts of current right where the chip draws them, and the inductance of that long trace is exactly what it was meant to bypass. Electrically it is present; in practice it does very little at the frequencies that matter.
+
+Place each decoupling capacitor at the pin it serves, with the shortest possible path to its ground via.
+
+## 3. A label printed on a pad
+
+<FaultCompare fault="silk" />
+
+A reference designator was dragged across a pad. Silkscreen ink on a pad can stop solder from wetting it. Many fabs clip the silkscreen off exposed copper automatically and some don't; either way, the label you wanted is gone or mangled.
+
+Labels go beside their parts, never on copper that gets soldered.
+
+## 4. A connection that was never routed
+
+<FaultCompare fault="airwire" />
+
+The thin dashed line is an airwire: the schematic says these two points connect, and no copper was drawn. Every layout tool shows them, and a connectivity check lists them, but on a busy board one can survive to the end if nobody reads the report. The boards then come back with that connection simply open.
+
+Make "zero unrouted connections" a gate before export, and read the report rather than trusting the colour of the button.
+
+## 5. A trace on the board edge
+
+<FaultCompare fault="edge" />
+
+The trace hugs the board outline. When the board is routed or scored out of its production panel, copper this close to the edge can be nicked, exposed or shorted to whatever the board is mounted against.
+
+Keep copper back from the edge by at least what your fab's capability sheet asks for, and set an edge-clearance rule so the tool enforces it.
+
+## 6. Two signals almost touching
+
+<FaultCompare fault="pinch" />
+
+Two traces run side by side at a comfortable gap, then one jogs towards the other and the gap all but disappears. Below the fab's minimum spacing the etch can bridge them; even just above it, the yield drops.
+
+The design rule check catches this only if the clearance rule matches what the fab can actually build. Set it from the capability sheet, not from a default.
+
+## 7. Two parts on top of each other
+
+<FaultCompare fault="overlap" />
+
+One part was nudged on top of another. Their pads overlap, so they would be shorted even if a machine could place both, and it can't. Courtyard checks exist for exactly this, but only for parts whose footprints have courtyards.
+
+Check that every footprint in your library has one, and run the courtyard check.
+
+## 8. A USB connector set back from the edge
+
+<FaultCompare fault="setback" />
+
+Everything about the connector is electrically correct: pads, traces, protection. But it sits well inside the board outline, and a plug can't reach it. No electrical rule will ever flag this, because nothing is wrong with the circuit.
+
+Edge connectors belong on the edge, usually overhanging it slightly as their datasheet drawing shows. Check the mechanical drawing against the enclosure before the layout is finished, not after.
+
+## 9. A USB pair split around a via
+
+<FaultCompare fault="split" />
+
+USB's two data lines are a differential pair: they carry one signal as opposite voltages and have to run side by side at a controlled spacing. Here a via was dropped into their path and one line detours around it. The pair loses its controlled impedance over that stretch and becomes better at picking up and radiating noise. At USB's high-speed rate, a break like that is enough to make the link flaky.
+
+Route the pair together, keep vias and other traces out from between them, and set a differential-pair rule if your tool has one.
+
+## What they have in common
+
+Four of these nine sail through a rule check with default settings: the pinched trace still clears the minimum width, the distant capacitor is connected, the set-back connector is electrically fine, and the split pair is flagged only if someone set up a differential-pair rule. The other five are caught only if the right rule is switched on and someone reads what it reports. None of them is hard to fix on screen, and all of them are expensive to fix in copper.
+
+That is the case for a review before the order goes in: a second person reading the board as the factory, the assembler and the current will. If you would like one on your next board, that is [the first service I offer](/services#svc-01).

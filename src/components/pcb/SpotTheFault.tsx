@@ -168,7 +168,7 @@ export default function SpotTheFault() {
             ) : (
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 p-6 sm:p-9">
                 <div className="min-w-0">
-                  <span className="eyebrow">Mini game · 60 seconds</span>
+                  <span className="eyebrow">Mini game · a new board every Monday</span>
                   <h2 className="display mt-3 text-[2.4rem] leading-[1.02] sm:text-[3rem]" style={{ color: "var(--text)" }}>
                     Spot the <em>fault</em>
                   </h2>

@@ -12,6 +12,9 @@ export type PostMeta = {
   readTime: string;
   tag: string;
   excerpt: string;
+  /** the <title> for search results, worded the way people search; the
+      page itself keeps `title` */
+  seoTitle?: string;
   draft?: boolean;
 };
 
@@ -36,6 +39,7 @@ export const getAllPosts = cache((): PostMeta[] => {
         readTime: String(data.readTime ?? ""),
         tag: String(data.tag ?? "General"),
         excerpt: String(data.excerpt ?? ""),
+        seoTitle: data.seoTitle ? String(data.seoTitle) : undefined,
         draft: data.draft === true,
       };
     })

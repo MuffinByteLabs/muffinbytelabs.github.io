@@ -2,7 +2,7 @@ import Link from "next/link";
 import GitHubMark from "@/components/pcb/GitHubMark";
 import Icon from "@/components/ui/Icon";
 import CopyEmail from "@/components/CopyEmail";
-import { REPO, CONTACT_EMAIL, CONTACT_MAILTO, UPWORK_URL } from "@/components/pcb/pcbData";
+import { REPO, BOOKING_URL, CONTACT_EMAIL, CONTACT_MAILTO, UPWORK_URL } from "@/components/pcb/pcbData";
 import { PCB2_SLUG } from "@/components/pcb2/data";
 
 /* How to reach me, where the work lives, and nothing that tracks you.
@@ -24,15 +24,23 @@ const COLUMNS: { title: string; links: { label: string; href: string; external?:
       { label: "Services", href: "/services" },
       { label: "Deliverables", href: "/#deliverables" },
       { label: "Field Notes", href: "/blog" },
+      { label: "RSS feed", href: "/feed.xml" },
+      { label: "Book a 15-minute call", href: BOOKING_URL, external: true },
       { label: "Upwork profile", href: UPWORK_URL, external: true, me: true },
+      { label: "GitHub", href: "https://github.com/MuffinByteLabs", external: true, me: true },
     ],
   },
   {
-    title: "Tools",
+    title: "Free tools",
     links: [
-      { label: "STM32 Memory Map", href: "/memory-map" },
-      { label: "RSS feed", href: "/feed.xml" },
-      { label: "GitHub", href: "https://github.com/MuffinByteLabs", external: true, me: true },
+      { label: "All tools", href: "/tools" },
+      { label: "ESP32-S3 pin planner", href: "/tools/esp32-s3-pinout" },
+      { label: "Buck converter calculator", href: "/tools/buck-converter-calculator" },
+      { label: "Trace width calculator", href: "/tools/pcb-trace-width-calculator" },
+      { label: "Design cost estimator", href: "/tools/pcb-design-cost-calculator" },
+      { label: "Project brief builder", href: "/tools/pcb-design-brief" },
+      { label: "PCB terms explained", href: "/tools/pcb-glossary" },
+      { label: "STM32 memory map", href: "/memory-map" },
     ],
   },
 ];

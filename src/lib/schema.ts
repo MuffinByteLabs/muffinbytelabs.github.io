@@ -304,6 +304,98 @@ export function memoryMapSchema(description: string) {
   };
 }
 
+/** A free tool under /tools: a web application, free to use. */
+export function toolSchema(t: { path: string; name: string; description: string; category: string; date: string }) {
+  const url = `${SITE}${t.path}`;
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": `${url}#app`,
+        name: t.name,
+        url,
+        description: t.description,
+        applicationCategory: t.category,
+        operatingSystem: "Any (runs in a web browser)",
+        browserRequirements: "Requires JavaScript",
+        isAccessibleForFree: true,
+        offers: { "@type": "Offer", price: 0, priceCurrency: "USD" },
+        author: AUTHOR,
+        publisher: PUBLISHER,
+        dateModified: t.date,
+        inLanguage: "en",
+      },
+      breadcrumbs([
+        { name: "Free tools", path: "/tools" },
+        { name: t.name, path: t.path },
+      ]),
+    ],
+  };
+}
+
+/** The glossary: a set of defined terms, each with its own anchor. */
+export function glossarySchema(
+  t: { path: string; name: string; description: string; date: string },
+  terms: { id: string; term: string; def: string }[]
+) {
+  const url = `${SITE}${t.path}`;
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "DefinedTermSet",
+        "@id": `${url}#terms`,
+        name: t.name,
+        url,
+        description: t.description,
+        author: AUTHOR,
+        publisher: PUBLISHER,
+        dateModified: t.date,
+        inLanguage: "en",
+        hasDefinedTerm: terms.map((x) => ({
+          "@type": "DefinedTerm",
+          "@id": `${url}#${x.id}`,
+          name: x.term,
+          description: x.def,
+          url: `${url}#${x.id}`,
+          inDefinedTermSet: `${url}#terms`,
+        })),
+      },
+      breadcrumbs([
+        { name: "Free tools", path: "/tools" },
+        { name: t.name, path: t.path },
+      ]),
+    ],
+  };
+}
+
+/** The /tools index: every free tool, as a list. */
+export function toolsHubSchema(hub: { path: string; title: string; description: string; date: string }, tools: { path: string; name: string }[]) {
+  const url = `${SITE}${hub.path}`;
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": `${url}#page`,
+        url,
+        name: hub.title,
+        description: hub.description,
+        author: AUTHOR,
+        publisher: PUBLISHER,
+        dateModified: hub.date,
+        inLanguage: "en",
+        mainEntity: {
+          "@type": "ItemList",
+          itemListElement: tools.map((x, i) => ({ "@type": "ListItem", position: i + 1, name: x.name, url: `${SITE}${x.path}` })),
+        },
+      },
+      breadcrumbs([{ name: "Free tools", path: hub.path }]),
+    ],
+  };
+}
+
 /** The Field Notes index: the blog and every post in it. */
 export function blogSchema(posts: { slug: string; title: string; date: string }[], description: string) {
   const url = `${SITE}/blog`;

@@ -2,7 +2,12 @@ import Reveal from "./Reveal";
 import ClientArt from "./ClientArt";
 import SectionHead from "@/components/ui/SectionHead";
 import Unbroken from "@/components/ui/Unbroken";
-import { CLIENT_WORK } from "./pcbData";
+import Icon from "@/components/ui/Icon";
+import { CLIENT_WORK, REVIEWS, UPWORK_STATS, UPWORK_URL } from "./pcbData";
+
+/** "2026-10-07" → "October 2026" */
+const monthYear = (iso: string) =>
+  new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "UTC" });
 
 /* ════════════════════════════════════════════════════════════════════════
    Client work — the first thing after the hero, because "has he done this
@@ -69,6 +74,32 @@ export default function ClientWork({ index }: { index?: string }) {
             </li>
           ))}
         </ul>
+
+        {/* what clients wrote, word for word, from the public Upwork profile */}
+        <Reveal>
+          <div className="reviews mt-6">
+            {REVIEWS.map((r) => (
+              <figure key={r.date} className="card card-static review">
+                <span className="review-stars" role="img" aria-label="Rated 5 out of 5">
+                  ★★★★★
+                </span>
+                <blockquote className="review-quote">&ldquo;{r.quote}&rdquo;</blockquote>
+                <figcaption className="review-who">
+                  Client on Upwork &middot; {r.project} &middot; {monthYear(r.date)}
+                </figcaption>
+              </figure>
+            ))}
+            <a href={UPWORK_URL} target="_blank" rel="noopener noreferrer" className="card card-link review-stats group">
+              <span className="display review-score">{UPWORK_STATS.rating}</span>
+              <span className="review-stats-text">
+                from {UPWORK_STATS.reviews} Upwork reviews &middot; {UPWORK_STATS.jobSuccess} Job Success
+              </span>
+              <span className="link-gold inline-flex items-center gap-1 text-[13px] font-medium">
+                Read them on Upwork <Icon name="arrowUpRight" size={13} />
+              </span>
+            </a>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
