@@ -52,11 +52,27 @@ export function getPostSlugs(): string[] {
 }
 
 /** A post's Markdown body with the frontmatter removed, for /llms-full.txt.
-    Build-time only, like everything else here. */
+    Build-time only, like everything else here. MDX-only lines mean nothing
+    as Markdown, so they are dropped: the `import` lines, and a component
+    standing on a line of its own (a drawing; the text around it already
+    says what it shows). Lines inside code fences are kept as written. */
 export function getPostBody(slug: string): string {
   const file = path.join(contentDir, `${slug}.mdx`);
   if (!fs.existsSync(file)) return "";
-  return matter(fs.readFileSync(file, "utf-8")).content.trim();
+  let fenced = false;
+  return matter(fs.readFileSync(file, "utf-8"))
+    .content.split("\n")
+    .filter((line) => {
+      if (/^\s*(```|~~~)/.test(line)) {
+        fenced = !fenced;
+        return true;
+      }
+      if (fenced) return true;
+      return !/^(import|export)\s/.test(line) && !/^<[A-Z][\w.]*(\s[^>]*)?\/>$/.test(line.trim());
+    })
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }
 
 /**
